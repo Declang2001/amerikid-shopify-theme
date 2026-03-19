@@ -1,0 +1,172 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "custom_liquid_R6CiTK": {
+      "type": "custom-liquid",
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "<!-- ─── INTERACTIVE BOUNCING SECTION ─── -->\n<div\n  id=\"custom-bounce-wrapper\"\n  tabindex=\"0\"\n  style=\"position: relative; width: 100vw; height: 400px; overflow: hidden; z-index: 999; background: black; cursor: pointer;\"\n  aria-label=\"Interactive bouncing logos with navigation buttons\"\n>\n  <!-- Cart Button -->\n  <div id=\"custom-cart-button\" class=\"cart-bubble-container\">\n    <a href=\"\/cart\" aria-label=\"View cart\">\n      <img\n        src=\"https:\/\/cdn.shopify.com\/s\/files\/1\/0930\/3267\/7656\/files\/cart.png?v=1750659934\"\n        alt=\"Cart\"\n        class=\"cart-icon-img\"\n      \/>\n    <\/a>\n  <\/div>\n\n  <!-- Mobile “M E N U” label -->\n  <span id=\"mobile-menu-text\" role=\"button\" aria-label=\"Open navigation\" tabindex=\"0\">\n    M&nbsp;E&nbsp;N&nbsp;U\n  <\/span>\n\n  <!-- ─── DESKTOP NAVIGATION GRID ─── -->\n  <div class=\"amerikid-defense-grid\">\n    <!-- TOP ROW -->\n    <a\n      href=\"\/collections\/master-collection\"\n      class=\"amerikid-button left-edge fade-in {% if request.path == '\/collections\/master-collection' %}active{% endif %}\"\n    >\n      P&nbsp;R&nbsp;O&nbsp;D&nbsp;U&nbsp;C&nbsp;T&nbsp;S\n    <\/a>\n\n    <a\n      href=\"\/pages\/the-collective\"\n      class=\"amerikid-button center-btn fade-in {% if request.path == '\/pages\/the-collective' %}active{% endif %}\"\n    >\n      L&nbsp;I&nbsp;F&nbsp;E&nbsp;\/&nbsp;S&nbsp;T&nbsp;Y&nbsp;L&nbsp;E\n    <\/a>\n\n    <!-- ARCHIVE now in the right-edge slot -->\n    <a\n      href=\"\/collections\/\"\n      class=\"amerikid-button right-edge fade-in {% if request.path contains '\/collections' %}active{% endif %}\"\n    >\n      A&nbsp;R&nbsp;C&nbsp;H&nbsp;I&nbsp;V&nbsp;E\n    <\/a>\n\n    <!-- BOTTOM ROW -->\n    <div class=\"bottom-row\">\n      <!-- NARRATIVE moved down here -->\n      <a\n        href=\"\/pages\/narrative\"\n        class=\"amerikid-button fade-in {% if request.path == '\/pages\/narrative' %}active{% endif %}\"\n      >\n        N&nbsp;A&nbsp;R&nbsp;R&nbsp;A&nbsp;T&nbsp;I&nbsp;V&nbsp;E\n      <\/a>\n\n      <a\n        href=\"\/pages\/contact\"\n        class=\"amerikid-button fade-in {% if request.path == '\/pages\/contact' %}active{% endif %}\"\n      >\n        C&nbsp;O&nbsp;N&nbsp;T&nbsp;A&nbsp;C&nbsp;T\n      <\/a>\n    <\/div>\n  <\/div>\n\n  <!-- ─── MOBILE FULL-SCREEN DRAWER ─── -->\n  <div id=\"mobile-drawer\">\n    <button id=\"drawer-close\" aria-label=\"Close menu\">✕<\/button>\n\n    <a href=\"\/collections\/master-collection\">P&nbsp;R&nbsp;O&nbsp;D&nbsp;U&nbsp;C&nbsp;T&nbsp;S<\/a>\n    <a href=\"\/pages\/the-collective\">L&nbsp;I&nbsp;F&nbsp;E&nbsp;\/&nbsp;S&nbsp;T&nbsp;Y&nbsp;L&nbsp;E<\/a>\n\n    <!-- ARCHIVE now listed above Narrative -->\n    <a href=\"\/collections\/\">A&nbsp;R&nbsp;C&nbsp;H&nbsp;I&nbsp;V&nbsp;E<\/a>\n    <a href=\"\/pages\/narrative\">N&nbsp;A&nbsp;R&nbsp;R&nbsp;A&nbsp;T&nbsp;I&nbsp;V&nbsp;E<\/a>\n\n    <a href=\"\/pages\/contact\">C&nbsp;O&nbsp;N&nbsp;T&nbsp;A&nbsp;C&nbsp;T<\/a>\n  <\/div>\n\n  <!-- Tooltip -->\n  <div id=\"custom-logo-tooltip\" class=\"custom-logo-tooltip\"><\/div>\n<\/div>\n\n<!-- ─── STYLES ─── -->\n<style>\n  \/* ---------- desktop nav + buttons ---------- *\/\n  .amerikid-defense-grid {\n    position: absolute;\n    top: 58%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    display: grid;\n    grid-template-columns: 1fr auto 1fr;\n    grid-template-rows: auto auto;\n    gap: 3.5rem 5rem;\n    width: 100%;\n    padding: 0 2rem;\n    box-sizing: border-box;\n    align-items: center;\n    justify-items: center;\n    z-index: 1500;\n    pointer-events: auto;\n  }\n  .bottom-row {\n    grid-column: 1 \/ span 3;\n    grid-row: 2;\n    display: flex;\n    justify-content: center;\n    gap: 14rem;\n    margin-top: 1rem;\n  }\n  .amerikid-button {\n    background: none;\n    color: #fff;\n    font-weight: 900;\n    font-size: 34px;\n    padding: 0.5rem 1.5rem;\n    text-align: center;\n    text-decoration: none;\n    text-transform: uppercase;\n    letter-spacing: 0.3em;\n    white-space: nowrap;\n    transition: color 0.3s ease;\n    opacity: 0;\n    transform: translateY(30px);\n    animation: fadeSlideIn 0.8s ease forwards;\n  }\n  .amerikid-button:hover,\n  .amerikid-button.active {\n    color: #ff33ff;\n  }\n  @keyframes fadeSlideIn {\n    to {\n      opacity: 1;\n      transform: translateY(0);\n    }\n  }\n\n  \/* ---------- Impact font & mobile “M E N U” label ---------- *\/\n  @font-face {\n    font-family: 'Impact';\n    src: local('Impact'), local('Impact Regular'),\n      url('https:\/\/fonts.gstatic.com\/s\/impact\/v11\/H4cnBXaW.woff2') format('woff2');\n    font-display: swap;\n  }\n  #mobile-menu-text {\n    display: none;\n    font-family: 'Impact', sans-serif;\n    font-size: clamp(28px, 9vw, 48px);\n    color: #39ff14;\n    text-transform: uppercase;\n    letter-spacing: 0.35em;\n    position: absolute;\n    bottom: 1.5rem;\n    left: 50%;\n    transform: translateX(-50%);\n    padding: 0.2rem 0.7rem;\n    width: max-content;\n    cursor: pointer;\n    user-select: none;\n    z-index: 1001;\n    animation: menuColorPulse 3.5s ease-in-out infinite,\n               menuScale      3.5s ease-in-out infinite;\n  }\n  @keyframes menuColorPulse {\n    0%, 100% {\n      color: #39ff14;\n      text-shadow: 0 0 4px #39ff14, 0 0 10px #39ff14;\n    }\n    50% {\n      color: #ff33ff;\n      text-shadow: 0 0 4px #ff33ff, 0 0 10px #ff33ff;\n    }\n  }\n  @keyframes menuScale {\n    0%, 100% { transform: translateX(-50%) scale(1); }\n    50%      { transform: translateX(-50%) scale(1.09); }\n  }\n  #mobile-menu-text:hover { filter: brightness(1.2); }\n\n  \/* ---------- mobile drawer ---------- *\/\n  #mobile-drawer {\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: center;\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100vw;\n    height: 100vh;\n    background: #000;\n    gap: 3rem;\n    z-index: 1000;\n    transform: translateX(-100%);\n    transition: transform 0.4s ease;\n    pointer-events: none;\n  }\n  #mobile-drawer.open {\n    transform: translateX(0);\n    pointer-events: all;\n  }\n  #drawer-close {\n    align-self: flex-start;\n    background: none;\n    border: none;\n    color: #fff;\n    font-size: 36px;\n    cursor: pointer;\n    margin: 2rem 0 3rem 2rem;\n  }\n  #mobile-drawer a {\n    color: #fff;\n    text-decoration: none;\n    font-weight: 900;\n    font-size: 2.4rem;\n    letter-spacing: 0.25em;\n    text-transform: uppercase;\n    text-align: center;\n    transition: color 0.3s ease;\n  }\n  #mobile-drawer a:hover { color: #ff33ff; }\n\n  \/* ---------- tooltip & logo styles ---------- *\/\n  .custom-logo-link { position: absolute; will-change: transform; z-index: 500; }\n  .custom-logo      { width: 45px; height: 45px; cursor: pointer; transition: transform 0.2s ease, filter 0.2s ease; }\n  .custom-logo-tooltip {\n    position: absolute;\n    background: rgba(0, 0, 0, 0.85);\n    color: #fff;\n    padding: 4px 8px;\n    font-size: 12px;\n    border-radius: 5px;\n    pointer-events: none;\n    white-space: nowrap;\n    opacity: 0;\n    transform: translateY(-10px);\n    transition: opacity 0.3s ease, transform 0.3s ease;\n    z-index: 200;\n  }\n  .custom-logo-tooltip.visible { opacity: 1; transform: translateY(-20px); }\n\n  \/* ---------- cart icon ---------- *\/\n  .cart-bubble-container { position: fixed; top: 1rem; right: 1rem; z-index: 9999; }\n  .cart-icon-img {\n    width: 72px;\n    height: 72px;\n    object-fit: contain;\n    transition: transform 0.2s ease;\n  }\n  .cart-icon-img:hover { transform: scale(1.05); }\n\n  \/* --- glow effect when cart has items --- *\/\n  .cart-icon-img.cart-glow { animation: cartGlowPulse 2s ease-in-out infinite; }\n  @keyframes cartGlowPulse {\n    0%, 100% { filter: drop-shadow(0 0 4px #39ff14) drop-shadow(0 0 12px #39ff14); }\n    50%      { filter: drop-shadow(0 0 8px #39ff14) drop-shadow(0 0 18px #39ff14); }\n  }\n\n  \/* ---------- mobile overrides ---------- *\/\n  @media (max-width: 749px) {\n    #custom-bounce-wrapper { height: 200px !important; }\n    .amerikid-defense-grid { display: none !important; }\n    .custom-logo-link      { display: block !important; }\n    .cart-bubble-container { position: absolute; top: 1rem; right: 1rem; }\n    #mobile-menu-text      { display: block; }\n  }\n<\/style>\n\n<!-- ─── SCRIPTS (unchanged) ─── -->\n<script>\ndocument.addEventListener('DOMContentLoaded', () => {\n  \/* ---------- cart-glow logic ---------- *\/\n  const cartImg = document.querySelector('.cart-icon-img');\n  async function updateCartGlow() {\n    try {\n      const cart = await fetch('\/cart.js').then(r => r.json());\n      cart && cart.item_count > 0\n        ? cartImg.classList.add('cart-glow')\n        : cartImg.classList.remove('cart-glow');\n    } catch (err) { console.error('Cart glow check failed:', err); }\n  }\n  updateCartGlow();\n  document.addEventListener('cart:updated', updateCartGlow);\n  setInterval(updateCartGlow, 10000);\n\n  \/* ---------- drawer controls ---------- *\/\n  const menuLabel = document.getElementById('mobile-menu-text');\n  const drawer    = document.getElementById('mobile-drawer');\n  const closeBtn  = document.getElementById('drawer-close');\n  menuLabel.addEventListener('click', () => drawer.classList.add('open'));\n  menuLabel.addEventListener('keydown', e => {\n    if (e.key === 'Enter' || e.key === ' ') drawer.classList.add('open');\n  });\n  closeBtn.addEventListener('click', () => drawer.classList.remove('open'));\n  document.addEventListener('click', e => {\n    if (!drawer.contains(e.target) && !menuLabel.contains(e.target)) drawer.classList.remove('open');\n  });\n\n  \/* ---------- bouncing logo setup (unchanged) ---------- *\/\n  const container = document.getElementById('custom-bounce-wrapper');\n  const tooltip   = document.getElementById('custom-logo-tooltip');\n  const logoSrc   = 'https:\/\/cdn.shopify.com\/s\/files\/1\/0930\/3267\/7656\/files\/KID_SCRIBBLE_OUTLINE_6bd5ffa8-d310-4eb9-be67-23cf56737678.png?v=1747881692';\n\n  const logoCount = window.innerWidth < 750 ? 15 : 70;\n  const logoSize  = 45;\n  const speeds    = [];\n\n  function isOverlapping(x, y) {\n    return speeds.some(s => {\n      const dx = s.posX - x, dy = s.posY - y;\n      return Math.sqrt(dx * dx + dy * dy) < logoSize;\n    });\n  }\n  function findPosition() {\n    let attempts = 0;\n    while (attempts < 500) {\n      const x = Math.random() * (container.clientWidth  - logoSize);\n      const y = Math.random() * (container.clientHeight - logoSize);\n      if (!isOverlapping(x, y)) return { x, y };\n      attempts++;\n    }\n    return { x: 0, y: 0 };\n  }\n\n  for (let i = 0; i < logoCount; i++) {\n    const link = document.createElement('a');\n    link.href = '\/collections\/master-collection';\n    link.className = 'custom-logo-link';\n\n    const img = document.createElement('img');\n    img.src = logoSrc;\n    img.alt = 'Logo';\n    img.className = 'custom-logo';\n\n    link.appendChild(img);\n    container.appendChild(link);\n\n    const { x, y } = findPosition();\n    const speed = {\n      x: (Math.random() < 0.5 ? -1 : 1) * (0.3 + Math.random() * 0.6),\n      y: (Math.random() < 0.5 ? -1 : 1) * (0.3 + Math.random() * 0.6),\n      posX: x,\n      posY: y,\n      el: link,\n      img,\n      label: Math.random() < 0.5 ? 'AMERIKID' : 'PRODUCTS'\n    };\n\n    img.addEventListener('mouseenter', () => {\n      tooltip.textContent = speed.label;\n      tooltip.classList.add('visible');\n      const rotation = (Math.random() * 30 - 15).toFixed(1);\n      img.style.transform += ` rotate(${rotation}deg) scale(1.9)`;\n      img.style.zIndex = '100';\n    });\n    img.addEventListener('mousemove', e => {\n      const rect = container.getBoundingClientRect();\n      tooltip.style.left = `${e.clientX - rect.left + 15}px`;\n      tooltip.style.top  = `${e.clientY - rect.top  - 30}px`;\n    });\n    img.addEventListener('mouseleave', () => {\n      tooltip.classList.remove('visible');\n      img.style.transform = '';\n      img.style.zIndex = '10';\n    });\n\n    speeds.push(speed);\n  }\n\n  document.querySelectorAll('.amerikid-button').forEach(button => {\n    button.addEventListener('mouseenter', () => {\n      const rect = button.getBoundingClientRect();\n      const bx = rect.left + rect.width \/ 2;\n      const by = rect.top  + rect.height \/ 2;\n      speeds.forEach(s => {\n        const dx = s.posX + logoSize \/ 2 - (bx - container.getBoundingClientRect().left);\n        const dy = s.posY + logoSize \/ 2 - (by - container.getBoundingClientRect().top);\n        const dist = Math.sqrt(dx * dx + dy * dy);\n        if (dist < 120) {\n          const force = (120 - dist) \/ 16;\n          s.x += (dx \/ dist) * force;\n          s.y += (dy \/ dist) * force;\n        }\n      });\n    });\n  });\n\n  function resolveCollision(a, b) {\n    const dx = b.posX - a.posX, dy = b.posY - a.posY;\n    const dist = Math.sqrt(dx * dx + dy * dy) || 1;\n    const overlap = logoSize - dist;\n    const nx = dx \/ dist, ny = dy \/ dist;\n    a.posX -= nx * overlap \/ 2; a.posY -= ny * overlap \/ 2;\n    b.posX += nx * overlap \/ 2; b.posY += ny * overlap \/ 2;\n    const relVel = (b.x - a.x) * nx + (b.y - a.y) * ny;\n    if (relVel > 0) return;\n    const impulse = (-(1 + 0.95) * relVel) \/ 2;\n    a.x -= impulse * nx; a.y -= impulse * ny;\n    b.x += impulse * nx; b.y += impulse * ny;\n  }\n\n  function animate() {\n    for (let i = 0; i < speeds.length; i++) {\n      const s = speeds[i];\n      s.posX += s.x + Math.sin(performance.now() * 0.0015 + i) * 0.3;\n      s.posY += s.y + Math.cos(performance.now() * 0.0015 + i) * 0.3;\n\n      if (s.posX <= 0 || s.posX >= container.clientWidth - logoSize) {\n        s.x *= -1;\n        s.posX = Math.max(0, Math.min(container.clientWidth - logoSize, s.posX));\n      }\n      if (s.posY <= 0 || s.posY >= container.clientHeight - logoSize) {\n        s.y *= -1;\n        s.posY = Math.max(0, Math.min(container.clientHeight - logoSize, s.posY));\n      }\n\n      for (let j = i + 1; j < speeds.length; j++) {\n        const other = speeds[j];\n        if (\n          Math.sqrt(\n            Math.pow(other.posX - s.posX, 2) +\n            Math.pow(other.posY - s.posY, 2)\n          ) < logoSize\n        ) {\n          resolveCollision(s, other);\n        }\n      }\n      s.el.style.transform = `translate(${s.posX}px, ${s.posY}px)`;\n    }\n    requestAnimationFrame(animate);\n  }\n  animate();\n});\n<\/script>",
+        "color_scheme": "scheme-4",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "custom_liquid_PRXwDH": {
+      "type": "custom-liquid",
+      "disabled": true,
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "<!-- sections\/amerikid-fast-banner.liquid -->\n<style>\n  .amerikid-fast-banner {\n    background-color: #000;\n    overflow: hidden;\n    position: relative;\n    height: auto;\n    display: flex;\n    align-items: center;\n    padding: 4px 0;       \/* slight vertical padding *\/\n    margin: 0;\n    font-size: 5rem;\n    line-height: 1;\n  }\n\n  .amerikid-fast-track-wrapper {\n    display: flex;\n    width: 200%;\n    animation: amerikid-fast-scroll-ltr 25s linear infinite;\n  }\n\n  .amerikid-fast-track {\n    display: flex;\n    white-space: nowrap;\n  }\n\n  .amerikid-fast-word {\n    font-family: Impact, sans-serif;\n    font-size: inherit;\n    line-height: 1;\n    margin: 0;\n    padding: 0;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    animation: none !important;\n    transform: none !important;\n  }\n\n  @keyframes amerikid-fast-scroll-ltr {\n    0% {\n      transform: translateX(-50%);\n    }\n    100% {\n      transform: translateX(0%);\n    }\n  }\n<\/style>\n\n<div class=\"amerikid-fast-banner\">\n  <div class=\"amerikid-fast-track-wrapper\">\n    <div class=\"amerikid-fast-track\">\n      {% for i in (1..30) %}\n        <div class=\"amerikid-fast-word\">🍭‼️🇺🇸🛍️🗣️💯🔌💰💧📖🪬🥇🎱<\/div>\n      {% endfor %}\n    <\/div>\n    <div class=\"amerikid-fast-track\">\n      {% for i in (1..30) %}\n        <div class=\"amerikid-fast-word\">🍭‼️🇺🇸🛍️🗣️💯🔌💰💧📖🪬🥇🎱<\/div>\n      {% endfor %}\n    <\/div>\n  <\/div>\n<\/div>",
+        "color_scheme": "scheme-4",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "description": {
+          "type": "description",
+          "settings": {}
+        },
+        "custom_liquid_KbTzPh": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": ""
+          }
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button",
+            "swatch_shape": "circle"
+          }
+        },
+        "quantity_selector": {
+          "type": "quantity_selector",
+          "settings": {}
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true,
+            "show_gift_card_recipient": true
+          }
+        },
+        "share": {
+          "type": "share",
+          "settings": {
+            "share_label": "Share"
+          }
+        }
+      },
+      "block_order": [
+        "title",
+        "description",
+        "custom_liquid_KbTzPh",
+        "price",
+        "variant_picker",
+        "quantity_selector",
+        "buy_buttons",
+        "share"
+      ],
+      "settings": {
+        "enable_sticky_info": true,
+        "color_scheme": "scheme-4",
+        "media_size": "medium",
+        "constrain_to_viewport": true,
+        "media_fit": "cover",
+        "gallery_layout": "stacked",
+        "mobile_thumbnails": "show",
+        "media_position": "left",
+        "image_zoom": "hover",
+        "hide_variants": false,
+        "enable_video_looping": false,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "rich_text_nJ3Wpd": {
+      "type": "rich-text",
+      "blocks": {
+        "heading_LEWyqy": {
+          "type": "heading",
+          "settings": {
+            "heading": "",
+            "heading_size": "h1"
+          }
+        },
+        "text_YhFMnY": {
+          "type": "text",
+          "settings": {
+            "text": ""
+          }
+        },
+        "button_7PcwQF": {
+          "type": "button",
+          "settings": {
+            "button_label": "BACK",
+            "button_link": "shopify:\/\/collections\/master-collection",
+            "button_style_secondary": true,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_LEWyqy",
+        "text_YhFMnY",
+        "button_7PcwQF"
+      ],
+      "name": "t:sections.rich-text.presets.name",
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "scheme-4",
+        "full_width": true,
+        "padding_top": 0,
+        "padding_bottom": 52
+      }
+    },
+    "custom_liquid_Y768e9": {
+      "type": "custom-liquid",
+      "disabled": true,
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "<!-- sections\/amerikid-rapid-banner.liquid -->\n<style>\n  .amerikid-rapid-banner {\n    background-color: #000;\n    overflow: hidden;\n    position: relative;\n    height: auto;\n    display: flex;\n    align-items: center;\n    padding: 4px 0;       \/* slight vertical padding *\/\n    margin: 0;\n    font-size: 5rem;\n    line-height: 1;\n  }\n\n  .amerikid-rapid-track-wrapper {\n    display: flex;\n    width: 200%;\n    animation: amerikid-rapid-scroll-rtl 25s linear infinite;\n  }\n\n  .amerikid-rapid-track {\n    display: flex;\n    white-space: nowrap;\n  }\n\n  .amerikid-rapid-word {\n    font-family: Impact, sans-serif;\n    font-size: inherit;\n    line-height: 1;\n    margin: 0;\n    padding: 0;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    animation: none !important;\n    transform: none !important;\n  }\n\n  @keyframes amerikid-rapid-scroll-rtl {\n    0% {\n      transform: translateX(0%);\n    }\n    100% {\n      transform: translateX(-50%);\n    }\n  }\n<\/style>\n\n<div class=\"amerikid-rapid-banner\">\n  <div class=\"amerikid-rapid-track-wrapper\">\n    <div class=\"amerikid-rapid-track\">\n      {% for i in (1..30) %}\n        <div class=\"amerikid-rapid-word\">🍭‼️🇺🇸🛍️🗣️💯🔌💰💧📖🪬🥇🎱<\/div>\n      {% endfor %}\n    <\/div>\n    <div class=\"amerikid-rapid-track\">\n      {% for i in (1..30) %}\n        <div class=\"amerikid-rapid-word\">🍭‼️🇺🇸🛍️🗣️💯🔌💰💧📖🪬🥇🎱<\/div>\n      {% endfor %}\n    <\/div>\n  <\/div>\n<\/div>",
+        "color_scheme": "scheme-4",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "related-products": {
+      "type": "related-products",
+      "settings": {}
+    }
+  },
+  "order": [
+    "custom_liquid_R6CiTK",
+    "custom_liquid_PRXwDH",
+    "main",
+    "rich_text_nJ3Wpd",
+    "custom_liquid_Y768e9",
+    "related-products"
+  ]
+}

@@ -1,0 +1,240 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "banner": {
+      "type": "main-collection-banner",
+      "settings": {}
+    },
+    "custom_liquid_J6HYJT": {
+      "type": "custom-liquid",
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "<!-- Stylesheet imports -->\n<link rel=\"stylesheet\" href=\"{{ 'component-list-menu.css' | asset_url }}\" media=\"print\" onload=\"this.media='all'\">\n<link rel=\"stylesheet\" href=\"{{ 'component-search.css' | asset_url }}\" media=\"print\" onload=\"this.media='all'\">\n<link rel=\"stylesheet\" href=\"{{ 'component-menu-drawer.css' | asset_url }}\" media=\"print\" onload=\"this.media='all'\">\n<link rel=\"stylesheet\" href=\"{{ 'component-cart-notification.css' | asset_url }}\" media=\"print\" onload=\"this.media='all'\">\n\n{% if settings.predictive_search_enabled %}\n  <link rel=\"stylesheet\" href=\"{{ 'component-price.css' | asset_url }}\" media=\"print\" onload=\"this.media='all'\">\n{% endif %}\n\n{% if section.settings.menu_type_desktop == 'mega' %}\n  <link rel=\"stylesheet\" href=\"{{ 'component-mega-menu.css' | asset_url }}\" media=\"print\" onload=\"this.media='all'\">\n{% endif %}\n\n<!-- Custom Styles -->\n<style>\n  .header-wrapper {\n    background: white !important;\n  }\n\n  .header__heading-logo-wrapper {\n    cursor: pointer;\n    display: inline-block;\n  }\n\n  .header__heading-link {\n    text-decoration: none;\n    display: inline-block;\n  }\n\n  header-drawer {\n    justify-self: start;\n    margin-left: -1.2rem;\n  }\n\n  {% if section.settings.sticky_header_type == 'reduce-logo-size' %}\n    .scrolled-past-header .header__heading-logo-wrapper {\n      width: 75%;\n    }\n  {% endif %}\n\n  {% if section.settings.menu_type_desktop != \"drawer\" %}\n    @media screen and (min-width: 990px) {\n      header-drawer {\n        display: none;\n      }\n    }\n  {% endif %}\n\n  .menu-drawer-container {\n    display: flex;\n  }\n\n  .list-menu {\n    list-style: none;\n    padding: 0;\n    margin: 0;\n  }\n\n  .list-menu--inline {\n    display: inline-flex;\n    flex-wrap: wrap;\n  }\n\n  summary.list-menu__item {\n    padding-right: 2.7rem;\n  }\n\n  .list-menu__item {\n    display: flex;\n    align-items: center;\n    line-height: calc(1 + 0.3 \/ var(--font-body-scale));\n  }\n\n  .list-menu__item--link {\n    text-decoration: none;\n    padding: 1rem 0;\n    line-height: calc(1 + 0.8 \/ var(--font-body-scale));\n  }\n\n  @media screen and (min-width: 750px) {\n    .list-menu__item--link {\n      padding: 0.5rem 0;\n    }\n  }\n\n  .cart-bubble-container {\n    position: absolute;\n    top: 50%;\n    right: 2rem;\n    transform: translateY(-50%);\n    z-index: 1000;\n  }\n<\/style>\n\n{% style %}\n  .header {\n    padding: {{ section.settings.padding_top | times: 0.5 | round: 0 }}px 3rem {{ section.settings.padding_bottom | times: 0.5 | round: 0 }}px 3rem;\n  }\n\n  .section-header {\n    position: sticky;\n    margin-bottom: {{ section.settings.margin_bottom | times: 0.75 | round: 0 }}px;\n  }\n\n  @media screen and (min-width: 750px) {\n    .section-header {\n      margin-bottom: {{ section.settings.margin_bottom }}px;\n    }\n  }\n\n  @media screen and (min-width: 990px) {\n    .header {\n      padding-top: {{ section.settings.padding_top }}px;\n      padding-bottom: {{ section.settings.padding_bottom }}px;\n    }\n  }\n{% endstyle %}\n\n<script src=\"{{ 'cart-notification.js' | asset_url }}\" defer=\"defer\"><\/script>\n\n{% liquid\n  assign header_tag = 'div'\n  if section.settings.sticky_header_type != 'none'\n    assign header_tag = 'sticky-header'\n  endif\n%}\n\n<{{ header_tag }}\n  class=\"header-wrapper color-{{ section.settings.color_scheme }}{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}\"\n  {% if header_tag == 'sticky-header' %}\n    data-sticky-type=\"{{ section.settings.sticky_header_type }}\"\n  {% endif %}\n>\n  <header class=\"header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }} page-width{% if section.settings.menu_type_desktop == 'drawer' %} drawer-menu{% endif %}{% if section.settings.menu != blank %} header--has-menu{% endif %}\">\n    \n    {% if section.settings.menu != blank %}\n      {% render 'header-drawer' %}\n    {% endif %}\n\n    {% if section.settings.logo_position == 'top-center' or section.settings.menu == blank %}\n      {% render 'header-search', input_id: 'Search-In-Modal-1' %}\n    {% endif %}\n\n    {% if section.settings.menu != blank and section.settings.menu_type_desktop == 'drawer' %}\n      <a\n        href=\"javascript:void(0)\"\n        id=\"logo-menu-toggle-left\"\n        aria-label=\"Toggle menu\"\n        class=\"header__heading-link focus-inset\"\n      >\n        <div class=\"header__heading-logo-wrapper\">\n          <svg style=\"width: 24px; height: 24px; fill: currentColor;\">\n            <rect y=\"4\" width=\"24\" height=\"2\"><\/rect>\n            <rect y=\"11\" width=\"24\" height=\"2\"><\/rect>\n            <rect y=\"18\" width=\"24\" height=\"2\"><\/rect>\n          <\/svg>\n        <\/div>\n      <\/a>\n    {% endif %}\n\n    <!-- ✅ LOGO now links to \/collections\/all -->\n    <a href=\"{{ shop.url }}\" class=\"header__heading-link link link--text focus-inset\" style=\"margin: 0 auto;\">\n      {% if settings.logo != blank %}\n        <div class=\"header__heading-logo-wrapper\">\n          {% assign logo_alt = settings.logo.alt | default: shop.name | escape %}\n          {% assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio %}\n          {% capture sizes %}(min-width: 750px) {{ settings.logo_width }}px, 50vw{% endcapture %}\n          {% capture widths %}{{ settings.logo_width }}, {{ settings.logo_width | times: 1.5 | round }}, {{ settings.logo_width | times: 2 }}{% endcapture %}\n          {{\n            settings.logo\n            | image_url: width: 600\n            | image_tag:\n              class: 'header__heading-logo',\n              widths: widths,\n              height: logo_height,\n              width: settings.logo_width,\n              alt: logo_alt,\n              sizes: sizes,\n              preload: true\n          }}\n        <\/div>\n      {% endif %}\n    <\/a>\n\n    <div class=\"cart-bubble-container\">\n      {% render 'cart-icon-bubble' %}\n    <\/div>\n  <\/header>\n<\/{{ header_tag }}>\n\n<script>\n  document.addEventListener('DOMContentLoaded', () => {\n    const logoToggleLeft = document.getElementById('logo-menu-toggle-left');\n    if (logoToggleLeft) {\n      logoToggleLeft.addEventListener('click', () => {\n        const drawer = document.querySelector('header-drawer');\n        if (drawer) drawer.open = !drawer.open;\n      });\n    }\n  });\n<\/script>",
+        "color_scheme": "",
+        "padding_top": 12,
+        "padding_bottom": 0
+      }
+    },
+    "rich_text_anime_Ntefpn": {
+      "type": "rich-text-anime",
+      "blocks": {
+        "heading_XBHTtg": {
+          "type": "heading",
+          "settings": {
+            "heading": "",
+            "heading_size": "h1"
+          }
+        },
+        "text_KN3pzz": {
+          "type": "text",
+          "settings": {
+            "text": ""
+          }
+        },
+        "button_PV8agx": {
+          "type": "button",
+          "settings": {
+            "button_label": "ARCHIVE",
+            "button_link": "shopify:\/\/collections",
+            "button_style_secondary": true,
+            "button_label_2": "LIFE\/STYLE",
+            "button_link_2": "shopify:\/\/pages\/the-collective",
+            "button_style_secondary_2": true
+          }
+        }
+      },
+      "block_order": [
+        "heading_XBHTtg",
+        "text_KN3pzz",
+        "button_PV8agx"
+      ],
+      "name": "t:sections.rich-text.presets.name",
+      "settings": {
+        "full_width": true,
+        "color_scheme": "scheme-4",
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "padding_top": 0,
+        "padding_bottom": 28
+      }
+    },
+    "custom_liquid_Jdbfj4": {
+      "type": "custom-liquid",
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "<!-- sections\/amerikid-fast-banner.liquid -->\n<style>\n  .amerikid-fast-banner {\n    background-color: #000;\n    overflow: hidden;\n    position: relative;\n    height: auto;\n    display: flex;\n    align-items: center;\n    padding: 4px 0;       \/* slight vertical padding *\/\n    margin: 0;\n    font-size: 5rem;\n    line-height: 1;\n  }\n\n  .amerikid-fast-track-wrapper {\n    display: flex;\n    width: 200%;\n    animation: amerikid-fast-scroll-ltr 25s linear infinite;\n  }\n\n  .amerikid-fast-track {\n    display: flex;\n    white-space: nowrap;\n  }\n\n  .amerikid-fast-word {\n    font-family: Impact, sans-serif;\n    font-size: inherit;\n    line-height: 1;\n    margin: 0;\n    padding: 0;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    animation: none !important;\n    transform: none !important;\n  }\n\n  @keyframes amerikid-fast-scroll-ltr {\n    0% {\n      transform: translateX(-50%);\n    }\n    100% {\n      transform: translateX(0%);\n    }\n  }\n<\/style>\n\n<div class=\"amerikid-fast-banner\">\n  <div class=\"amerikid-fast-track-wrapper\">\n    <div class=\"amerikid-fast-track\">\n      {% for i in (1..30) %}\n        <div class=\"amerikid-fast-word\">🍭‼️🇺🇸🛍️🗣️💯🔌💰💧📖🪬🥇🎱<\/div>\n      {% endfor %}\n    <\/div>\n    <div class=\"amerikid-fast-track\">\n      {% for i in (1..30) %}\n        <div class=\"amerikid-fast-word\">🍭‼️🇺🇸🛍️🗣️💯🔌💰💧📖🪬🥇🎱<\/div>\n      {% endfor %}\n    <\/div>\n  <\/div>\n<\/div>",
+        "color_scheme": "",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "rich_text_FxK773": {
+      "type": "rich-text",
+      "blocks": {
+        "text_zY7ytg": {
+          "type": "text",
+          "settings": {
+            "text": ""
+          }
+        },
+        "button_jRERMj": {
+          "type": "button",
+          "settings": {
+            "button_label": "",
+            "button_link": "",
+            "button_style_secondary": false,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "text_zY7ytg",
+        "button_jRERMj"
+      ],
+      "name": "t:sections.rich-text.presets.name",
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "scheme-4",
+        "full_width": true,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "product-grid": {
+      "type": "main-collection-product-grid",
+      "custom_css": [
+        "#product-grid li.grid__item {display: flex !important; justify-content: center !important; \/* center horizontally *\/ align-items: flex-start !important; \/* align top vertically *\/ padding: 0 !important;}",
+        "#product-grid li.grid__item > * {max-width: 360px; \/* even bigger fixed max width *\/ width: 100%;}"
+      ],
+      "settings": {
+        "products_per_page": 36,
+        "columns_desktop": 2,
+        "columns_mobile": "2",
+        "color_scheme": "scheme-4",
+        "image_ratio": "square",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "enable_filtering": false,
+        "filter_type": "horizontal",
+        "enable_sorting": false,
+        "padding_top": 100,
+        "padding_bottom": 100
+      }
+    },
+    "custom_liquid_GRwzCK": {
+      "type": "custom-liquid",
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "<!-- sections\/amerikid-rapid-banner.liquid -->\n<style>\n  .amerikid-rapid-banner {\n    background-color: #000;\n    overflow: hidden;\n    position: relative;\n    height: auto;\n    display: flex;\n    align-items: center;\n    padding: 4px 0;       \/* slight vertical padding *\/\n    margin: 0;\n    font-size: 5rem;\n    line-height: 1;\n  }\n\n  .amerikid-rapid-track-wrapper {\n    display: flex;\n    width: 200%;\n    animation: amerikid-rapid-scroll-rtl 25s linear infinite;\n  }\n\n  .amerikid-rapid-track {\n    display: flex;\n    white-space: nowrap;\n  }\n\n  .amerikid-rapid-word {\n    font-family: Impact, sans-serif;\n    font-size: inherit;\n    line-height: 1;\n    margin: 0;\n    padding: 0;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    animation: none !important;\n    transform: none !important;\n  }\n\n  @keyframes amerikid-rapid-scroll-rtl {\n    0% {\n      transform: translateX(0%);\n    }\n    100% {\n      transform: translateX(-50%);\n    }\n  }\n<\/style>\n\n<div class=\"amerikid-rapid-banner\">\n  <div class=\"amerikid-rapid-track-wrapper\">\n    <div class=\"amerikid-rapid-track\">\n      {% for i in (1..30) %}\n        <div class=\"amerikid-rapid-word\">🍭‼️🇺🇸🛍️🗣️💯🔌💰💧📖🪬🥇🎱<\/div>\n      {% endfor %}\n    <\/div>\n    <div class=\"amerikid-rapid-track\">\n      {% for i in (1..30) %}\n        <div class=\"amerikid-rapid-word\">🍭‼️🇺🇸🛍️🗣️💯🔌💰💧📖🪬🥇🎱<\/div>\n      {% endfor %}\n    <\/div>\n  <\/div>\n<\/div>",
+        "color_scheme": "",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "rich_text_G8bCyk": {
+      "type": "rich-text",
+      "blocks": {
+        "heading_RKm8Uq": {
+          "type": "heading",
+          "settings": {
+            "heading": "",
+            "heading_size": "h1"
+          }
+        },
+        "text_hhEbyF": {
+          "type": "text",
+          "settings": {
+            "text": ""
+          }
+        }
+      },
+      "block_order": [
+        "heading_RKm8Uq",
+        "text_hhEbyF"
+      ],
+      "name": "t:sections.rich-text.presets.name",
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "scheme-4",
+        "full_width": true,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "image_banner_blank_wPF9kL": {
+      "type": "image-banner-blank",
+      "blocks": {
+        "heading_pdADiM": {
+          "type": "heading",
+          "settings": {
+            "heading": "",
+            "heading_size": "h1"
+          }
+        },
+        "text_GyA8hE": {
+          "type": "text",
+          "settings": {
+            "text": "",
+            "text_style": "body"
+          }
+        },
+        "buttons_RcNyR9": {
+          "type": "buttons",
+          "settings": {
+            "button_label_1": "",
+            "button_link_1": "",
+            "button_style_secondary_1": false,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_pdADiM",
+        "text_GyA8hE",
+        "buttons_RcNyR9"
+      ],
+      "name": "t:sections.image-banner.presets.name",
+      "settings": {
+        "image": "shopify:\/\/shop_images\/smpte-color-bars-5791787_1280.jpg",
+        "image_overlay_opacity": 0,
+        "image_height": "small",
+        "image_behavior": "fixed",
+        "desktop_content_position": "middle-center",
+        "desktop_content_alignment": "center",
+        "show_text_box": false,
+        "color_scheme": "",
+        "stack_images_on_mobile": true,
+        "mobile_content_alignment": "center",
+        "show_text_below": false
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "custom_liquid_J6HYJT",
+    "rich_text_anime_Ntefpn",
+    "custom_liquid_Jdbfj4",
+    "rich_text_FxK773",
+    "product-grid",
+    "custom_liquid_GRwzCK",
+    "rich_text_G8bCyk",
+    "image_banner_blank_wPF9kL"
+  ]
+}

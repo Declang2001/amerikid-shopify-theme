@@ -1,0 +1,31 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "pagefly-home": {
+      "type": "pagefly-home",
+      "settings": {}
+    },
+    "custom_liquid_xPURQD": {
+      "type": "custom-liquid",
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "<style>\n  #floating-enter-btn {\n    position: fixed;\n    top: 150px;\n    left: 50px;\n    z-index: 9999;\n    background: transparent;\n    border: none;\n    cursor: pointer;\n    animation: fadeInScale 0.8s ease-out forwards;\n    opacity: 0;\n    padding: 0;\n  }\n\n  #floating-enter-btn img {\n    max-width: 220px;\n    height: auto;\n    display: block;\n    filter: drop-shadow(0 0 10px white);\n    animation: pulseGlow 2s ease-in-out infinite;\n  }\n\n  @keyframes fadeInScale {\n    0% {\n      transform: scale(0.6);\n      opacity: 0;\n    }\n    100% {\n      transform: scale(1);\n      opacity: 1;\n    }\n  }\n\n  @keyframes pulseGlow {\n    0%, 100% {\n      filter: drop-shadow(0 0 10px white);\n    }\n    50% {\n      filter: drop-shadow(0 0 20px white);\n    }\n  }\n\n  @media (max-width: 768px) {\n    #floating-enter-btn img {\n      max-width: 160px;\n    }\n  }\n<\/style>\n\n<!-- Floating image button -->\n<button id=\"floating-enter-btn\">\n  <img src=\"https:\/\/cdn.shopify.com\/s\/files\/1\/0930\/3267\/7656\/files\/KID_SCRIBBLE_OUTLINE.png?v=1746502793\" alt=\"Enter\">\n<\/button>\n\n<script>\n  document.addEventListener(\"DOMContentLoaded\", function () {\n    const btn = document.getElementById(\"floating-enter-btn\");\n\n    let x = 50;\n    let y = 150;\n    let dx = 2.5;\n    let dy = 2.5;\n\n    function moveButton() {\n      const maxX = window.innerWidth - btn.offsetWidth;\n      const maxY = window.innerHeight - btn.offsetHeight;\n\n      x += dx;\n      y += dy;\n\n      if (x <= 0 || x >= maxX) dx *= -1;\n      if (y <= 0 || y >= maxY) dy *= -1;\n\n      btn.style.left = `${x}px`;\n      btn.style.top = `${y}px`;\n\n      requestAnimationFrame(moveButton);\n    }\n\n    moveButton();\n\n    btn.addEventListener(\"click\", () => {\n      window.location.href = \"https:\/\/iacxyv-w5.myshopify.com\/collections\/all\";\n    });\n\n    window.addEventListener(\"resize\", () => {\n      x = Math.min(x, window.innerWidth - btn.offsetWidth);\n      y = Math.min(y, window.innerHeight - btn.offsetHeight);\n    });\n  });\n<\/script>",
+        "color_scheme": "",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    }
+  },
+  "order": [
+    "pagefly-home",
+    "custom_liquid_xPURQD"
+  ]
+}

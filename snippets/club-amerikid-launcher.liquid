@@ -1,0 +1,418 @@
+{%- comment -%}
+  CLUB AMERIKID floating launcher (site-wide)
+
+  Logged out: CLUB AMERIKID -> register (return_to current page)
+  Logged in:  CLUB AMERIKID -> /pages/club-hub (return_to current page)
+
+  IMPORTANT (this version):
+  - The launcher is rendered but STARTS HIDDEN + NOT CLICKABLE.
+  - To show it temporarily: add ?club_launcher=1 to any URL.
+  - To show/hide via console:
+      AK_CLUB_LAUNCHER.show()
+      AK_CLUB_LAUNCHER.hide()
+      AK_CLUB_LAUNCHER.reset()   (clears saved preference + hides)
+{%- endcomment -%}
+
+{%- assign club_mode = 'link' -%}
+
+{%- assign club_return_to = request.path -%}
+{%- if request.query_string != blank -%}
+  {%- assign club_return_to = club_return_to | append: '?' | append: request.query_string -%}
+{%- endif -%}
+{%- assign club_return_to = club_return_to | url_encode -%}
+
+{%- assign club_is_logged_in = customer != blank -%}
+
+{%- assign club_is_member = false -%}
+{%- if customer and customer.tags contains 'club_amerikid' -%}
+  {%- assign club_is_member = true -%}
+{%- endif -%}
+
+{%- assign club_hub_path = '/pages/club-hub' -%}
+{%- assign club_hub_url = club_hub_path -%}
+
+{%- comment -%}
+  Preserve current query string (ex: preview_theme_id) so preview does not break.
+  Also add return_to.
+{%- endcomment -%}
+{%- if request.query_string != blank -%}
+  {%- assign club_hub_url = club_hub_url | append: '?' | append: request.query_string | append: '&return_to=' | append: club_return_to -%}
+{%- else -%}
+  {%- assign club_hub_url = club_hub_url | append: '?return_to=' | append: club_return_to -%}
+{%- endif -%}
+
+<div
+  id="club-amerikid-launcher"
+  class="club-amerikid-launcher club-edge is-hidden{% if club_is_logged_in %} is-logged-in{% else %} is-logged-out{% endif %}{% if club_is_member %} is-member{% endif %}"
+  data-mode="{{ club_mode }}"
+  data-ak-launcher="club-amerikid"
+  aria-hidden="true"
+>
+  {%- if club_mode == 'link' -%}
+    {%- if club_is_logged_in -%}
+      <a class="club-btn"
+         href="{{ club_hub_url }}"
+         aria-label="Open Club Hub">
+        <span class="club-label" data-text="CLUB AMERIKID">CLUB AMERIKID</span>
+        <span class="club-hit" aria-hidden="true"></span>
+      </a>
+    {%- else -%}
+      <a class="club-btn"
+         href="{{ routes.account_register_url }}?return_to={{ club_return_to }}"
+         aria-label="Join Club AmeriKid">
+        <span class="club-label" data-text="CLUB AMERIKID">CLUB AMERIKID</span>
+        <span class="club-hit" aria-hidden="true"></span>
+      </a>
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+<style>
+  /* =========================
+     CLUB LAUNCHER: EDGE-LIT GLASS TAG
+     ========================= */
+
+  #club-amerikid-launcher.club-edge{
+    position: fixed;
+    left: calc(16px + env(safe-area-inset-left));
+    top:  calc(16px + env(safe-area-inset-top));
+    z-index: 999999;
+    font-family: inherit;
+
+    /* default (logged out) */
+    --club-accent: #ff33ff;
+    --club-accent-soft: rgba(255,51,255,0.28);
+
+    /* neutral glass, no colored fill */
+    --club-glassA: rgba(12,12,16,0.88);
+    --club-glassB: rgba(0,0,0,0.92);
+
+    --club-outline: rgba(255,255,255,0.10);
+    --club-hi: rgba(255,255,255,0.12);
+    --club-lo: rgba(0,0,0,0.55);
+
+    /* allow a clean reveal animation */
+    transition: opacity 180ms ease, transform 220ms ease, filter 220ms ease, visibility 0s linear 220ms;
+    will-change: opacity, transform, filter;
+  }
+
+  /* Hidden state: NOT CLICKABLE, NOT FOCUSABLE (JS sets tabindex/inert too) */
+  #club-amerikid-launcher.is-hidden{
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transform: translate3d(-14px, -6px, 0) scale(0.98) !important;
+    filter: blur(1.5px) saturate(0.9) !important;
+  }
+
+  /* Visible state */
+  #club-amerikid-launcher.is-visible{
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: translate3d(0,0,0) scale(1) !important;
+    filter: none !important;
+    transition: opacity 180ms ease, transform 220ms ease, filter 220ms ease;
+  }
+
+  #club-amerikid-launcher.club-edge.is-logged-in{
+    --club-accent: #33ffff;
+    --club-accent-soft: rgba(51,255,255,0.26);
+  }
+
+  #club-amerikid-launcher.club-edge.is-member{
+    --club-accent: #33ff66;
+    --club-accent-soft: rgba(51,255,102,0.26);
+  }
+
+  #club-amerikid-launcher.club-edge .club-btn{
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+
+    padding: 16px 22px;
+    min-height: 54px;
+
+    border-radius: 999px;
+
+    background: linear-gradient(180deg, var(--club-glassA), var(--club-glassB));
+    border: 1px solid var(--club-outline);
+
+    box-shadow:
+      0 14px 32px rgba(0,0,0,0.52),
+      0 0 0 1px rgba(255,255,255,0.04) inset,
+      0 0 26px var(--club-accent-soft);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    transform: translateZ(0);
+    transition: transform 170ms ease, box-shadow 220ms ease, filter 220ms ease;
+    overflow: hidden;
+  }
+
+  #club-amerikid-launcher.club-edge .club-btn::before{
+    content:"";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+
+    background: conic-gradient(
+      from 180deg,
+      rgba(255,255,255,0.0),
+      rgba(255,255,255,0.10),
+      rgba(0,246,255,0.14),
+      rgba(255,51,255,0.14),
+      rgba(255,255,255,0.08),
+      rgba(255,255,255,0.0)
+    );
+
+    padding: 1px;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+
+    opacity: 0.55;
+    filter: blur(0.2px);
+  }
+
+  #club-amerikid-launcher.club-edge .club-btn::after{
+    content:"";
+    position:absolute;
+    left: 10px;
+    right: 10px;
+    top: 7px;
+    height: 1px;
+    border-radius: 999px;
+    pointer-events:none;
+    z-index: 0;
+    background: linear-gradient(90deg, transparent, var(--club-hi), transparent);
+    opacity: 0.75;
+  }
+
+  #club-amerikid-launcher.club-edge .club-btn .club-hit{
+    position: absolute;
+    inset: -18% -30%;
+    pointer-events: none;
+    z-index: 1;
+
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255,255,255,0.14) 45%,
+      rgba(255,255,255,0.22) 50%,
+      rgba(255,255,255,0.14) 55%,
+      transparent 100%
+    );
+    transform: translateX(-120%);
+    opacity: 0;
+    mix-blend-mode: screen;
+  }
+
+  #club-amerikid-launcher.club-edge .club-btn.is-flash .club-hit{
+    opacity: 1;
+    animation: clubEdgeHit 170ms ease-out forwards;
+  }
+
+  @keyframes clubEdgeHit{
+    0%   { transform: translateX(-120%); }
+    100% { transform: translateX(120%); opacity: 0; }
+  }
+
+  #club-amerikid-launcher.club-edge .club-label{
+    position: relative;
+    z-index: 2;
+
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    text-transform: uppercase;
+    font-size: 15px;
+    letter-spacing: 0.20em;
+    line-height: 1;
+
+    color: #fff;
+
+    text-shadow:
+      0 1px 0 rgba(255,255,255,0.10),
+      0 8px 18px rgba(0,0,0,0.55);
+  }
+
+  #club-amerikid-launcher.club-edge .club-label::before{
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    color: rgba(255,255,255,0.35);
+    transform: translate3d(1px,1px,-1px);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  #club-amerikid-launcher.club-edge .club-label::after{
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    color: rgba(0,0,0,0.65);
+    transform: translate3d(2px,2px,-2px);
+    z-index: -2;
+    pointer-events: none;
+    filter: blur(0.2px);
+  }
+
+  #club-amerikid-launcher.club-edge .club-btn:hover{
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+    box-shadow:
+      0 18px 40px rgba(0,0,0,0.56),
+      0 0 0 1px rgba(255,255,255,0.05) inset,
+      0 0 34px var(--club-accent-soft);
+  }
+
+  #club-amerikid-launcher.club-edge .club-btn:hover::before{
+    opacity: 0.85;
+    background: conic-gradient(
+      from 180deg,
+      rgba(255,255,255,0.0),
+      rgba(255,255,255,0.14),
+      rgba(0,246,255,0.18),
+      var(--club-accent),
+      rgba(255,255,255,0.12),
+      rgba(255,255,255,0.0)
+    );
+  }
+
+  #club-amerikid-launcher.club-edge .club-btn:active{
+    transform: translateY(0px) scale(0.99);
+  }
+
+  #club-amerikid-launcher.club-edge .club-btn:focus-visible{
+    outline: none;
+    box-shadow:
+      0 18px 40px rgba(0,0,0,0.56),
+      0 0 0 2px rgba(255,255,255,0.10) inset,
+      0 0 0 2px color-mix(in srgb, var(--club-accent) 70%, transparent);
+  }
+
+  @media (max-width: 480px){
+    #club-amerikid-launcher.club-edge{
+      left: calc(12px + env(safe-area-inset-left));
+      top:  calc(12px + env(safe-area-inset-top));
+    }
+    #club-amerikid-launcher.club-edge .club-btn{
+      padding: 15px 18px;
+      min-height: 52px;
+    }
+    #club-amerikid-launcher.club-edge .club-label{
+      font-size: 14px;
+      letter-spacing: 0.18em;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    #club-amerikid-launcher.club-edge .club-btn{
+      transition: none;
+    }
+    #club-amerikid-launcher.club-edge .club-btn:hover{
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+(function(){
+  var root = document.getElementById('club-amerikid-launcher');
+  if(!root) return;
+
+  var btn = root.querySelector('.club-btn');
+  if(!btn) return;
+
+  var reduced = false;
+  try { reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){}
+
+  var KEY = 'akClubLauncherState'; // "show" or "hide"
+
+  function setFocusable(enabled){
+    // Prevent keyboard focus when hidden
+    if(enabled){
+      root.removeAttribute('inert');
+      root.setAttribute('aria-hidden','false');
+      btn.removeAttribute('tabindex');
+    } else {
+      root.setAttribute('inert','');
+      root.setAttribute('aria-hidden','true');
+      btn.setAttribute('tabindex','-1');
+    }
+  }
+
+  function show(persist){
+    root.classList.remove('is-hidden');
+    root.classList.add('is-visible');
+    setFocusable(true);
+    if(persist) try { localStorage.setItem(KEY,'show'); } catch(e){}
+  }
+
+  function hide(persist){
+    root.classList.remove('is-visible');
+    root.classList.add('is-hidden');
+    setFocusable(false);
+    if(persist) try { localStorage.setItem(KEY,'hide'); } catch(e){}
+  }
+
+  function reset(){
+    try { localStorage.removeItem(KEY); } catch(e){}
+    hide(false);
+  }
+
+  // Expose controls for you
+  window.AK_CLUB_LAUNCHER = {
+    show: function(){ show(true); },
+    hide: function(){ hide(true); },
+    reset: reset
+  };
+
+  // Decide initial state:
+  // 1) URL override: ?club_launcher=1 shows (does not need persistence)
+  // 2) localStorage remembered state
+  // 3) default hidden
+  var params = {};
+  try {
+    var qs = window.location.search || '';
+    if(qs && qs.length > 1){
+      qs.substring(1).split('&').forEach(function(pair){
+        var parts = pair.split('=');
+        var k = decodeURIComponent(parts[0] || '').toLowerCase();
+        var v = decodeURIComponent(parts[1] || '');
+        if(k) params[k] = v;
+      });
+    }
+  } catch(e){}
+
+  var forceShow = (params.club_launcher === '1' || (params.club_launcher || '').toLowerCase() === 'show');
+
+  if(forceShow){
+    show(false);
+  } else {
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch(e){}
+    if(saved === 'show') show(false);
+    else hide(false);
+  }
+
+  // Only attach click-flash when visible and not reduced
+  if(!reduced){
+    btn.addEventListener('pointerdown', function(){
+      if(root.classList.contains('is-hidden')) return;
+      btn.classList.add('is-flash');
+      window.setTimeout(function(){ btn.classList.remove('is-flash'); }, 190);
+    }, {passive:true});
+  }
+})();
+</script>

@@ -1,0 +1,808 @@
+{{ 'component-cart.css' | asset_url | stylesheet_tag }}
+{{ 'component-cart-items.css' | asset_url | stylesheet_tag }}
+{{ 'component-totals.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-discounts.css' | asset_url | stylesheet_tag }}
+{{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  /* CART CONTAINER (NO PINK GLOW BOX) */
+  .cart-glow-box{
+    position:relative;
+    width:100%;
+    background:#000;
+    border-radius:20px;
+    padding:1.5rem;
+    margin:0;
+    border:none;
+    box-shadow:none;
+    animation:none;
+  }
+
+  /* === AMBIENT PARTICLE LAYER (ADDED, DOES NOT CHANGE LAYOUT) === */
+  .cart-glow-box{ isolation:isolate; overflow:hidden; }
+  .cart-glow-box .ak-cart-field{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    z-index:0;
+    pointer-events:none;
+    mix-blend-mode:screen;
+    opacity:1;
+    filter: contrast(1.10) saturate(1.10);
+  }
+  .cart-glow-box > .page-width{
+    position:relative;
+    z-index:1;
+  }
+
+  /* GLOBAL TYPO (KEEP YOUR IMPACT LOOK) */
+  .section-{{ section.id }}-padding{padding:0!important}
+  .cart__warnings,
+  .cart__login-title,
+  .cart__empty-text,
+  .custom-continue-button,
+  .cart__remove-link,
+  .cart__login-paragraph a,
+  .title--primary,
+  .underlined-link,
+  .cart-item__details,
+  .cart-items th,
+  .cart-items td{
+    font-family:Impact,Haettenschweiler,'Arial Narrow Bold',sans-serif!important;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+
+  /* HEADER BAR */
+  .cart-title-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:1rem;
+    padding:1.25rem 0;
+    border-bottom:1px solid rgba(255,255,255,.12);
+    margin-top:.5rem;
+  }
+  .title--primary{margin:0;font-size:1.8rem}
+  @media(min-width:750px){ .title--primary{font-size:2.2rem} }
+  .underlined-link{
+    font-size:1.2rem;
+    text-decoration:underline;
+    text-underline-offset:.2em;
+  }
+  @media(min-width:750px){ .underlined-link{font-size:1.6rem} }
+
+  /* EMPTY STATE TEXT (UNCHANGED) */
+  .cart__empty-text,
+  .cart__login-title{
+    font-size:2.8rem;max-width:90vw;margin:5vh auto 2vh;
+    color:#fff;text-align:center;
+  }
+  @media(min-width:750px){.cart__empty-text,.cart__login-title{font-size:5rem}}
+
+  /* EMPTY STATE BUTTONS -> PURPLE */
+  @keyframes bounceIn{0%{transform:scale(.8);opacity:0}60%{transform:scale(1.1);opacity:1}100%{transform:scale(1)}}
+
+  .custom-continue-button{
+    font-size:1.4rem;
+    background:#000;
+    color:#ff33ff;
+    border:2px solid #ff33ff;
+    padding:1rem 2rem;
+    margin-top:3rem;
+    display:inline-block;
+    text-decoration:none;
+    border-radius:12px;
+    box-shadow:0 0 10px rgba(255,51,255,.6);
+    animation:bounceIn .7s ease forwards;
+    transition:.25s;
+  }
+  .custom-continue-button:hover{
+    background:#ff33ff;
+    color:#000;
+    box-shadow:0 0 18px rgba(255,51,255,.85);
+    transform:scale(1.06);
+  }
+  @media(min-width:750px){
+    .custom-continue-button{font-size:2.2rem;padding:1.6rem 3.2rem}
+  }
+
+  .cart__login-paragraph{text-align:center;margin-bottom:2.5rem}
+  .cart__login-paragraph a{
+    display:inline-block;
+    padding:1rem 2.4rem;
+    background:#000;
+    color:#ff33ff;
+    border:2px solid #ff33ff;
+    border-radius:10px;
+    font-size:1.2rem;
+    text-decoration:none;
+    box-shadow:0 0 10px rgba(255,51,255,.6);
+    transition:.25s;
+  }
+  .cart__login-paragraph a:hover{
+    background:#ff33ff;
+    color:#000;
+    box-shadow:0 0 18px rgba(255,51,255,.85);
+    transform:scale(1.05);
+  }
+  @media(min-width:750px){
+    .cart__login-paragraph a{font-size:1.8rem;padding:1.4rem 3.2rem}
+  }
+
+  /* =========================
+     CART ITEMS: DIV-BASED CARD STACK (STABLE, NO TABLE GRID BUGS)
+     ========================= */
+  #main-cart-items{max-width:1200px;margin:0 auto}
+
+  .cart-items-list{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    margin-top:2rem;
+  }
+
+  .cart-item-card{
+    position:relative;
+    overflow:hidden;
+    border-radius:22px;
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(0,0,0,.78);
+    padding:1.25rem;
+    display:grid;
+    grid-template-columns:minmax(220px, 340px) 1fr minmax(220px, 260px);
+    gap:1.25rem 1.4rem;
+    align-items:center;
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+
+  /* subtle micro “HUD” overlay, super light */
+  .cart-item-card:before{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.08) 0,
+      rgba(255,255,255,.08) 1px,
+      transparent 1px,
+      transparent 7px
+    );
+    opacity:.05;
+    mix-blend-mode:screen;
+  }
+
+  .cart-item-card:hover{
+    border-color:rgba(255,51,255,.22);
+    box-shadow:0 0 0 1px rgba(255,51,255,.10), 0 18px 40px rgba(0,0,0,.55);
+    transform:translateY(-2px);
+  }
+
+  /* LEFT: IMAGE */
+  .cart-item-media{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .cart-item-media a{display:block;line-height:0}
+  .cart-item-media img{
+    width:100%;
+    max-width:320px;
+    aspect-ratio:1 / 1;
+    object-fit:cover;
+    border-radius:22px;
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow:0 10px 22px rgba(0,0,0,.55);
+  }
+  @media(min-width:750px){
+    .cart-item-media img{max-width:340px}
+  }
+
+  /* MIDDLE: INFO */
+  .cart-item-info{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:.55rem;
+    text-align:left;
+  }
+  .cart-item-title{
+    color:#fff;
+    font-size:2.2rem;
+    line-height:1.02;
+    word-break:break-word;
+  }
+  @media(min-width:750px){
+    .cart-item-title{font-size:3.1rem}
+  }
+  .cart-item-variant{
+    font-size:1.2rem;
+    opacity:.85;
+  }
+  @media(min-width:750px){
+    .cart-item-variant{font-size:1.55rem}
+  }
+
+  .cart__remove-link{
+    color:#ff4d4d;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:.45rem .95rem;
+    border-radius:999px;
+    border:1px solid rgba(255,77,77,.45);
+    background:rgba(255,77,77,.08);
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+    margin-top:.45rem;
+    width:max-content;
+  }
+  .cart__remove-link:hover{
+    background:rgba(255,77,77,.14);
+    border-color:rgba(255,77,77,.7);
+    box-shadow:0 0 10px rgba(255,77,77,.18);
+    transform:scale(1.04);
+  }
+
+  /* RIGHT: META (QTY + TOTAL) */
+  .cart-item-meta{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:1rem;
+    text-align:right;
+    position:relative;
+    padding-left:1.25rem;
+  }
+
+  /* subtle divider so the middle doesn’t feel empty */
+  .cart-item-meta:before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:.5rem;
+    bottom:.5rem;
+    width:1px;
+    background:rgba(255,255,255,.10);
+  }
+
+  .cart-meta-block{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:.5rem;
+  }
+
+  .cart-meta-label{
+    font-size:1.1rem;
+    color:#39ff14;
+    opacity:.95;
+    letter-spacing:.08em;
+  }
+  @media(min-width:750px){
+    .cart-meta-label{font-size:1.25rem}
+  }
+
+  .quantity-input{
+    width:140px;
+    height:64px;
+    text-align:center;
+    padding:.6rem;
+    font-weight:bold;
+    border:2px solid #39ff14;
+    border-radius:999px;
+    background:#000;
+    color:#39ff14;
+    transition:.2s;
+    font-size:2rem;
+  }
+  .quantity-input:focus{
+    outline:none;
+    border-color:#00ff99;
+    box-shadow:0 0 8px #00ff99;
+  }
+
+  .cart-meta-value{
+    font-size:2.6rem;
+    color:#fff;
+  }
+
+  /* MOBILE STACK */
+  @media(max-width:749px){
+    .cart-item-card{
+      grid-template-columns:1fr;
+      gap:1rem;
+      padding:1.1rem;
+    }
+    .cart-item-media img{
+      max-width:100%;
+      border-radius:18px;
+    }
+    .cart-item-meta{
+      align-items:flex-start;
+      text-align:left;
+      padding-left:0;
+    }
+    .cart-item-meta:before{display:none}
+    .cart-meta-block{align-items:flex-start}
+    .quantity-input{width:140px;height:60px;font-size:1.9rem}
+    .cart-meta-value{font-size:2.3rem}
+  }
+
+  /* Hide continue shopping in header when cart is empty */
+  cart-items.is-empty .cart-title-bar .underlined-link{display:none!important}
+{%- endstyle -%}
+
+{%- unless settings.cart_type == 'drawer' -%}
+  <script src="{{ 'cart.js' | asset_url }}" defer></script>
+{%- endunless -%}
+<script src="{{ 'quantity-popover.js' | asset_url }}" defer></script>
+
+<cart-items class="gradient color-{{ section.settings.color_scheme }} isolate{% if cart == empty %} is-empty{% else %} section-{{ section.id }}-padding{% endif %}">
+  <div class="cart-glow-box">
+    <!-- AMBIENT PARTICLE CANVAS (ADDED) -->
+    <canvas class="ak-cart-field" id="ak-cart-canvas-{{ section.id }}" aria-hidden="true"></canvas>
+
+    <div class="page-width">
+      <div class="title-wrapper-with-link cart-title-bar">
+        <h1 class="title title--primary">{{ 'sections.cart.title' | t }}</h1>
+        <a href="/collections/master-collection" class="underlined-link">{{ 'general.continue_shopping' | t }}</a>
+      </div>
+
+      <div class="cart__warnings">
+        <h1 class="cart__empty-text">DUDE BUY SOME SHIT.</h1>
+        <a href="/collections/master-collection" class="custom-continue-button">
+          {{- 'general.continue_shopping' | t -}}
+        </a>
+        {%- if shop.customer_accounts_enabled and customer == null -%}
+          <h2 class="cart__login-title">HAVE AN ACCOUNT?</h2>
+          <div class="cart__login-paragraph">
+            <a href="{{ routes.account_login_url }}">LOG&nbsp;IN</a>
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- unless cart == empty -%}
+        <form action="{{ routes.cart_url }}" method="post" id="cart">
+          <div id="main-cart-items" data-id="{{ section.id }}">
+            <div class="cart-items-list">
+              {% for item in cart.items %}
+                <div class="cart-item-card" id="CartItem-{{ item.index }}">
+                  <div class="cart-item-media">
+                    <a href="{{ item.url }}">
+                      <img
+                        src="{{ item.image | img_url: '900x900' }}"
+                        alt="{{ item.title }}"
+                        loading="lazy"
+                      >
+                    </a>
+                  </div>
+
+                  <div class="cart-item-info">
+                    <div class="cart-item-title">{{ item.product.title }}</div>
+                    <div class="cart-item-variant">{{ item.variant.title }}</div>
+
+                    <a
+                      href="{{ item.url_to_remove }}"
+                      class="cart__remove-link"
+                      aria-label="Remove {{ item.product.title }}"
+                    >REMOVE</a>
+                  </div>
+
+                  <div class="cart-item-meta">
+                    <div class="cart-meta-block">
+                      <div class="cart-meta-label">QTY</div>
+                      <input
+                        type="number"
+                        name="updates[]"
+                        value="{{ item.quantity }}"
+                        min="0"
+                        class="quantity-input"
+                        aria-label="{{ 'sections.cart.quantity' | t }}"
+                      >
+                    </div>
+
+                    <div class="cart-meta-block">
+                      <div class="cart-meta-label">TOTAL</div>
+                      <div class="cart-meta-value">{{ item.line_price | money }}</div>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </form>
+      {%- endunless -%}
+    </div>
+  </div>
+</cart-items>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cartForm = document.getElementById('cart');
+    if (!cartForm) return;
+    cartForm.querySelectorAll('.quantity-input').forEach(input => {
+      input.addEventListener('change', () => cartForm.submit());
+    });
+  });
+</script>
+
+<!-- AMBIENT PARTICLES + SHOOTING STARS (ADDED, STANDALONE) -->
+<script>
+(function(){
+  var canvas = document.getElementById('ak-cart-canvas-{{ section.id }}');
+  if(!canvas) return;
+
+  if(canvas.dataset.akInit === '1') return;
+  canvas.dataset.akInit = '1';
+
+  var root = canvas.parentElement;
+  if(!root) return;
+
+  var reduced = false;
+  try { reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){}
+  if(reduced) return;
+
+  var ctx = canvas.getContext('2d', { alpha:true });
+  var w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  var dust = [];
+  var floaters = [];
+  var shooters = [];
+  var nextShooterAt = 0;
+  var lastFrameTime = 0;
+  var isVisible = true;
+
+  var COLORS = {
+    white:  { rgb: "255,255,255", hex: "#ffffff" },
+    purple: { rgb: "255,51,255",  hex: "#ff33ff" },
+    blue:   { rgb: "127,212,255", hex: "#7fd4ff" },
+    yellow: { rgb: "255,211,74",  hex: "#ffd34a" }
+  };
+
+  function clamp(v, a, b){ return Math.min(b, Math.max(a, v)); }
+  function rand(a, b){ return a + Math.random() * (b - a); }
+
+  function resize(){
+    var rect = root.getBoundingClientRect();
+    w = Math.max(1, Math.floor(rect.width));
+    h = Math.max(1, Math.floor(rect.height));
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    canvas.style.width = w + "px";
+    canvas.style.height = h + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function pickAccent(){
+    var r = Math.random();
+    if(r < 0.44) return COLORS.purple;
+    if(r < 0.76) return COLORS.blue;
+    return COLORS.yellow;
+  }
+  function pickDustColor(){ return (Math.random() < 0.90) ? COLORS.white : pickAccent(); }
+  function pickFloaterColor(){ return (Math.random() < 0.78) ? COLORS.white : pickAccent(); }
+
+  function densityScale(){
+    var mobile = (window.innerWidth || 1200) < 750;
+    return mobile ? 0.85 : 1.15;
+  }
+
+  function seedDust(){
+    var area = w * h;
+    var s = densityScale();
+
+    var count = Math.round(clamp((area / 140) * s, 1200, 20000));
+    dust = new Array(count);
+
+    for(var i=0;i<count;i++){
+      var color = pickDustColor();
+      var isAccent = (color !== COLORS.white);
+
+      var vx = rand(-0.028, 0.028);
+      var vy = rand(-0.022, 0.022);
+
+      var tw = rand(0.25, 1.05);
+      var ph = rand(0, Math.PI * 2);
+
+      var a0 = isAccent ? rand(0.20, 0.44) : rand(0.06, 0.18);
+      var size = isAccent ? rand(2.6, 6.0) : rand(1.3, 3.6);
+
+      dust[i] = { x: rand(0,w), y: rand(0,h), vx:vx, vy:vy, color:color, isAccent:isAccent, a0:a0, size:size, tw:tw, ph:ph };
+    }
+  }
+
+  function pickFloaterKind(){
+    var r = Math.random();
+    if(r < 0.02) return "blob";
+    if(r < 0.22) return "pill";
+    return "dot";
+  }
+
+  function seedFloaters(){
+    var area = w * h;
+    var s = densityScale();
+
+    var count = Math.round(clamp((area / 2200) * s, 240, 1400));
+    floaters = new Array(count);
+
+    for(var i=0;i<count;i++){
+      var kind = pickFloaterKind();
+      var color = pickFloaterColor();
+      var isAccent = (color !== COLORS.white);
+
+      var vx = rand(-0.16, 0.16);
+      var vy = rand(-0.13, 0.13);
+
+      var tw = rand(0.35, 1.30);
+      var ph = rand(0, Math.PI * 2);
+
+      var a0 = isAccent ? rand(0.20, 0.52) : rand(0.08, 0.22);
+      if(kind === "blob") a0 *= 0.80;
+
+      var p = { x: rand(0,w), y: rand(0,h), vx:vx, vy:vy, kind:kind, color:color, isAccent:isAccent, a0:a0, tw:tw, ph:ph };
+
+      if(kind === "dot"){
+        p.r = isAccent ? rand(3.8, 9.2) : rand(2.8, 6.8);
+      } else if(kind === "pill"){
+        p.pw = rand(12, 40);
+        p.phh = rand(3.2, 8.0);
+        p.rot = rand(-0.85, 0.85);
+      } else {
+        p.br = rand(10, 24);
+      }
+
+      if(isAccent) p.glowSize = rand(14, 34);
+      floaters[i] = p;
+    }
+  }
+
+  function drawRoundRect(x,y,ww,hh,rr){
+    var r = Math.min(rr, ww/2, hh/2);
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.lineTo(x+ww-r,y);
+    ctx.quadraticCurveTo(x+ww,y,x+ww,y+r);
+    ctx.lineTo(x+ww,y+hh-r);
+    ctx.quadraticCurveTo(x+ww,y+hh,x+ww-r,y+hh);
+    ctx.lineTo(x+r,y+hh);
+    ctx.quadraticCurveTo(x,y+hh,x,y+hh-r);
+    ctx.lineTo(x,y+r);
+    ctx.quadraticCurveTo(x,y,x+r,y);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function scheduleNextShooter(now){ nextShooterAt = now + rand(2200, 6200); }
+  function pickMeteorColor(){ return (Math.random() < 0.80) ? COLORS.white : pickAccent(); }
+
+  function spawnShooter(now){
+    var fromLeft = (Math.random() < 0.5);
+    var depth = rand(0.55, 1.0);
+    var y = rand(h * 0.10, h * 0.90);
+    var startX = fromLeft ? -rand(60, 160) : (w + rand(60, 160));
+    var angle = fromLeft ? rand(-0.42, 0.42) : rand(Math.PI - 0.42, Math.PI + 0.42);
+    var speed = rand(650, 1250) * (0.70 + depth * 0.40);
+    var life = rand(0.60, 1.20);
+
+    shooters.push({
+      x:startX, y:y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      t:0, life:life, depth:depth,
+      tail: rand(95, 215) * depth * (speed/1000),
+      w: rand(0.95, 2.1) * depth,
+      color: pickMeteorColor()
+    });
+
+    scheduleNextShooter(now);
+  }
+
+  function drawShooter(s){
+    var p = clamp(s.t / s.life, 0, 1);
+    var fadeIn = Math.pow(clamp(p / 0.12, 0, 1), 0.75);
+    var fadeOut = 1 - Math.pow(clamp((p - 0.45) / 0.55, 0, 1), 1.9);
+    var alpha = fadeIn * fadeOut;
+    if(alpha < 0.01) return;
+
+    var spd = Math.sqrt(s.vx*s.vx + s.vy*s.vy) || 1;
+    var dx = s.vx / spd;
+    var dy = s.vy / spd;
+
+    var tailX = s.x - dx * s.tail;
+    var tailY = s.y - dy * s.tail;
+
+    ctx.save();
+    ctx.lineCap = "round";
+
+    var g1 = ctx.createLinearGradient(tailX, tailY, s.x, s.y);
+    g1.addColorStop(0, "rgba(" + s.color.rgb + ",0)");
+    g1.addColorStop(0.55, "rgba(" + s.color.rgb + "," + (0.09*alpha).toFixed(4) + ")");
+    g1.addColorStop(1, "rgba(" + s.color.rgb + "," + (0.26*alpha).toFixed(4) + ")");
+    ctx.strokeStyle = g1;
+    ctx.lineWidth = s.w * 4.9;
+    ctx.beginPath();
+    ctx.moveTo(tailX, tailY);
+    ctx.lineTo(s.x, s.y);
+    ctx.stroke();
+
+    var g2 = ctx.createLinearGradient(tailX, tailY, s.x, s.y);
+    g2.addColorStop(0, "rgba(255,255,255,0)");
+    g2.addColorStop(0.55, "rgba(255,255,255," + (0.20*alpha).toFixed(4) + ")");
+    g2.addColorStop(1, "rgba(255,255,255," + (0.72*alpha).toFixed(4) + ")");
+    ctx.strokeStyle = g2;
+    ctx.lineWidth = s.w * 1.10;
+    ctx.beginPath();
+    ctx.moveTo(s.x - dx * s.tail * 0.45, s.y - dy * s.tail * 0.45);
+    ctx.lineTo(s.x, s.y);
+    ctx.stroke();
+
+    ctx.shadowBlur = 14 * s.depth;
+    ctx.shadowColor = s.color.hex;
+
+    var r = s.w * 2.2 * s.depth;
+    var hg = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r * 3.0);
+    hg.addColorStop(0, "rgba(255,255,255," + (0.82*alpha).toFixed(4) + ")");
+    hg.addColorStop(0.18, "rgba(" + s.color.rgb + "," + (0.50*alpha).toFixed(4) + ")");
+    hg.addColorStop(0.55, "rgba(" + s.color.rgb + "," + (0.15*alpha).toFixed(4) + ")");
+    hg.addColorStop(1, "rgba(" + s.color.rgb + ",0)");
+    ctx.fillStyle = hg;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, r * 3.0, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.restore();
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = "transparent";
+  }
+
+  function reseed(){
+    resize();
+    seedDust();
+    seedFloaters();
+    shooters.length = 0;
+    nextShooterAt = 0;
+    lastFrameTime = 0;
+  }
+
+  function step(t){
+    if(!isVisible){
+      requestAnimationFrame(step);
+      return;
+    }
+
+    var now = (t || performance.now());
+    var time = now * 0.001;
+    var dt = lastFrameTime ? clamp((now - lastFrameTime) / 1000, 0.001, 0.05) : (1/60);
+    lastFrameTime = now;
+
+    ctx.clearRect(0,0,w,h);
+    ctx.globalCompositeOperation = "lighter";
+
+    for(var i=0;i<dust.length;i++){
+      var d = dust[i];
+      d.x += d.vx; d.y += d.vy;
+
+      if(d.x < -2) d.x = w + 2;
+      if(d.x > w + 2) d.x = -2;
+      if(d.y < -2) d.y = h + 2;
+      if(d.y > h + 2) d.y = -2;
+
+      var twk = 0.70 + 0.30 * Math.sin(time * d.tw + d.ph);
+      var a = d.a0 * twk;
+
+      if(d.isAccent){
+        ctx.shadowBlur = 3;
+        ctx.shadowColor = d.color.hex;
+      } else {
+        ctx.shadowBlur = 0;
+      }
+
+      ctx.fillStyle = "rgba(" + d.color.rgb + "," + a.toFixed(3) + ")";
+      ctx.fillRect(d.x - d.size*0.5, d.y - d.size*0.5, d.size, d.size);
+    }
+
+    for(var j=0;j<floaters.length;j++){
+      var p = floaters[j];
+
+      p.x += p.vx; p.y += p.vy;
+
+      if(p.x < -30) p.x = w + 30;
+      if(p.x > w + 30) p.x = -30;
+      if(p.y < -30) p.y = h + 30;
+      if(p.y > h + 30) p.y = -30;
+
+      var twk2 = 0.65 + 0.35 * Math.sin(time * p.tw + p.ph);
+      var a2 = p.a0 * twk2;
+
+      if(p.isAccent && p.glowSize){
+        ctx.shadowBlur = p.glowSize * twk2;
+        ctx.shadowColor = p.color.hex;
+      } else {
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = "transparent";
+      }
+
+      ctx.fillStyle = "rgba(" + p.color.rgb + "," + a2.toFixed(3) + ")";
+
+      if(p.kind === "dot"){
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fill();
+      } else if(p.kind === "pill"){
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        drawRoundRect(-p.pw/2, -p.phh/2, p.pw, p.phh, p.phh/2);
+        ctx.restore();
+      } else {
+        var r2 = p.br;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, r2, 0, Math.PI*2);
+        ctx.arc(p.x + r2*0.5, p.y - r2*0.2, r2*0.7, 0, Math.PI*2);
+        ctx.arc(p.x - r2*0.4, p.y + r2*0.15, r2*0.6, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+
+    if(!nextShooterAt) scheduleNextShooter(now);
+    if(now >= nextShooterAt) spawnShooter(now);
+
+    for(var k=shooters.length-1;k>=0;k--){
+      var s = shooters[k];
+      s.t += dt;
+      s.x += s.vx * dt;
+      s.y += s.vy * dt;
+
+      drawShooter(s);
+
+      var margin = 420;
+      if(s.t >= s.life || s.x < -margin || s.x > w + margin || s.y < -margin || s.y > h + margin){
+        shooters.splice(k, 1);
+      }
+    }
+
+    ctx.globalCompositeOperation = "source-over";
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = "transparent";
+
+    requestAnimationFrame(step);
+  }
+
+  reseed();
+  requestAnimationFrame(step);
+
+  window.addEventListener('resize', function(){ reseed(); }, { passive:true });
+
+  if('ResizeObserver' in window){
+    var ro = new ResizeObserver(function(){ reseed(); });
+    ro.observe(root);
+  }
+
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){ isVisible = entry.isIntersecting; });
+    }, { threshold: 0 });
+    io.observe(root);
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.main-cart-items.name",
+  "settings": [
+    { "type": "color_scheme", "id": "color_scheme", "label": "t:sections.all.colors.label", "default": "scheme-1" },
+    { "type": "header", "content": "t:sections.all.padding.section_padding_heading" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "t:sections.all.padding.padding_top", "default": 36 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "t:sections.all.padding.padding_bottom", "default": 36 }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,841 @@
+{{ 'template-collection.css' | asset_url | stylesheet_tag }}
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+{% if section.settings.image_shape == 'blob' %}
+  {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
+
+{%- unless section.settings.quick_add == 'none' -%}
+  {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+{%- endunless -%}
+
+{%- if section.settings.quick_add == 'standard' -%}
+  <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{%- if section.settings.quick_add == 'bulk' -%}
+  <script src="{{ 'quick-add-bulk.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quick-order-list.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{%- style -%}
+  /* Center all textual content beneath each product image */
+  .card-wrapper .card__information,
+  .card-wrapper .card__information > * {
+    text-align: center !important;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Make product title bigger */
+  .card-wrapper .card__heading,
+  .card-wrapper .card__heading a,
+  .card-wrapper .card__information .full-unstyled-link {
+    font-size: 3.0rem !important;
+    line-height: 1.25;
+  }
+
+  /* Hide all price amounts */
+  .card-wrapper .price,
+  .card-wrapper .price__sale,
+  .card-wrapper .price-item {
+    display: none !important;
+  }
+
+  /* ---------- SOLD-OUT diagonal banner ---------- */
+  .card-wrapper .badge--sold-out {
+    position: absolute;
+    bottom: -1.25rem;
+    left: -3.5rem;
+    width: 220px;
+    padding: 0.55rem 0;
+    background: #e31b23;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-align: center;
+    transform: rotate(-45deg);
+    transform-origin: bottom left;
+    box-shadow: 0 0 6px rgba(0,0,0,0.35);
+    pointer-events: none;
+    z-index: 20;
+  }
+
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  /* -------- FULL-WIDTH WRAPPER (no glow) -------- */
+  .glowing-product-box {
+    border: none;
+    border-radius: 20px;
+    padding: 2rem;
+
+    width: 100vw;
+    max-width: 100vw;
+
+    margin-left: calc(-1 * ((100vw - 100%) / 2));
+    margin-right: calc(-1 * ((100vw - 100%) / 2));
+
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  /* === Section background: Ambient particle stars === */
+  .section-{{ section.id }}-padding {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .section-{{ section.id }}-padding .ak-collection-field{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    z-index:0;
+    opacity:1;
+    mix-blend-mode: screen;
+    filter: contrast(1.1);
+  }
+
+  /* Keep all content above the canvas */
+  .section-{{ section.id }}-padding > *:not(.ak-collection-field){
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .section-{{ section.id }}-padding .ak-collection-field{ display:none; }
+  }
+
+  /* ================================
+     AMERIKID FIX: keep section dark + remove card plates
+     (prevents the page from turning white)
+  ================================ */
+
+  /* Force the collection section to stay black (so particles read) */
+  .section-{{ section.id }}-padding{
+    background: #000 !important;
+    background-image: none !important;
+  }
+
+  /* Make sure wrappers aren't painting a white plate */
+  .section-{{ section.id }}-padding .collection,
+  .section-{{ section.id }}-padding .product-grid-container,
+  .section-{{ section.id }}-padding .glowing-product-box{
+    background: transparent !important;
+  }
+
+  /* Remove the “card plate” while keeping clickability */
+  .section-{{ section.id }}-padding .product-card-wrapper,
+  .section-{{ section.id }}-padding .card-wrapper,
+  .section-{{ section.id }}-padding .card,
+  .section-{{ section.id }}-padding .card__inner,
+  .section-{{ section.id }}-padding .card__content,
+  .section-{{ section.id }}-padding .card__information,
+  .section-{{ section.id }}-padding #product-grid > .grid__item{
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    outline: 0 !important;
+  }
+
+  /* Kill Dawn pseudo-element plates/shadows */
+  .section-{{ section.id }}-padding .product-card-wrapper::before,
+  .section-{{ section.id }}-padding .product-card-wrapper::after,
+  .section-{{ section.id }}-padding .card::before,
+  .section-{{ section.id }}-padding .card::after,
+  .section-{{ section.id }}-padding .card__inner::before,
+  .section-{{ section.id }}-padding .card__inner::after,
+  .section-{{ section.id }}-padding #product-grid > .grid__item::before,
+  .section-{{ section.id }}-padding #product-grid > .grid__item::after{
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    filter: none !important;
+  }
+
+  /* Removes “border-looking” link overlay */
+  .section-{{ section.id }}-padding a.full-unstyled-link::after,
+  .section-{{ section.id }}-padding .card__heading a::after{
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    outline: 0 !important;
+  }
+
+  /* Let particles show through around PNG edges (no forced black behind media) */
+  .section-{{ section.id }}-padding .card__media,
+  .section-{{ section.id }}-padding .media{
+    background: transparent !important;
+  }
+{%- endstyle -%}
+
+<div class="section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}">
+  <!-- Ambient particles -->
+  <canvas class="ak-collection-field" id="ak-collection-field-{{ section.id }}" aria-hidden="true"></canvas>
+
+  {%- paginate collection.products by section.settings.products_per_page -%}
+    {%- if section.settings.enable_sorting and section.settings.filter_type == 'vertical' -%}
+      <facet-filters-form class="facets facets-vertical-sort page-width small-hide">
+        <form class="facets-vertical-form" id="FacetSortForm">
+          <div class="facet-filters sorting caption">
+            <div class="facet-filters__field">
+              <h2 class="facet-filters__label caption-large text-body">
+                <label for="SortBy">{{ 'products.facets.sort_by_label' | t }}</label>
+              </h2>
+              <div class="select">
+                {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+                <select
+                  name="sort_by"
+                  class="facet-filters__sort select__select caption-large"
+                  id="SortBy"
+                  aria-describedby="a11y-refresh-page-message"
+                >
+                  {%- for option in collection.sort_options -%}
+                    <option
+                      value="{{ option.value | escape }}"
+                      {% if option.value == sort_by %}
+                        selected="selected"
+                      {% endif %}
+                    >
+                      {{ option.name | escape }}
+                    </option>
+                  {%- endfor -%}
+                </select>
+                <span class="svg-wrapper">
+                  {{- 'icon-caret.svg' | inline_asset_content -}}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-count-vertical light" role="status">
+            <h2 class="product-count__text text-body">
+              <span id="ProductCountDesktop">
+                {%- if collection.results_count -%}
+                  {{
+                    'templates.search.results_with_count'
+                    | t: terms: collection.terms, count: collection.results_count
+                  }}
+                {%- elsif collection.products_count == collection.all_products_count -%}
+                  {{ 'products.facets.product_count_simple' | t: count: collection.products_count }}
+                {%- else -%}
+                  {{
+                    'products.facets.product_count'
+                    | t: product_count: collection.products_count, count: collection.all_products_count
+                  }}
+                {%- endif -%}
+              </span>
+            </h2>
+            {%- render 'loading-spinner' -%}
+          </div>
+        </form>
+      </facet-filters-form>
+    {%- endif -%}
+
+    <div class="{% if section.settings.filter_type == 'vertical' %} facets-vertical page-width{% endif %}">
+      {{ 'component-facets.css' | asset_url | stylesheet_tag }}
+      <script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
+
+      {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
+        <aside
+          aria-labelledby="verticalTitle"
+          class="facets-wrapper{% unless section.settings.enable_filtering %} facets-wrapper--no-filters{% endunless %}{% if section.settings.filter_type != 'vertical' %} page-width{% endif %}"
+          id="main-collection-filters"
+          data-id="{{ section.id }}"
+        >
+          {% render 'facets',
+            results: collection,
+            enable_filtering: section.settings.enable_filtering,
+            enable_sorting: section.settings.enable_sorting,
+            filter_type: section.settings.filter_type,
+            paginate: paginate
+          %}
+        </aside>
+      {%- endif -%}
+
+      <div
+        class="product-grid-container{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+        id="ProductGridContainer"
+        {% if settings.animations_reveal_on_scroll %}
+          data-cascade
+        {% endif %}
+      >
+        {%- if collection.products.size == 0 -%}
+          <div class="collection collection--empty page-width" id="product-grid" data-id="{{ section.id }}">
+            <div class="loading-overlay gradient"></div>
+            <div class="title-wrapper center">
+              <h2 class="title title--primary">
+                {{ 'sections.collection_template.empty' | t -}}
+                <br>
+                {{
+                  'sections.collection_template.use_fewer_filters_html'
+                  | t: link: collection.url, class: 'underlined-link link'
+                }}
+              </h2>
+            </div>
+          </div>
+        {%- else -%}
+          <div class="collection{% if section.settings.filter_type != 'vertical' %} page-width{% endif %}">
+            <div class="loading-overlay gradient"></div>
+
+            <div class="glowing-product-box">
+              <ul
+                id="product-grid"
+                data-id="{{ section.id }}"
+                class="
+                  grid product-grid grid--{{ section.settings.columns_mobile }}-col-tablet-down
+                  grid--{{ section.settings.columns_desktop }}-col-desktop
+                  {% if section.settings.quick_add == 'bulk' %} collection-quick-add-bulk{% endif %}
+                "
+              >
+                {% assign skip_card_product_styles = false %}
+                {%- for product in collection.products -%}
+                  {% assign lazy_load = false %}
+                  {%- if forloop.index > 2 -%}
+                    {% assign lazy_load = true %}
+                  {%- endif -%}
+                  <li
+                    class="grid__item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                    {% if settings.animations_reveal_on_scroll %}
+                      data-cascade
+                      style="--animation-order: {{ forloop.index }};"
+                    {% endif %}
+                  >
+                    {% render 'card-product',
+                      card_product: product,
+                      media_aspect_ratio: section.settings.image_ratio,
+                      image_shape: section.settings.image_shape,
+                      show_secondary_image: section.settings.show_secondary_image,
+                      show_vendor: section.settings.show_vendor,
+                      show_rating: section.settings.show_rating,
+                      lazy_load: lazy_load,
+                      skip_styles: skip_card_product_styles,
+                      quick_add: section.settings.quick_add,
+                      section_id: section.id
+                    %}
+                  </li>
+                  {% assign skip_card_product_styles = true %}
+                {%- endfor -%}
+              </ul>
+            </div>
+
+            {% if paginate.pages > 1 %}
+              {% render 'pagination', paginate: paginate, anchor: '' %}
+            {% endif %}
+          </div>
+
+          {%- if paginate.pages > 1 -%}
+            {% render 'pagination', paginate: paginate, anchor: '' %}
+          {%- endif -%}
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endpaginate -%}
+
+  {% if section.settings.image_shape == 'arch' %}
+    {{ 'mask-arch.svg' | inline_asset_content }}
+  {%- endif -%}
+</div>
+
+<script>
+(function(){
+  var wrap = document.querySelector('.section-{{ section.id }}-padding');
+  var canvas = document.getElementById('ak-collection-field-{{ section.id }}');
+  if(!wrap || !canvas) return;
+
+  if(canvas.dataset.akInit === '1') return;
+  canvas.dataset.akInit = '1';
+
+  var reduced = false;
+  try { reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){}
+  if(reduced) return;
+
+  var ctx = canvas.getContext('2d', { alpha:true });
+  var w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var dust = [];
+  var floaters = [];
+
+  /* Shooting stars */
+  var shooters = [];
+  var nextShooterAt = 0;
+  var lastFrameTime = 0;
+
+  var COLORS = {
+    white:  { rgb: "255,255,255", hex: "#ffffff" },
+    purple: { rgb: "255,51,255",  hex: "#ff33ff" },
+    blue:   { rgb: "127,212,255", hex: "#7fd4ff" },
+    yellow: { rgb: "255,211,74",  hex: "#ffd34a" }
+  };
+
+  function clamp(v, min, max){ return Math.min(max, Math.max(min, v)); }
+  function rand(min, max){ return min + Math.random() * (max - min); }
+
+  function resize(){
+    var rect = wrap.getBoundingClientRect();
+    w = Math.max(1, Math.floor(rect.width));
+    h = Math.max(1, Math.floor(rect.height));
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    canvas.style.width = w + "px";
+    canvas.style.height = h + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function pickAccent(){
+    var r = Math.random();
+    if(r < 0.40) return COLORS.purple;
+    if(r < 0.72) return COLORS.blue;
+    return COLORS.yellow;
+  }
+
+  function pickDustColor(){ return (Math.random() < 0.88) ? COLORS.white : pickAccent(); }
+  function pickFloaterColor(){ return (Math.random() < 0.76) ? COLORS.white : pickAccent(); }
+  function pickFloaterKind(){
+    var r = Math.random();
+    if(r < 0.015) return "blob";
+    if(r < 0.18) return "pill";
+    return "dot";
+  }
+
+  /* Slight tone-down overall, with a modest extra reduction on mobile (not drastic) */
+  function densityScale(){
+    var mobile = (window.innerWidth || 1200) < 750;
+    return mobile ? 0.62 : 1.0;
+  }
+
+  /* ================================
+     PARTICLES (same look/behavior)
+     Only change: counts toned down slightly
+  ================================ */
+  function seedDust(){
+    var area = w * h;
+    var s = densityScale();
+
+    /* was: clamp((area / 120) * s, 4000, 24000) */
+    var count = Math.round(clamp((area / 140) * s, 3600, 20000));
+    dust = new Array(count);
+
+    for(var i = 0; i < count; i++){
+      var color = pickDustColor();
+      var isAccent = (color !== COLORS.white);
+
+      var vx = rand(-0.028, 0.028);
+      var vy = rand(-0.022, 0.022);
+
+      var tw = rand(0.25, 1.1);
+      var ph = rand(0, Math.PI * 2);
+
+      var a0 = isAccent ? rand(0.20, 0.46) : rand(0.06, 0.18);
+
+      /* sizes unchanged */
+      var size = isAccent
+        ? rand(2.8, 6.2)
+        : ((Math.random() < 0.78) ? rand(1.7, 3.8) : rand(3.8, 5.4));
+
+      dust[i] = { x: rand(0, w), y: rand(0, h), vx: vx, vy: vy, color: color, isAccent: isAccent, a0: a0, size: size, tw: tw, ph: ph };
+    }
+  }
+
+  function seedFloaters(){
+    var area = w * h;
+    var s = densityScale();
+
+    /* was: clamp((area / 1400) * s, 600, 2200) */
+    var count = Math.round(clamp((area / 1600) * s, 520, 1800));
+    floaters = new Array(count);
+
+    for(var i = 0; i < count; i++){
+      var kind = pickFloaterKind();
+      var color = pickFloaterColor();
+      var isAccent = (color !== COLORS.white);
+
+      var vx = rand(-0.16, 0.16);
+      var vy = rand(-0.13, 0.13);
+
+      var tw = rand(0.35, 1.35);
+      var ph = rand(0, Math.PI * 2);
+
+      var a0 = isAccent ? rand(0.22, 0.55) : rand(0.08, 0.20);
+      if(kind === "blob") a0 *= 0.78;
+      if(kind === "pill") a0 *= 0.9;
+
+      var p = { x: rand(0, w), y: rand(0, h), vx: vx, vy: vy, kind: kind, color: color, isAccent: isAccent, a0: a0, tw: tw, ph: ph };
+
+      /* sizes unchanged */
+      if(kind === "dot"){
+        p.r = isAccent ? rand(4.4, 9.2) : ((Math.random() < 0.60) ? rand(3.0, 6.0) : rand(5.6, 8.2));
+      } else if(kind === "pill"){
+        p.pw = rand(14, 40);
+        p.phh = rand(3.6, 8.0);
+        p.rot = rand(-0.85, 0.85);
+      } else {
+        p.br = rand(12, 24);
+      }
+
+      if(isAccent) p.glowSize = rand(14, 32);
+      floaters[i] = p;
+    }
+  }
+
+  function drawRoundRect(x, y, ww, hh, rr){
+    var r = Math.min(rr, ww/2, hh/2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + ww - r, y);
+    ctx.quadraticCurveTo(x + ww, y, x + ww, y + r);
+    ctx.lineTo(x + ww, y + hh - r);
+    ctx.quadraticCurveTo(x + ww, y + hh, x + ww - r, y + hh);
+    ctx.lineTo(x + r, y + hh);
+    ctx.quadraticCurveTo(x, y + hh, x, y + hh - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  /* =========================
+     SHOOTING STARS (meteors)
+  ========================= */
+  function scheduleNextShooter(now){
+    nextShooterAt = now + rand(2400, 7200);
+  }
+  function pickMeteorColor(){
+    return (Math.random() < 0.78) ? COLORS.white : pickAccent();
+  }
+  function spawnShooter(now){
+    var fromLeft = (Math.random() < 0.5);
+    var depth = rand(0.55, 1.0);
+
+    var y = rand(h * 0.06, h * 0.94);
+    var startX = fromLeft ? -rand(60, 160) : (w + rand(60, 160));
+    var angle = fromLeft ? rand(-0.42, 0.42) : rand(Math.PI - 0.42, Math.PI + 0.42);
+    var speed = rand(700, 1400) * (0.70 + depth * 0.40);
+    var life = rand(0.60, 1.20);
+
+    shooters.push({
+      x: startX,
+      y: y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      t: 0,
+      life: life,
+      depth: depth,
+      tail: rand(110, 230) * depth * (speed/1000),
+      w: rand(1.0, 2.2) * depth,
+      color: pickMeteorColor()
+    });
+
+    scheduleNextShooter(now);
+  }
+
+  function drawShooter(s){
+    var p = clamp(s.t / s.life, 0, 1);
+    var fadeIn = Math.pow(clamp(p / 0.12, 0, 1), 0.75);
+    var fadeOut = 1 - Math.pow(clamp((p - 0.45) / 0.55, 0, 1), 1.9);
+    var alpha = fadeIn * fadeOut;
+    if(alpha < 0.01) return;
+
+    var spd = Math.sqrt(s.vx*s.vx + s.vy*s.vy) || 1;
+    var dx = s.vx / spd;
+    var dy = s.vy / spd;
+
+    var tailX = s.x - dx * s.tail;
+    var tailY = s.y - dy * s.tail;
+
+    ctx.save();
+    ctx.lineCap = "round";
+
+    var g1 = ctx.createLinearGradient(tailX, tailY, s.x, s.y);
+    g1.addColorStop(0, "rgba(" + s.color.rgb + ",0)");
+    g1.addColorStop(0.55, "rgba(" + s.color.rgb + "," + (0.10*alpha).toFixed(4) + ")");
+    g1.addColorStop(1, "rgba(" + s.color.rgb + "," + (0.28*alpha).toFixed(4) + ")");
+    ctx.strokeStyle = g1;
+    ctx.lineWidth = s.w * 5.2;
+    ctx.beginPath();
+    ctx.moveTo(tailX, tailY);
+    ctx.lineTo(s.x, s.y);
+    ctx.stroke();
+
+    var g2 = ctx.createLinearGradient(tailX, tailY, s.x, s.y);
+    g2.addColorStop(0, "rgba(255,255,255,0)");
+    g2.addColorStop(0.55, "rgba(255,255,255," + (0.22*alpha).toFixed(4) + ")");
+    g2.addColorStop(1, "rgba(255,255,255," + (0.80*alpha).toFixed(4) + ")");
+    ctx.strokeStyle = g2;
+    ctx.lineWidth = s.w * 1.15;
+    ctx.beginPath();
+    ctx.moveTo(s.x - dx * s.tail * 0.45, s.y - dy * s.tail * 0.45);
+    ctx.lineTo(s.x, s.y);
+    ctx.stroke();
+
+    ctx.shadowBlur = 16 * s.depth;
+    ctx.shadowColor = s.color.hex;
+
+    var r = s.w * 2.3 * s.depth;
+    var hg = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r * 3.2);
+    hg.addColorStop(0, "rgba(255,255,255," + (0.85*alpha).toFixed(4) + ")");
+    hg.addColorStop(0.18, "rgba(" + s.color.rgb + "," + (0.55*alpha).toFixed(4) + ")");
+    hg.addColorStop(0.55, "rgba(" + s.color.rgb + "," + (0.16*alpha).toFixed(4) + ")");
+    hg.addColorStop(1, "rgba(" + s.color.rgb + ",0)");
+    ctx.fillStyle = hg;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, r * 3.2, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.restore();
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = "transparent";
+  }
+
+  function step(t){
+    var now = (t || performance.now());
+    var time = now * 0.001;
+
+    var dt = lastFrameTime ? clamp((now - lastFrameTime) / 1000, 0.001, 0.05) : (1/60);
+    lastFrameTime = now;
+
+    ctx.clearRect(0, 0, w, h);
+    ctx.globalCompositeOperation = "lighter";
+
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = "transparent";
+
+    for(var i = 0; i < dust.length; i++){
+      var d = dust[i];
+
+      d.x += d.vx;
+      d.y += d.vy;
+
+      if(d.x < -2) d.x = w + 2;
+      if(d.x > w + 2) d.x = -2;
+      if(d.y < -2) d.y = h + 2;
+      if(d.y > h + 2) d.y = -2;
+
+      var twk = 0.70 + 0.30 * Math.sin(time * d.tw + d.ph);
+      var a = d.a0 * twk;
+
+      if(d.isAccent){
+        ctx.shadowBlur = 4;
+        ctx.shadowColor = d.color.hex;
+      } else {
+        ctx.shadowBlur = 0;
+      }
+
+      ctx.fillStyle = "rgba(" + d.color.rgb + "," + a.toFixed(3) + ")";
+      ctx.fillRect(d.x - d.size * 0.5, d.y - d.size * 0.5, d.size, d.size);
+    }
+
+    for(var j = 0; j < floaters.length; j++){
+      var p = floaters[j];
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if(p.x < -30) p.x = w + 30;
+      if(p.x > w + 30) p.x = -30;
+      if(p.y < -30) p.y = h + 30;
+      if(p.y > h + 30) p.y = -30;
+
+      var twk2 = 0.65 + 0.35 * Math.sin(time * p.tw + p.ph);
+      var a2 = p.a0 * twk2;
+
+      if(p.isAccent && p.glowSize){
+        ctx.shadowBlur = p.glowSize * twk2;
+        ctx.shadowColor = p.color.hex;
+      } else {
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = "transparent";
+      }
+
+      ctx.fillStyle = "rgba(" + p.color.rgb + "," + a2.toFixed(3) + ")";
+
+      if(p.kind === "dot"){
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      } else if(p.kind === "pill"){
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        drawRoundRect(-p.pw/2, -p.phh/2, p.pw, p.phh, p.phh/2);
+        ctx.restore();
+      } else {
+        var r2 = p.br;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, r2, 0, Math.PI * 2);
+        ctx.arc(p.x + r2 * 0.5, p.y - r2 * 0.2, r2 * 0.7, 0, Math.PI * 2);
+        ctx.arc(p.x - r2 * 0.4, p.y + r2 * 0.15, r2 * 0.6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    /* Meteors */
+    if(!nextShooterAt) scheduleNextShooter(now);
+    if(now >= nextShooterAt) spawnShooter(now);
+
+    for(var k = shooters.length - 1; k >= 0; k--){
+      var s = shooters[k];
+      s.t += dt;
+      s.x += s.vx * dt;
+      s.y += s.vy * dt;
+
+      drawShooter(s);
+
+      var margin = 420;
+      if(s.t >= s.life || s.x < -margin || s.x > w + margin || s.y < -margin || s.y > h + margin){
+        shooters.splice(k, 1);
+      }
+    }
+
+    ctx.globalCompositeOperation = "source-over";
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = "transparent";
+
+    requestAnimationFrame(step);
+  }
+
+  function reseed(){
+    resize();
+    seedDust();
+    seedFloaters();
+    shooters.length = 0;
+    nextShooterAt = 0;
+    lastFrameTime = 0;
+  }
+
+  reseed();
+  requestAnimationFrame(step);
+
+  window.addEventListener('resize', function(){
+    reseed();
+  }, { passive: true });
+
+  if('ResizeObserver' in window){
+    var ro = new ResizeObserver(function(){
+      reseed();
+    });
+    ro.observe(wrap);
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.main-collection-product-grid.name",
+  "class": "section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 36,
+      "step": 4,
+      "default": 16,
+      "label": "t:sections.main-collection-product-grid.settings.products_per_page.label"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 4,
+      "label": "t:sections.main-collection-product-grid.settings.columns_desktop.label"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "default": "2",
+      "label": "t:sections.main-collection-product-grid.settings.columns_mobile.label",
+      "options": [
+        { "value": "1", "label": "t:sections.main-collection-product-grid.settings.columns_mobile.options__1.label" },
+        { "value": "2", "label": "t:sections.main-collection-product-grid.settings.columns_mobile.options__2.label" }
+      ]
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "info": "t:sections.all.colors.has_cards_info",
+      "default": "scheme-1"
+    },
+    { "type": "header", "content": "t:sections.main-collection-product-grid.settings.header__3.content" },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        { "value": "adapt", "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__1.label" },
+        { "value": "portrait", "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__2.label" },
+        { "value": "square", "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__3.label" }
+      ],
+      "default": "adapt",
+      "label": "t:sections.main-collection-product-grid.settings.image_ratio.label"
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "options": [
+        { "value": "default", "label": "t:sections.all.image_shape.options__1.label" },
+        { "value": "arch", "label": "t:sections.all.image_shape.options__2.label" },
+        { "value": "blob", "label": "t:sections.all.image_shape.options__3.label" },
+        { "value": "chevronleft", "label": "t:sections.all.image_shape.options__4.label" },
+        { "value": "chevronright", "label": "t:sections.all.image_shape.options__5.label" },
+        { "value": "diamond", "label": "t:sections.all.image_shape.options__6.label" },
+        { "value": "parallelogram", "label": "t:sections.all.image_shape.options__7.label" },
+        { "value": "round", "label": "t:sections.all.image_shape.options__8.label" }
+      ],
+      "default": "default",
+      "label": "t:sections.all.image_shape.label"
+    },
+    { "type": "checkbox", "id": "show_secondary_image", "default": false, "label": "t:sections.main-collection-product-grid.settings.show_secondary_image.label" },
+    { "type": "checkbox", "id": "show_vendor", "default": false, "label": "t:sections.main-collection-product-grid.settings.show_vendor.label" },
+    { "type": "checkbox", "id": "show_rating", "default": false, "label": "t:sections.main-collection-product-grid.settings.show_rating.label", "info": "t:sections.main-collection-product-grid.settings.show_rating.info" },
+    {
+      "type": "select",
+      "id": "quick_add",
+      "default": "none",
+      "label": "t:sections.main-collection-product-grid.settings.quick_add.label",
+      "options": [
+        { "value": "none", "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_1" },
+        { "value": "standard", "label": "t:sections.main-collection-product-grid.settings.quick_add.options option_2" },
+        { "value": "bulk", "label": "t:sections.main-collection-product-grid.settings.quick_add.options option_3" }
+      ]
+    },
+    { "type": "header", "content": "t:sections.main-collection-product-grid.settings.header__1.content" },
+    { "type": "checkbox", "id": "enable_filtering", "default": true, "label": "t:sections.main-collection-product-grid.settings.enable_filtering.label", "info": "t:sections.main-collection-product-grid.settings.enable_filtering.info" },
+    {
+      "type": "select",
+      "id": "filter_type",
+      "options": [
+        { "value": "horizontal", "label": "t:sections.main-collection-product-grid.settings.filter_type.options__1.label" },
+        { "value": "vertical", "label": "t:sections.main-collection-product-grid.settings.filter_type.options__2.label" },
+        { "value": "drawer", "label": "t:sections.main-collection-product-grid.settings.filter_type.options__3.label" }
+      ],
+      "default": "horizontal",
+      "label": "t:sections.main-collection-product-grid.settings.filter_type.label"
+    },
+    { "type": "checkbox", "id": "enable_sorting", "default": true, "label": "t:sections.main-collection-product-grid.settings.enable_sorting.label" },
+    { "type": "header", "content": "t:sections.all.padding.section_padding_heading" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "t:sections.all.padding.padding_top", "default": 36 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "t:sections.all.padding.padding_bottom", "default": 36 }
+  ]
+}
+{% endschema %}

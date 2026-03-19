@@ -1,0 +1,729 @@
+{{ 'section-contact-form.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  :root{
+    --ak-purple:#ff33ff;
+    --ak-bg:#000;
+    --ak-line:rgba(255,255,255,.10);
+
+    /* neutral glass (no purple wash) */
+    --ak-glass-bg:rgba(255,255,255,.018);
+    --ak-glass-border:rgba(255,255,255,.12);
+    --ak-glass-highlight:rgba(255,255,255,.08);
+  }
+
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  /* =========================
+     AMERIKID CONTACT (CHANNELS-LIKE BACKGROUND + NEUTRAL GLASS PANEL)
+  ========================= */
+
+  /* Full section becomes the ambient field container */
+  #shopify-section-{{ section.id }} .gradient{
+    position:relative;
+    background:#000 !important;
+    overflow:hidden;
+    isolation:isolate;
+  }
+
+  /* Full-bleed particle field behind everything */
+  #shopify-section-{{ section.id }} .ak-contact-bg{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    display:block;
+    pointer-events:none;
+    z-index:0;
+    opacity:1;
+    mix-blend-mode:screen;
+    filter:contrast(1.1);
+    transform:translateZ(0);
+  }
+
+  /* Bring content above the field */
+  #shopify-section-{{ section.id }} .contact{
+    position:relative;
+    z-index:2;
+    max-width:1200px;
+    width:100%;
+  }
+
+  /* Neutral glass panel (no purple tint wash) */
+  #shopify-section-{{ section.id }} .ak-contact-panel{
+    position:relative;
+    overflow:hidden;
+    border-radius:22px;
+
+    background:var(--ak-glass-bg);
+    -webkit-backdrop-filter:blur(56px) saturate(210%) contrast(112%);
+    backdrop-filter:blur(56px) saturate(210%) contrast(112%);
+
+    border:1px solid var(--ak-glass-border);
+    box-shadow:
+      inset 0 1px 0 0 var(--ak-glass-highlight),
+      inset 0 -1px 0 0 rgba(0,0,0,.22),
+      0 18px 60px rgba(0,0,0,.65);
+
+    padding:30px 18px;
+    isolation:isolate;
+  }
+  @media (min-width: 750px){
+    #shopify-section-{{ section.id }} .ak-contact-panel{ padding:36px 28px; }
+  }
+
+  /* Neutral specular + scan film (no color wash) */
+  @keyframes akShimmer{ 0%{ transform:translateX(-60%) } 100%{ transform:translateX(60%) } }
+
+  #shopify-section-{{ section.id }} .ak-contact-panel::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.04) 0,
+        rgba(255,255,255,.04) 1px,
+        transparent 1px,
+        transparent 8px
+      ),
+      linear-gradient(115deg,
+        transparent 0%,
+        rgba(255,255,255,.10) 45%,
+        transparent 60%
+      );
+    opacity:.06;
+    transform:translateX(-40%);
+    animation:akShimmer 6.5s linear infinite;
+    mix-blend-mode:screen;
+  }
+
+  #shopify-section-{{ section.id }} .ak-contact-panel::after{
+    content:"";
+    position:absolute;
+    inset:-1px;
+    pointer-events:none;
+    z-index:0;
+    border-radius:22px;
+    background:linear-gradient(
+      165deg,
+      rgba(255,255,255,.12) 0%,
+      rgba(255,255,255,.04) 25%,
+      transparent 50%
+    );
+    mix-blend-mode:screen;
+    opacity:1;
+  }
+
+  #shopify-section-{{ section.id }} .ak-contact-inner{
+    position:relative;
+    z-index:2;
+  }
+
+  #shopify-section-{{ section.id }} .ak-contact-panel:hover{
+    border-color: rgba(255,255,255,.20);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255,255,255,.12),
+      inset 0 -1px 0 0 rgba(0,0,0,.22),
+      0 22px 70px rgba(0,0,0,.70);
+  }
+
+  /* Header (unchanged content, just sits clean on glass) */
+  #shopify-section-{{ section.id }} .ak-contact-header{ text-align:center; margin-bottom:18px; }
+
+  #shopify-section-{{ section.id }} .ak-contact-title{
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+    text-transform: uppercase;
+    letter-spacing:.08em;
+    color:#fff;
+    font-size: clamp(26px, 4.2vw, 44px);
+    margin: 0 0 6px;
+    text-shadow: 0 0 12px rgba(255,255,255,.10);
+  }
+
+  #shopify-section-{{ section.id }} .ak-contact-sub{
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+    text-transform: uppercase;
+    letter-spacing:.10em;
+    color: rgba(255,255,255,.70);
+    font-size: 14px;
+  }
+
+  /* Layout */
+  #shopify-section-{{ section.id }} .contact__fields{ gap:14px; }
+
+  /* Remove Dawn outlines */
+  #shopify-section-{{ section.id }} .field::before,
+  #shopify-section-{{ section.id }} .field::after{
+    content:none !important;
+    display:none !important;
+  }
+
+  /* Label-above-input */
+  #shopify-section-{{ section.id }} .field{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-top:14px;
+  }
+
+  #shopify-section-{{ section.id }} .field__label{
+    position: static !important;
+    transform: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    order: -1;
+
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+    text-transform: uppercase;
+    letter-spacing: .10em;
+    color: rgba(255,255,255,.72) !important;
+    opacity: 1 !important;
+  }
+
+  /* Inputs (keep behavior; neutral glass look) */
+  #shopify-section-{{ section.id }} .field__input,
+  #shopify-section-{{ section.id }} .text-area{
+    background: rgba(0,0,0,.38) !important;
+    color: #fff !important;
+
+    border: 1px solid rgba(255,255,255,.14) !important;
+    border-radius: 16px !important;
+
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+
+    padding: 16px 16px !important;
+    transition: border-color .22s ease, box-shadow .22s ease, transform .15s ease;
+  }
+
+  #shopify-section-{{ section.id }} .field__input::placeholder,
+  #shopify-section-{{ section.id }} .text-area::placeholder{
+    color: rgba(255,255,255,.45) !important;
+    opacity: 1 !important;
+  }
+
+  #shopify-section-{{ section.id }} .field__input:focus,
+  #shopify-section-{{ section.id }} .text-area:focus{
+    border-color: rgba(255,51,255,.40) !important;
+    box-shadow:
+      0 0 0 1px rgba(255,51,255,.18),
+      0 0 16px rgba(255,51,255,.18) !important;
+    transform: scale(1.01);
+  }
+
+  /* Errors */
+  #shopify-section-{{ section.id }} .contact__field-error{
+    order: 3;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  #shopify-section-{{ section.id }} .form-status-list a{
+    color: var(--ak-purple) !important;
+    text-decoration: underline;
+  }
+
+  /* Button (keep your purple brand) */
+  #shopify-section-{{ section.id }} .contact__button{
+    margin-top: 18px;
+    display:flex;
+    justify-content:center;
+  }
+
+  #shopify-section-{{ section.id }} .contact__button .button{
+    background: #000 !important;
+    color: var(--ak-purple) !important;
+    border: 2px solid var(--ak-purple) !important;
+
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+
+    border-radius: 16px !important;
+    padding: 14px 26px !important;
+
+    box-shadow: 0 0 14px rgba(255,51,255,.55) !important;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease, color .15s ease;
+  }
+
+  #shopify-section-{{ section.id }} .contact__button .button:hover{
+    background: var(--ak-purple) !important;
+    color: #000 !important;
+    box-shadow: 0 0 22px rgba(255,51,255,.85) !important;
+    transform: scale(1.04);
+  }
+
+  #shopify-section-{{ section.id }} .contact__button .button:active{ transform: scale(1.01); }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    #shopify-section-{{ section.id }} .ak-contact-bg{ display:none !important; }
+    #shopify-section-{{ section.id }} .ak-contact-panel::before{ animation:none; }
+    #shopify-section-{{ section.id }} .contact__button .button,
+    #shopify-section-{{ section.id }} .field__input,
+    #shopify-section-{{ section.id }} .text-area{ transition:none; }
+  }
+{%- endstyle -%}
+
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <canvas class="ak-contact-bg" aria-hidden="true"></canvas>
+
+  <div class="contact page-width section-{{ section.id }}-padding">
+    <div class="ak-contact-panel">
+      <div class="ak-contact-inner">
+        <div class="ak-contact-header">
+          {%- if section.settings.heading != blank -%}
+            <h2 class="ak-contact-title title title-wrapper--no-top-margin inline-richtext {{ section.settings.heading_size }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+              {{ section.settings.heading }}
+            </h2>
+          {%- else -%}
+            <h2 class="ak-contact-title visually-hidden">{{ 'templates.contact.form.title' | t }}</h2>
+          {%- endif -%}
+
+          <div class="ak-contact-sub">SEND A MESSAGE. WE’LL HIT YOU BACK.</div>
+        </div>
+
+        {%- liquid
+          assign contact_form_class = 'isolate'
+          if settings.animations_reveal_on_scroll
+            assign contact_form_class = 'isolate scroll-trigger animate--slide-in'
+          endif
+        -%}
+
+        {%- form 'contact', id: 'ContactForm', class: contact_form_class -%}
+          {%- if form.posted_successfully? -%}
+            <h2 class="form-status form-status-list form__message" tabindex="-1" autofocus>
+              {{- 'icon-success.svg' | inline_asset_content -}}
+              {{ 'templates.contact.form.post_success' | t }}
+            </h2>
+          {%- elsif form.errors -%}
+            <div class="form__message">
+              <h2 class="form-status caption-large text-body" role="alert" tabindex="-1" autofocus>
+                {{- 'icon-error.svg' | inline_asset_content -}}
+                {{ 'templates.contact.form.error_heading' | t }}
+              </h2>
+            </div>
+            <ul class="form-status-list caption-large" role="list">
+              <li>
+                <a href="#ContactForm-email" class="link">
+                  {{ form.errors.translated_fields.email | capitalize }}
+                  {{ form.errors.messages.email }}
+                </a>
+              </li>
+            </ul>
+          {%- endif -%}
+
+          <div class="contact__fields">
+            <div class="field">
+              <label class="field__label" for="ContactForm-name">{{ 'templates.contact.form.name' | t }}</label>
+              <input
+                class="field__input"
+                autocomplete="name"
+                type="text"
+                id="ContactForm-name"
+                name="contact[{{ 'templates.contact.form.name' | t }}]"
+                value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+              >
+            </div>
+
+            <div class="field field--with-error">
+              <label class="field__label" for="ContactForm-email">
+                {{- 'templates.contact.form.email' | t }} <span aria-hidden="true">*</span>
+              </label>
+
+              <input
+                autocomplete="email"
+                type="email"
+                id="ContactForm-email"
+                class="field__input"
+                name="contact[email]"
+                spellcheck="false"
+                autocapitalize="off"
+                value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+                aria-required="true"
+                {% if form.errors contains 'email' %}
+                  aria-invalid="true"
+                  aria-describedby="ContactForm-email-error"
+                {% endif %}
+              >
+
+              {%- if form.errors contains 'email' -%}
+                <small class="contact__field-error" id="ContactForm-email-error">
+                  <span class="visually-hidden">{{ 'accessibility.error' | t }}</span>
+                  <span class="form__message">
+                    <span class="svg-wrapper">
+                      {{- 'icon-error.svg' | inline_asset_content -}}
+                    </span>
+                    {{- form.errors.translated_fields.email | capitalize }}
+                    {{ form.errors.messages.email -}}
+                  </span>
+                </small>
+              {%- endif -%}
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="ContactForm-phone">{{ 'templates.contact.form.phone' | t }}</label>
+            <input
+              type="tel"
+              id="ContactForm-phone"
+              class="field__input"
+              autocomplete="tel"
+              name="contact[{{ 'templates.contact.form.phone' | t }}]"
+              pattern="[0-9\-]*"
+              value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}"
+            >
+          </div>
+
+          <div class="field">
+            <label class="form__label field__label" for="ContactForm-body">
+              {{- 'templates.contact.form.comment' | t -}}
+            </label>
+            <textarea
+              rows="10"
+              id="ContactForm-body"
+              class="text-area field__input"
+              name="contact[{{ 'templates.contact.form.comment' | t }}]"
+            >{{- form.body -}}</textarea>
+          </div>
+
+          <div class="contact__button">
+            <button type="submit" class="button">
+              {{ 'templates.contact.form.send' | t }}
+            </button>
+          </div>
+        {%- endform -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const section = document.getElementById('shopify-section-{{ section.id }}');
+  if(!section) return;
+
+  const wrap = section.querySelector('.gradient');
+  const canvas = section.querySelector('.ak-contact-bg');
+  if(!wrap || !canvas) return;
+
+  const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduced) return;
+
+  const ctx = canvas.getContext('2d', { alpha:true });
+
+  let w=0,h=0,dpr=Math.min(window.devicePixelRatio||1,2);
+  let dust=[], floaters=[], shooters=[];
+  let nextShooterAt=0, lastT=0, raf=0, running=false;
+
+  const C={
+    w:{rgb:"255,255,255",hex:"#ffffff"},
+    p:{rgb:"255,51,255",hex:"#ff33ff"},
+    b:{rgb:"127,212,255",hex:"#7fd4ff"},
+    y:{rgb:"255,211,74",hex:"#ffd34a"}
+  };
+  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+  const rnd=(a,b)=>a+Math.random()*(b-a);
+
+  function resize(){
+    const r = wrap.getBoundingClientRect();
+    w = Math.max(1, Math.floor(r.width));
+    h = Math.max(1, Math.floor(r.height));
+    dpr = Math.min(window.devicePixelRatio||1,2);
+    canvas.width = Math.floor(w*dpr);
+    canvas.height = Math.floor(h*dpr);
+    canvas.style.width = w+"px";
+    canvas.style.height = h+"px";
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function pickAccent(){
+    const r=Math.random();
+    if(r<0.40) return C.p;
+    if(r<0.72) return C.b;
+    return C.y;
+  }
+  const pickDust=()=> (Math.random()<0.86)?C.w:pickAccent();
+  const pickFloater=()=> (Math.random()<0.73)?C.w:pickAccent();
+  const pickMeteor=()=> (Math.random()<0.78)?C.w:pickAccent();
+  function pickKind(){ const r=Math.random(); if(r<0.015) return "blob"; if(r<0.18) return "pill"; return "dot"; }
+
+  function seedDust(){
+    const area=w*h;
+    const count=Math.round(clamp(area/320, 900, 2400));
+    dust=new Array(count);
+    for(let i=0;i<count;i++){
+      const col=pickDust();
+      const acc=(col!==C.w);
+      dust[i]={
+        x:rnd(0,w), y:rnd(0,h),
+        vx:rnd(-0.026,0.026), vy:rnd(-0.022,0.022),
+        tw:rnd(0.28,1.05), ph:rnd(0,Math.PI*2),
+        a0:acc?rnd(0.38,0.66):rnd(0.12,0.30),
+        s:acc?rnd(1.05,2.25):((Math.random()<0.78)?rnd(0.55,1.25):rnd(1.25,1.85)),
+        col, acc
+      };
+    }
+  }
+
+  function seedFloaters(){
+    const area=w*h;
+    const count=Math.round(clamp(area/5200, 160, 360));
+    floaters=new Array(count);
+    for(let i=0;i<count;i++){
+      const k=pickKind();
+      const col=pickFloater();
+      const acc=(col!==C.w);
+      let a0=acc?rnd(0.42,0.78):rnd(0.16,0.36);
+      if(k==="blob") a0*=0.75;
+      if(k==="pill") a0*=0.9;
+      const p={x:rnd(0,w),y:rnd(0,h),vx:rnd(-0.15,0.15),vy:rnd(-0.13,0.13),k,col,acc,a0,tw:rnd(0.38,1.25),ph:rnd(0,Math.PI*2)};
+      if(k==="dot"){ p.r=acc?rnd(2.0,4.6):((Math.random()<0.65)?rnd(1.2,2.6):rnd(2.6,3.9)); }
+      else if(k==="pill"){ p.pw=rnd(6,18); p.phh=rnd(1.6,3.4); p.rot=rnd(-0.7,0.7); }
+      else { p.br=rnd(4.5,10.5); }
+      if(acc) p.gl=rnd(5,11);
+      floaters[i]=p;
+    }
+  }
+
+  function rr(x,y,ww,hh,rad){
+    const r=Math.min(rad, ww/2, hh/2);
+    ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.lineTo(x+ww-r,y); ctx.quadraticCurveTo(x+ww,y,x+ww,y+r);
+    ctx.lineTo(x+ww,y+hh-r); ctx.quadraticCurveTo(x+ww,y+hh,x+ww-r,y+hh);
+    ctx.lineTo(x+r,y+hh); ctx.quadraticCurveTo(x,y+hh,x,y+hh-r);
+    ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+    ctx.closePath(); ctx.fill();
+  }
+
+  function schedule(now){ nextShooterAt = now + rnd(2400, 6800); }
+
+  function spawn(now){
+    const fromLeft = Math.random()<0.5;
+    const depth = rnd(0.55,1.0);
+    const y = rnd(h*0.08, h*0.92);
+    const sx = fromLeft ? -rnd(60,140) : (w + rnd(60,140));
+    const ang = fromLeft ? rnd(-0.42,0.42) : rnd(Math.PI-0.42, Math.PI+0.42);
+    const spd = rnd(720,1450) * (0.70 + depth*0.45);
+    const life = rnd(0.60,1.15);
+    const col = pickMeteor();
+    shooters.push({
+      x:sx,y,
+      vx:Math.cos(ang)*spd, vy:Math.sin(ang)*spd,
+      t:0, life, depth,
+      tl:rnd(120,240)*depth*(spd/1000),
+      lw:rnd(1.1,2.5)*depth,
+      col
+    });
+    schedule(now);
+  }
+
+  function drawShooter(s){
+    const p=clamp(s.t/s.life,0,1);
+    const fi=Math.pow(clamp(p/0.12,0,1),0.7);
+    const fo=1-Math.pow(clamp((p-0.45)/0.55,0,1),1.8);
+    const a=fi*fo;
+    if(a<0.01) return;
+
+    const sp=Math.sqrt(s.vx*s.vx+s.vy*s.vy)||1;
+    const dx=s.vx/sp, dy=s.vy/sp;
+    const tl=s.tl*(0.65+0.35*a);
+    const tx=s.x-dx*tl, ty=s.y-dy*tl;
+
+    ctx.save();
+    ctx.lineCap="round";
+
+    const g1=ctx.createLinearGradient(tx,ty,s.x,s.y);
+    g1.addColorStop(0,`rgba(${s.col.rgb},0)`);
+    g1.addColorStop(0.30,`rgba(${s.col.rgb},${(0.06*a).toFixed(4)})`);
+    g1.addColorStop(0.62,`rgba(${s.col.rgb},${(0.14*a).toFixed(4)})`);
+    g1.addColorStop(1,`rgba(${s.col.rgb},${(0.24*a).toFixed(4)})`);
+    ctx.strokeStyle=g1;
+    ctx.lineWidth=s.lw*6;
+    ctx.beginPath(); ctx.moveTo(tx,ty); ctx.lineTo(s.x,s.y); ctx.stroke();
+
+    const g2=ctx.createLinearGradient(tx,ty,s.x,s.y);
+    g2.addColorStop(0,`rgba(${s.col.rgb},0)`);
+    g2.addColorStop(0.42,`rgba(${s.col.rgb},${(0.22*a).toFixed(4)})`);
+    g2.addColorStop(1,`rgba(${s.col.rgb},${(0.62*a).toFixed(4)})`);
+    ctx.strokeStyle=g2;
+    ctx.lineWidth=s.lw*2.35;
+    ctx.beginPath();
+    ctx.moveTo(tx+(s.x-tx)*0.18, ty+(s.y-ty)*0.18);
+    ctx.lineTo(s.x,s.y);
+    ctx.stroke();
+
+    const hr=s.lw*2.2;
+    ctx.shadowBlur=14*s.depth;
+    ctx.shadowColor=s.col.hex;
+
+    const hg=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,hr*3.0);
+    hg.addColorStop(0,`rgba(255,255,255,${(0.92*a).toFixed(4)})`);
+    hg.addColorStop(0.18,`rgba(${s.col.rgb},${(0.62*a).toFixed(4)})`);
+    hg.addColorStop(0.55,`rgba(${s.col.rgb},${(0.20*a).toFixed(4)})`);
+    hg.addColorStop(1,`rgba(${s.col.rgb},0)`);
+    ctx.fillStyle=hg;
+    ctx.beginPath(); ctx.arc(s.x,s.y,hr*3.0,0,Math.PI*2); ctx.fill();
+
+    ctx.shadowBlur=7*s.depth;
+    ctx.shadowColor="#ffffff";
+    ctx.fillStyle=`rgba(255,255,255,${(0.95*a).toFixed(4)})`;
+    ctx.beginPath(); ctx.arc(s.x,s.y,hr*0.35,0,Math.PI*2); ctx.fill();
+
+    ctx.restore();
+    ctx.shadowBlur=0;
+    ctx.shadowColor="transparent";
+  }
+
+  function frame(t){
+    const now=t||performance.now();
+    const dt=lastT?clamp((now-lastT)/1000,0.001,0.05):(1/60);
+    lastT=now;
+
+    const time=now*0.001;
+    ctx.clearRect(0,0,w,h);
+    ctx.globalCompositeOperation="lighter";
+    ctx.shadowBlur=0;
+    ctx.shadowColor="transparent";
+
+    for(let i=0;i<dust.length;i++){
+      const d=dust[i];
+      d.x+=d.vx; d.y+=d.vy;
+      if(d.x<-2) d.x=w+2; if(d.x>w+2) d.x=-2;
+      if(d.y<-2) d.y=h+2; if(d.y>h+2) d.y=-2;
+
+      const tw=0.70+0.30*Math.sin(time*d.tw+d.ph);
+      const a=d.a0*tw;
+
+      if(d.acc){ ctx.shadowBlur=3.2; ctx.shadowColor=d.col.hex; } else { ctx.shadowBlur=0; }
+      ctx.fillStyle=`rgba(${d.col.rgb},${a.toFixed(3)})`;
+      ctx.fillRect(d.x-d.s*0.5, d.y-d.s*0.5, d.s, d.s);
+    }
+
+    for(let i=0;i<floaters.length;i++){
+      const p=floaters[i];
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<-25) p.x=w+25; if(p.x>w+25) p.x=-25;
+      if(p.y<-25) p.y=h+25; if(p.y>h+25) p.y=-25;
+
+      const tw=0.65+0.35*Math.sin(time*p.tw+p.ph);
+      const a=p.a0*tw;
+
+      if(p.acc && p.gl){ ctx.shadowBlur=p.gl*tw; ctx.shadowColor=p.col.hex; }
+      else { ctx.shadowBlur=0; ctx.shadowColor="transparent"; }
+
+      ctx.fillStyle=`rgba(${p.col.rgb},${a.toFixed(3)})`;
+
+      if(p.k==="dot"){
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+      }else if(p.k==="pill"){
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+        rr(-p.pw/2,-p.phh/2,p.pw,p.phh,p.phh/2);
+        ctx.restore();
+      }else{
+        const r=p.br;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,r,0,Math.PI*2);
+        ctx.arc(p.x+r*0.5,p.y-r*0.2,r*0.7,0,Math.PI*2);
+        ctx.arc(p.x-r*0.4,p.y+r*0.15,r*0.6,0,Math.PI*2);
+        ctx.fill();
+      }
+    }
+
+    if(!nextShooterAt) schedule(now);
+    if(now>=nextShooterAt) spawn(now);
+
+    for(let i=shooters.length-1;i>=0;i--){
+      const s=shooters[i];
+      s.t+=dt; s.x+=s.vx*dt; s.y+=s.vy*dt;
+      drawShooter(s);
+      const m=520;
+      if(s.t>=s.life || s.x<-m || s.x>w+m || s.y<-m || s.y>h+m) shooters.splice(i,1);
+    }
+
+    ctx.globalCompositeOperation="source-over";
+    ctx.shadowBlur=0;
+    ctx.shadowColor="transparent";
+
+    if(running) raf=requestAnimationFrame(frame);
+    else raf=0;
+  }
+
+  function start(){
+    if(running) return;
+    running=true;
+    if(!raf) raf=requestAnimationFrame(frame);
+  }
+  function stop(){
+    running=false;
+    if(raf){ cancelAnimationFrame(raf); raf=0; }
+  }
+
+  function init(){
+    resize();
+    seedDust();
+    seedFloaters();
+  }
+  init();
+
+  const io = new IntersectionObserver((ents)=>{
+    for(const e of ents){ if(e.isIntersecting) start(); else stop(); }
+  }, { threshold: 0.12 });
+  io.observe(wrap);
+
+  window.addEventListener('resize', ()=>{
+    init();
+  }, { passive:true });
+
+})();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.contact-form.name",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": { "groups": ["header", "footer"] },
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "default": "t:sections.contact-form.settings.title.default",
+      "label": "t:sections.contact-form.settings.title.label"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        { "value": "h2", "label": "t:sections.all.heading_size.options__1.label" },
+        { "value": "h1", "label": "t:sections.all.heading_size.options__2.label" },
+        { "value": "h0", "label": "t:sections.all.heading_size.options__3.label" },
+        { "value": "hxl", "label": "t:sections.all.heading_size.options__4.label" },
+        { "value": "hxxl", "label": "t:sections.all.heading_size.options__5.label" }
+      ],
+      "default": "h1",
+      "label": "t:sections.all.heading_size.label"
+    },
+    { "type": "color_scheme", "id": "color_scheme", "label": "t:sections.all.colors.label", "default": "scheme-1" },
+    { "type": "header", "content": "t:sections.all.padding.section_padding_heading" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "t:sections.all.padding.padding_top", "default": 36 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "t:sections.all.padding.padding_bottom", "default": 36 }
+  ],
+  "presets": [
+    { "name": "t:sections.contact-form.presets.name" }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,136 @@
+<div data-pf-editor-version="gen-2" class="sc-jeyqhx jfeuyL __pf __pf_4NfR6TMo" id="__pf"><div data-pf-type="Body" class="sc-djTQOc ejtSSi pf-8_"><div data-pf-type="Layout" class="sc-fatbYi kUsjkM pf-9_"><section data-section-id="pf-f63b" data-pf-type="FlexSection" data-animation="fadeInDownBig" class="sc-gKlDTn jrBPeP pf-10_ pf-color-scheme-4 pf-bg-lazy"><div class="sc-jRGIGG bMuAgN pf-flex-section"><div data-pf-type="Custom.HTML" class="sc-gRtvfn YJaia pf-11_"><a class="ak-landing" href="/collections/master-collection" aria-label="Enter AmeriKid">
+  <video id="akLandingVideo" class="ak-landing__media ak-landing__video" autoplay muted loop playsinline
+    webkit-playsinline preload="auto">
+    <source src="https://cdn.shopify.com/videos/c/o/v/20c113f89b284acbb173345229f4f5c5.mp4" type="video/mp4" />
+  </video>
+
+  <img
+    class="ak-landing__media ak-landing__img"
+    src="https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_ec94c533-64a8-47ea-8520-f75e0a3397db.jpg?v=1751343507"
+    alt="AmeriKid landing"
+    loading="eager"
+    style="display:none"
+  />
+</a>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .ak-landing {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100svh;
+    height: 100dvh;
+    height: 100vh;
+    display: block;
+    overflow: hidden;
+    background: #000;
+    z-index: 1;
+    /* keep below floating button */
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .ak-landing__media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    /* media never steals click */
+  }
+
+  /* Hide video until it’s actually playing (prevents “flash”) */
+  .ak-landing__video {
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+
+  .ak-video-ready .ak-landing__video {
+    opacity: 1;
+  }
+
+  /* Desktop default */
+  .ak-landing__img {
+    display: none !important;
+  }
+
+  /* If video fails on desktop, show image instead */
+  .ak-video-failed .ak-landing__video {
+    display: none !important;
+  }
+
+  .ak-video-failed .ak-landing__img {
+    display: block !important;
+  }
+
+  /* Mobile: image ON, video OFF */
+  @media (max-width: 767px) {
+    .ak-landing__video {
+      display: none !important;
+    }
+
+    .ak-landing__img {
+      display: block !important;
+      opacity: 1 !important;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    const root = document.documentElement;
+    const v = document.getElementById("akLandingVideo");
+    if (!v) return;
+
+    const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+    if (!isDesktop) return; // on mobile we’re intentionally showing the image
+
+    const fail = () => root.classList.add("ak-video-failed");
+    const ready = () => root.classList.add("ak-video-ready");
+
+    v.muted = true;
+    v.playsInline = true;
+
+    v.addEventListener("error", fail, { once: true });
+    v.addEventListener("playing", ready, { once: true });
+    v.addEventListener("canplay", ready, { once: true });
+
+    // Force autoplay
+    const tryPlay = () => {
+      const p = v.play();
+      if (p && typeof p.catch === "function") p.catch(fail);
+    };
+
+    if (v.readyState >= 2) tryPlay();
+    else v.addEventListener("loadeddata", tryPlay, { once: true });
+  })();
+</script></div><a href="/collections/master-collection" target="_self" data-pf-type="Button2" class="sc-emIqIH hFkfQE pf-12_ pf-button-1 hero-video-hit pf-bg-lazy pf-lg-hide pf-md-hide pf-sm-hide pf-hide">Button Text</a><div data-pf-type="HTML.Video3" class="sc-cXPBhi jNGdCp pf-14_ hero-video-wrap pf-lg-hide pf-md-hide pf-sm-hide pf-hide"><div class="pf-lazy-html-video pf-video-wrapper"><video data-src="https://cdn.shopify.com/videos/c/o/v/9c28cb9e379849ccbb43024c149e1221.mp4#t=0.1" data-autoplay="true" data-lazyloading="lazy" width="100%" class="pf-visibility-hidden pf-media-video" type="video/1" loop="" muted="" playsinline="" autoplay="" controlsList="nodownload" disablepictureinpicture=""></video><svg class="pf-play-button" width="64" height="64" viewBox="0 0 48 48"><path d="M24.0003 47.8334C37.1631 47.8334 47.8337 37.1629 47.8337 24.0001C47.8337 10.8373 37.1631 0.166748 24.0003
+				0.166748C10.8375 0.166748 0.166992 10.8373 0.166992 24.0001C0.166992 37.1629 10.8375 47.8334 24.0003 47.8334Z" fill="rgb(193, 193, 193, .61)"></path><path d="M19.667 32.6668V15.3335L32.667 24.0002L19.667 32.6668Z" fill="#fff"></path></svg></div></div><img alt="LANDING PAGE.jpeg__PID:533c868a-0acd-418a-9438-372eb41afaa5" src="https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=1920" srcSet="https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=375 375w,https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=550 550w,https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=768 768w,https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=1024 1024w,https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=1280 1280w,https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=1440 1440w,https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=1680 1680w,https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=1800 1800w,https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=1920 1920w" fetchPriority="low" decoding="async" loading="lazy" style="--pf-image-ratio:1.539714867617108" sizes="100vw" data-action="url" data-href="/pages/2025" data-target="_self" data-pf-type="Image5" data-animation="fadeInDown" class="sc-fscnvs dncZrx pf-15_ pf-image-1 glow-hover-banner pf-lg-hide pf-md-hide pf-sm-hide pf-hide" store="[object Object]"/><img alt="LANDING PAGE.jpeg__PID:533c868a-0acd-418a-9438-372eb41afaa5" src="https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=1920" srcSet="https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=375 375w,https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=550 550w,https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=768 768w,https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=1024 1024w,https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=1280 1280w,https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=1440 1440w,https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=1680 1680w,https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=1800 1800w,https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_2bbf91fe-123e-4ad2-acd0-23c424390ffd.jpg?v=1747872412&width=1920 1920w" fetchPriority="low" decoding="async" loading="lazy" style="--pf-image-ratio:1.539714867617108" sizes="100vw" data-action="url" data-href="https://iacxyv-w5.myshopify.com/collections/" data-target="_self" data-pf-type="Image5" data-animation="fadeInDown" class="sc-fscnvs dncZrx pf-16_ pf-image-1 glow-hover-banner pf-lg-hide pf-md-hide pf-sm-hide pf-hide" store="[object Object]"/></div></section></div></div></div><script>
+    !function(){
+      window.__pagefly_page_setting__ = {"pageTitle":"Landing Page","pageType":"home","pageId":"6109eccb-2265-4e1b-a6ee-f4e1f99bc141","lazyLoad":true,"forceByPassGoogleLightHouse":false,"imageLazyLoad":true,"nativeImageLazyLoad":true,"useThemeJQ":false,"sectionRootType":"FlexSection","trackingIDs":[]};
+      window.__pagefly_setting__&&(window.__pagefly_setting2__=window.__pagefly_setting__),window.__pagefly_setting__={"baseURL":"https://apps.pagefly.io","analyticsURL":"https://analytics.pagefly.io","isBackend":false,"cdnURL":"https://cdn.pagefly.io","pageflyVersion":"4.25.7","shopDomain":"iacxyv-w5.myshopify.com","elementData":{},"shopifyProxyPath":"/apps/pagefly"},window.__pagefly_setting2__&&(window.__pagefly_setting__=function _(d,b){let c={...d||{}};for(let a of Object.keys(b))b[a]instanceof Object&&(Array.isArray(b[a])&&c[a]?Object.assign(b[a],[...b[a],...c[a]]):Object.assign(b[a],_(c[a],b[a])));return Object.assign(c||{},b),c}(__pagefly_setting2__,__pagefly_setting__),delete window.__pagefly_setting2__),window.__pagefly_setting__.moneyFormat={{shop.money_format|json}}}();
+    </script>
+{% schema %}
+{
+  "name": "PageFly Home Page",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "For full configuration, [visit PageFly Editor](https://iacxyv-w5.myshopify.com/admin/apps/pagefly/editor?id=6109eccb-2265-4e1b-a6ee-f4e1f99bc141&type=home)."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    }
+  ]
+}
+{% endschema %}

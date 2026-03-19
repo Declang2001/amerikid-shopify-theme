@@ -1,0 +1,15 @@
+<a
+  href="{{ routes.cart_url }}"
+  class="header__icon header__icon--cart focus-inset"
+  aria-label="{{ 'accessibility.cart_link' | t }}"
+>
+  <svg class="icon icon-cart" aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+    <path d="M7 4h-2l-3 9h16l3-9h-14zm-2.16 2h11.32l-2 6h-7.32l-2-6zM7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+  </svg>
+  {% if cart.item_count > 0 %}
+    <span class="cart-count-bubble">
+      <span class="visually-hidden">{{ 'accessibility.cart_item_count' | t: count: cart.item_count }}</span>
+      <span aria-hidden="true">{{ cart.item_count }}</span>
+    </span>
+  {% endif %}
+</a>

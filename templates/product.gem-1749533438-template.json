@@ -1,0 +1,171 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "custom_liquid_R6CiTK": {
+      "type": "custom-liquid",
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "<div class=\"bouncing-header-box\" id=\"bouncing-container\" style=\"position: relative; height: 150px; border-bottom: 2px solid #000; overflow: hidden; z-index: 999; background: white;\">\n  <!-- Cart button container, positioned center right -->\n  <div id=\"cart-button\" style=\"position: absolute; top: 50%; right: 2rem; transform: translateY(-50%); z-index: 1000;\">\n    {% render 'cart-icon-bubble' %}\n  <\/div>\n<\/div>\n\n<style>\n  \/* Bouncing logos styles *\/\n  .bouncing-logo-link {\n    position: absolute;\n    display: block;\n  }\n\n  .bouncing-logo {\n    width: 45px;\n    height: 45px;\n    display: block;\n    pointer-events: auto;\n    animation: pulseGlow 3s ease-in-out infinite;\n    filter: drop-shadow(0 0 10px white);\n  }\n\n  @keyframes pulseGlow {\n    0%, 100% {\n      filter: drop-shadow(0 0 10px white);\n    }\n    50% {\n      filter: drop-shadow(0 0 20px white);\n    }\n  }\n<\/style>\n\n<script>\n  document.addEventListener(\"DOMContentLoaded\", function () {\n    const container = document.getElementById(\"bouncing-container\");\n    const cartButton = document.getElementById(\"cart-button\");\n\n    \/\/ Clicking anywhere in the container except the cart button goes to \/collections\/all\n    container.addEventListener(\"click\", function () {\n      window.location.href = \"\/collections\/all\";\n    });\n\n    \/\/ Prevent clicks on cart button from bubbling up to container\n    cartButton.addEventListener(\"click\", function (event) {\n      event.stopPropagation();\n    });\n\n    \/\/ --- Bouncing Logos code ---\n    const logoSrc = \"https:\/\/cdn.shopify.com\/s\/files\/1\/0930\/3267\/7656\/files\/KID_SCRIBBLE_OUTLINE_6bd5ffa8-d310-4eb9-be67-23cf56737678.png?v=1747881692\";\n\n    \/\/ Set logoCount based on screen width: max 10 on mobile (<750px), else 30\n    const logoCount = window.innerWidth < 750 ? 10 : 30;\n\n    const logos = [];\n    const speeds = [];\n    const positions = [];\n\n    const logoWidth = 30;\n    const logoHeight = 30;\n\n    function isOverlapping(x1, y1, w1, h1, x2, y2, w2, h2) {\n      return !(x1 + w1 < x2 || x1 > x2 + w2 || y1 + h1 < y2 || y1 > y2 + h2);\n    }\n\n    function findNonOverlappingPosition() {\n      let tries = 0;\n      while (tries < 1000) {\n        const x = Math.random() * (container.clientWidth - logoWidth);\n        const y = Math.random() * (container.clientHeight - logoHeight);\n        let overlapping = false;\n        for (const pos of positions) {\n          if (isOverlapping(x, y, logoWidth, logoHeight, pos.x, pos.y, logoWidth, logoHeight)) {\n            overlapping = true;\n            break;\n          }\n        }\n        if (!overlapping) {\n          return { x, y };\n        }\n        tries++;\n      }\n      return { x: 0, y: 0 };\n    }\n\n    for (let i = 0; i < logoCount; i++) {\n      const link = document.createElement(\"a\");\n      link.href = \"\/collections\/all\";\n      link.className = \"bouncing-logo-link\";\n\n      const img = document.createElement(\"img\");\n      img.src = logoSrc;\n      img.alt = \"Bouncing Logo\";\n      img.className = \"bouncing-logo\";\n\n      link.appendChild(img);\n      container.appendChild(link);\n\n      const pos = findNonOverlappingPosition();\n      positions.push(pos);\n\n      logos.push(link);\n\n      speeds.push({\n        x: (Math.random() < 0.5 ? -1 : 1) * (0.3 + Math.random() * 0.3),\n        y: (Math.random() < 0.5 ? -1 : 1) * (0.3 + Math.random() * 0.3),\n        posX: pos.x,\n        posY: pos.y\n      });\n    }\n\n    function move() {\n      for (let i = 0; i < logoCount; i++) {\n        const logo = logos[i];\n        const speed = speeds[i];\n\n        speed.posX += speed.x;\n        speed.posY += speed.y;\n\n        if (speed.posX <= 0) {\n          speed.posX = 0;\n          speed.x *= -1;\n        }\n        if (speed.posX + logoWidth >= container.clientWidth) {\n          speed.posX = container.clientWidth - logoWidth;\n          speed.x *= -1;\n        }\n        if (speed.posY <= 0) {\n          speed.posY = 0;\n          speed.y *= -1;\n        }\n        if (speed.posY + logoHeight >= container.clientHeight) {\n          speed.posY = container.clientHeight - logoHeight;\n          speed.y *= -1;\n        }\n\n        for (let j = i + 1; j < logoCount; j++) {\n          const other = speeds[j];\n\n          if (isOverlapping(speed.posX, speed.posY, logoWidth, logoHeight,\n            other.posX, other.posY, logoWidth, logoHeight)) {\n            const tempX = speed.x;\n            const tempY = speed.y;\n            speed.x = other.x;\n            speed.y = other.y;\n            other.x = tempX;\n            other.y = tempY;\n\n            if (speed.posX < other.posX) {\n              speed.posX -= 1;\n              other.posX += 1;\n            } else {\n              speed.posX += 1;\n              other.posX -= 1;\n            }\n            if (speed.posY < other.posY) {\n              speed.posY -= 1;\n              other.posY += 1;\n            } else {\n              speed.posY += 1;\n              other.posY -= 1;\n            }\n          }\n        }\n\n        logo.style.left = `${speed.posX}px`;\n        logo.style.top = `${speed.posY}px`;\n      }\n\n      requestAnimationFrame(move);\n    }\n\n    setTimeout(move, 300);\n  });\n<\/script>",
+        "color_scheme": "",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "custom_liquid_PRXwDH": {
+      "type": "custom-liquid",
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "<!-- sections\/amerikid-fast-banner.liquid -->\n<style>\n  .amerikid-fast-banner {\n    background-color: #000;\n    overflow: hidden;\n    position: relative;\n    height: 60px;\n    display: flex;\n    align-items: center;\n  }\n\n  .amerikid-fast-track-wrapper {\n    display: flex;\n    width: 200%;\n    animation: amerikid-fast-scroll-ltr 25s linear infinite;\n  }\n\n  .amerikid-fast-track {\n    display: flex;\n    white-space: nowrap;\n  }\n\n  .amerikid-fast-word {\n    font-family: Impact, sans-serif;\n    font-size: 2rem;\n    color: white;\n    margin: 0 2rem;\n    animation: amerikid-fast-bounce 2s ease-in-out infinite;\n  }\n\n  @keyframes amerikid-fast-scroll-ltr {\n    0% {\n      transform: translateX(-50%);\n    }\n    100% {\n      transform: translateX(0%);\n    }\n  }\n\n  @keyframes amerikid-fast-bounce {\n    0%, 100% {\n      transform: translateY(0px);\n    }\n    50% {\n      transform: translateY(-5px);\n    }\n  }\n<\/style>\n\n<div class=\"amerikid-fast-banner\">\n  <div class=\"amerikid-fast-track-wrapper\">\n    <div class=\"amerikid-fast-track\">\n      {% for i in (1..30) %}\n        <div class=\"amerikid-fast-word\">AMERiKiD<\/div>\n      {% endfor %}\n    <\/div>\n    <div class=\"amerikid-fast-track\">\n      {% for i in (1..30) %}\n        <div class=\"amerikid-fast-word\">AMERiKiD<\/div>\n      {% endfor %}\n    <\/div>\n  <\/div>\n<\/div>",
+        "color_scheme": "",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "rich_text_3N3QPj": {
+      "type": "rich-text",
+      "blocks": {
+        "heading_jtfama": {
+          "type": "heading",
+          "settings": {
+            "heading": "",
+            "heading_size": "h1"
+          }
+        },
+        "text_JWcdXC": {
+          "type": "text",
+          "settings": {
+            "text": ""
+          }
+        },
+        "button_nFY8C8": {
+          "type": "button",
+          "settings": {
+            "button_label": "Back",
+            "button_link": "shopify:\/\/collections\/uh-oh-tee",
+            "button_style_secondary": true,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_jtfama",
+        "text_JWcdXC",
+        "button_nFY8C8"
+      ],
+      "name": "t:sections.rich-text.presets.name",
+      "settings": {
+        "desktop_content_position": "right",
+        "content_alignment": "right",
+        "color_scheme": "scheme-4",
+        "full_width": true,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "vendor": {
+          "type": "text",
+          "settings": {
+            "text": "{{ product.vendor }}",
+            "text_style": "uppercase"
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button",
+            "swatch_shape": "circle"
+          }
+        },
+        "quantity_selector": {
+          "type": "quantity_selector",
+          "settings": {}
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true,
+            "show_gift_card_recipient": true
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {}
+        },
+        "share": {
+          "type": "share",
+          "settings": {
+            "share_label": "Share"
+          }
+        }
+      },
+      "block_order": [
+        "vendor",
+        "title",
+        "price",
+        "variant_picker",
+        "quantity_selector",
+        "buy_buttons",
+        "description",
+        "share"
+      ],
+      "settings": {
+        "enable_sticky_info": true,
+        "color_scheme": "scheme-4",
+        "media_size": "large",
+        "constrain_to_viewport": true,
+        "media_fit": "contain",
+        "gallery_layout": "stacked",
+        "mobile_thumbnails": "hide",
+        "media_position": "left",
+        "image_zoom": "lightbox",
+        "hide_variants": true,
+        "enable_video_looping": false,
+        "padding_top": 36,
+        "padding_bottom": 12
+      }
+    },
+    "custom_liquid_Y768e9": {
+      "type": "custom-liquid",
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "<!-- sections\/amerikid-scroll-banner.liquid -->\n<style>\n  .scroll-banner-container {\n    background-color: #000;\n    overflow: hidden;\n    position: relative;\n    height: 60px;\n    display: flex;\n    align-items: center;\n  }\n\n  .scroll-banner-track-wrap {\n    display: flex;\n    width: 200%;\n    animation: scroll-banner-animation 25s linear infinite;\n  }\n\n  .scroll-banner-track {\n    display: flex;\n    white-space: nowrap;\n  }\n\n  .scroll-banner-word {\n    font-family: Impact, sans-serif;\n    font-size: 2rem;\n    color: white;\n    margin: 0 2rem;\n    animation: scroll-banner-bounce 2s ease-in-out infinite;\n  }\n\n  @keyframes scroll-banner-animation {\n    0% {\n      transform: translateX(0%);\n    }\n    100% {\n      transform: translateX(-50%);\n    }\n  }\n\n  @keyframes scroll-banner-bounce {\n    0%, 100% {\n      transform: translateY(0px);\n    }\n    50% {\n      transform: translateY(-5px);\n    }\n  }\n<\/style>\n\n<div class=\"scroll-banner-container\">\n  <div class=\"scroll-banner-track-wrap\">\n    <div class=\"scroll-banner-track\">\n      {% for i in (1..30) %}\n        <div class=\"scroll-banner-word\">AMERiKiD<\/div>\n      {% endfor %}\n    <\/div>\n    <div class=\"scroll-banner-track\">\n      {% for i in (1..30) %}\n        <div class=\"scroll-banner-word\">AMERiKiD<\/div>\n      {% endfor %}\n    <\/div>\n  <\/div>\n<\/div>",
+        "color_scheme": "",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "related-products": {
+      "type": "related-products",
+      "settings": {}
+    }
+  },
+  "order": [
+    "custom_liquid_R6CiTK",
+    "custom_liquid_PRXwDH",
+    "rich_text_3N3QPj",
+    "main",
+    "custom_liquid_Y768e9",
+    "related-products"
+  ]
+}

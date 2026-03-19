@@ -1,0 +1,2985 @@
+{%- comment -%}
+
+  Club Hub page content
+
+  File: snippets/club-hub.liquid
+
+  ID / Passport layout concept.
+
+  Profile saving is stubbed until App Proxy backend is wired.
+
+{%- endcomment -%}
+
+{%- assign ak_backend_enabled = true -%}
+
+{%- assign ak_proxy_action = '/apps/club/profile' -%}
+
+{%- comment -%} ADDED: Watermark image URL - update this to the actual kid logo asset path {%- endcomment -%}
+
+{%- assign ak_kid_watermark_src = '' -%}
+
+
+<script>
+
+  (function(){ document.documentElement.classList.add('ak-clubhub-page'); })();
+
+</script>
+
+<div class="ak-clubhub" role="region" aria-label="Club AmeriKid Hub">
+
+<!-- ADDED: Ambient particles + shooting stars background -->
+
+<canvas class="ak-clubhub-field" id="ak-clubhub-field" aria-hidden="true"></canvas>
+
+<div class="ak-clubhub-inner">
+
+{% if customer == blank %}
+
+<div class="ak-id-shell ak-logged-out">
+
+<div class="ak-id-card">
+
+<div class="ak-id-topbar">
+
+<div class="ak-id-brand">
+
+<div class="ak-id-title">AMERIKID MEMBER ID</div>
+
+<div class="ak-id-sub">Log in to access your card, spins, and profile.</div>
+
+</div>
+
+<div class="ak-id-actions">
+
+<a class="ak-id-btn ak-primary"
+
+href="{{ routes.account_login_url }}?return_to={{ '/pages/club-hub' | url_encode }}">
+
+                LOG IN
+
+</a>
+
+<a class="ak-id-btn"
+
+href="{{ routes.account_register_url }}?return_to={{ '/pages/club-hub' | url_encode }}">
+
+                JOIN
+
+</a>
+
+</div>
+
+</div>
+
+<div class="ak-id-body ak-id-body--loggedout">
+
+<div class="ak-id-photo">
+
+<div class="ak-id-photo-frame">
+
+<div class="ak-id-photo-placeholder">
+
+<div class="ak-id-photo-mark">PHOTO</div>
+
+<div class="ak-id-photo-note">Upload after login</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="ak-id-fields">
+
+<div class="ak-field">
+
+<div class="ak-label">STATUS</div>
+
+<div class="ak-value">NOT LOGGED IN</div>
+
+</div>
+
+<div class="ak-field">
+
+<div class="ak-label">BENEFIT</div>
+
+<div class="ak-value">ACCESS TO SPINS + MEMBER DROPS + YOUR ID</div>
+
+</div>
+
+<div class="ak-field">
+
+<div class="ak-label">NEXT</div>
+
+<div class="ak-value">LOG IN OR JOIN TO ISSUE YOUR CARD</div>
+
+</div>
+
+<div class="ak-id-hint">
+
+                This page is your "best of both worlds" hub. It's custom AmeriKid UI, but still links into Shopify's official Orders and Account pages.
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% else %}
+
+{%- assign spins = customer.metafields.club.spins_available.value | default: 0 -%}
+
+{%- assign joined_at = customer.metafields.club.joined_at.value -%}
+
+{%- assign birthday = customer.metafields.club.birthday.value -%}
+
+{%- assign top_size = customer.metafields.club.top_size.value -%}
+
+{%- assign bottom_size = customer.metafields.club.bottom_size.value -%}
+
+{%- assign favorite_color = customer.metafields.club.favorite_color.value -%}
+
+{%- assign favorite_album = customer.metafields.club.favorite_album.value -%}
+
+{%- assign dream_piece = customer.metafields.club.dream_piece.value -%}
+
+{%- assign photo_val = customer.metafields.club.photo_url.value -%}
+
+{%- assign photo_src = '' -%}
+
+{%- if photo_val != blank -%}
+
+{%- if photo_val.url -%}
+
+{%- assign photo_src = photo_val.url -%}
+
+{%- else -%}
+
+{%- assign photo_src = photo_val -%}
+
+{%- endif -%}
+
+{%- endif -%}
+
+{%- assign member_id_num = customer.id | modulo: 1000000 -%}
+
+{%- assign issued_date = joined_at | default: 'now' | date: "%b %d, %Y" -%}
+
+{%- comment -%} Email marketing subscription check {%- endcomment -%}
+{%- assign ak_already_subscribed = false -%}
+{%- if customer.accepts_marketing == true -%}
+{%- assign ak_already_subscribed = true -%}
+{%- endif -%}
+{%- if customer.email_marketing_consent -%}
+{%- if customer.email_marketing_consent.state == "subscribed" or customer.email_marketing_consent.state == "pending" -%}
+{%- assign ak_already_subscribed = true -%}
+{%- endif -%}
+{%- endif -%}
+
+<div class="ak-id-shell ak-logged-in">
+
+{%- unless ak_already_subscribed -%}
+<div class="ak-drops-module" id="ak-drops-module">
+{% form 'customer', id: 'ak-drops-form', class: 'ak-drops-inner' %}
+<input type="hidden" name="contact[accepts_marketing]" value="true">
+<input type="hidden" name="contact[tags]" value="club_amerikid,newsletter">
+<input type="hidden" name="return_to" value="/pages/club-hub">
+{% if form.posted_successfully? %}
+<div class="ak-drops-bar">
+<div class="ak-drops-success">📡 EMAIL DROPS: ACTIVE</div>
+</div>
+{% else %}
+<div class="ak-drops-bar">
+<div class="ak-drops-heading">📡 SIGN UP FOR EMAIL DROPS</div>
+{% if form.errors %}
+<div class="ak-drops-error">{{ form.errors | default_errors }}</div>
+{% endif %}
+<div class="ak-drops-row">
+<input type="email" name="contact[email]" class="ak-input ak-drops-email" value="{{ customer.email | escape }}" placeholder="you@example.com" required autocomplete="email">
+<button type="submit" class="ak-id-btn ak-primary ak-drops-btn" id="ak-drops-submit">SUBSCRIBE</button>
+</div>
+</div>
+<div class="ak-drops-captcha" id="ak-drops-captcha">
+<div class="ak-captcha-note" aria-live="polite">COMPLETE VERIFICATION TO FINISH SUBSCRIBING</div>
+<div class="ak-captcha-helper">Once verified, you'll be subscribed automatically.</div>
+<div class="ak-captcha-loading" id="ak-captcha-loading">
+<div class="ak-captcha-spinner"></div>
+<span>LOADING VERIFICATION…</span>
+</div>
+<div class="ak-captcha-widget" id="ak-captcha-widget">
+{{ form | captcha }}
+</div>
+</div>
+{% endif %}
+{% endform %}
+</div>
+{%- endunless -%}
+
+<div class="ak-id-card">
+
+<div class="ak-id-topbar">
+
+<div class="ak-id-brand">
+
+<div class="ak-id-title">AMERIKID MEMBER ID</div>
+
+<div class="ak-id-sub">
+
+                ISSUED: <strong>{{ issued_date }}</strong>
+
+<span class="ak-dot">•</span>
+
+                MEMBER ID: <strong>AK-{{ member_id_num }}</strong>
+
+</div>
+
+<div class="ak-id-chips">
+
+<span class="ak-chip">SPINS: <strong>{{ spins }}</strong></span>
+
+</div>
+
+</div>
+
+<div class="ak-id-actions">
+
+<a class="ak-id-btn" href="/account/orders">ORDERS</a>
+
+<a class="ak-id-btn" href="{{ routes.account_url }}">ACCOUNT</a>
+
+<a class="ak-id-btn ak-warn" href="{{ routes.account_logout_url }}">LOG OUT</a>
+
+</div>
+
+</div>
+
+<div class="ak-id-body">
+
+<!-- PHOTO COLUMN -->
+
+<div class="ak-id-photo">
+
+<div class="ak-id-photo-frame">
+
+{% if photo_src != blank %}
+
+<img class="ak-id-photo-img" src="{{ photo_src }}" alt="Member photo">
+
+{% else %}
+
+<div class="ak-id-photo-placeholder">
+
+<div class="ak-id-photo-mark">PHOTO</div>
+
+<div class="ak-id-photo-note">Add photo (next)</div>
+
+</div>
+
+{% endif %}
+
+<!-- Upload -->
+
+<label class="ak-id-photo-upload">
+
+<input type="file" accept="image/png,image/jpeg" id="ak-id-photo-input" />
+
+<span>UPLOAD</span>
+
+</label>
+
+<div class="ak-id-photo-error" id="ak-id-photo-error"></div>
+
+<!-- ADDED: Holographic strip decoration -->
+
+<div class="ak-holo-strip" aria-hidden="true"></div>
+
+</div>
+
+<div class="ak-id-mini">
+
+<div class="ak-mini-label">EMAIL</div>
+
+<div class="ak-mini-value">{{ customer.email }}</div>
+
+</div>
+
+<!-- ADDED: Phone mini card -->
+
+<div class="ak-id-mini">
+
+<div class="ak-mini-label">PHONE</div>
+
+<div class="ak-mini-value">
+
+{% if customer.phone != blank %}
+
+{{ customer.phone | escape }}
+
+{% else %}
+
+NOT SET
+
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+<!-- FIELDS COLUMN -->
+
+<div class="ak-id-fields">
+
+<div class="ak-id-section-title">YOUR ID DETAILS</div>
+
+<form class="ak-id-form"
+
+method="post"
+
+action="{{ ak_proxy_action }}"
+
+data-backend="{{ ak_backend_enabled }}">
+
+<input type="hidden" name="return_to" value="/pages/club-hub">
+
+<div class="ak-grid">
+
+<div class="ak-field">
+
+<label class="ak-label" for="ak-first">FIRST NAME</label>
+
+<input id="ak-first" class="ak-input" type="text" name="first_name"
+
+value="{{ customer.first_name | escape }}" placeholder="First name" autocomplete="given-name">
+
+</div>
+
+<div class="ak-field">
+
+<label class="ak-label" for="ak-last">LAST NAME</label>
+
+<input id="ak-last" class="ak-input" type="text" name="last_name"
+
+value="{{ customer.last_name | escape }}" placeholder="Last name" autocomplete="family-name">
+
+</div>
+
+<!-- ADDED: Phone field -->
+
+<div class="ak-field">
+
+<label class="ak-label" for="ak-phone">PHONE</label>
+
+<input id="ak-phone" class="ak-input" type="tel" name="phone"
+
+value="{{ customer.phone | escape }}"
+
+placeholder="ex: +1 555 123 4567" autocomplete="tel">
+
+</div>
+
+<div class="ak-field">
+
+<label class="ak-label" for="ak-bday">DATE OF BIRTH</label>
+
+<input id="ak-bday" class="ak-input" type="date" name="birthday"
+
+value="{% if birthday %}{{ birthday | date: "%Y-%m-%d" }}{% endif %}">
+
+</div>
+
+<!-- SMS Opt-In: hidden once customer has already consented -->
+
+{%- assign sms_consent_raw = customer.metafields.club.sms_consent.value | default: customer.metafields.club.sms_consent -%}
+
+{%- assign smsOptedIn = false -%}
+
+{%- if sms_consent_raw == true or sms_consent_raw == "true" -%}
+
+{%- assign smsOptedIn = true -%}
+
+{%- endif -%}
+
+{% unless smsOptedIn %}
+
+<div class="ak-field ak-span-2">
+
+<label class="ak-label" for="ak-sms-consent">SMS OPT-IN</label>
+
+<label style="display:flex; gap:10px; align-items:flex-start;">
+
+<input id="ak-sms-consent" type="checkbox" name="sms_consent" value="1" style="margin-top:4px;">
+
+<span style="font-size:13px; line-height:1.4; opacity:0.9;">
+
+I agree to receive marketing texts from AmeriKid. Msg and data rates may apply. Reply STOP to unsubscribe.
+
+</span>
+
+</label>
+
+</div>
+
+{% endunless %}
+
+<div class="ak-field">
+
+<label class="ak-label" for="ak-top">TOP SIZE</label>
+
+<select id="ak-top" class="ak-input" name="top_size">
+
+<option value="" {% if top_size == blank %}selected{% endif %}>Select</option>
+
+<option {% if top_size == 'XS' %}selected{% endif %}>XS</option>
+
+<option {% if top_size == 'S' %}selected{% endif %}>S</option>
+
+<option {% if top_size == 'M' %}selected{% endif %}>M</option>
+
+<option {% if top_size == 'L' %}selected{% endif %}>L</option>
+
+<option {% if top_size == 'XL' %}selected{% endif %}>XL</option>
+
+<option {% if top_size == 'XXL' %}selected{% endif %}>XXL</option>
+
+</select>
+
+</div>
+
+<div class="ak-field">
+
+<label class="ak-label" for="ak-bottom">BOTTOM SIZE</label>
+
+<select id="ak-bottom" class="ak-input" name="bottom_size">
+
+<option value="" {% if bottom_size == blank %}selected{% endif %}>Select</option>
+
+<option {% if bottom_size == '28' %}selected{% endif %}>28</option>
+
+<option {% if bottom_size == '30' %}selected{% endif %}>30</option>
+
+<option {% if bottom_size == '32' %}selected{% endif %}>32</option>
+
+<option {% if bottom_size == '34' %}selected{% endif %}>34</option>
+
+<option {% if bottom_size == '36' %}selected{% endif %}>36</option>
+
+<option {% if bottom_size == '38' %}selected{% endif %}>38</option>
+
+</select>
+
+</div>
+
+<div class="ak-field">
+
+<label class="ak-label" for="ak-color">FAVORITE COLOR</label>
+
+<input id="ak-color" class="ak-input" type="text" name="favorite_color"
+
+value="{{ favorite_color | escape }}" placeholder="ex: purple / black / neon green" maxlength="24">
+
+</div>
+
+<div class="ak-field ak-span-2">
+
+<label class="ak-label" for="ak-album">FAVORITE ALBUM</label>
+
+<input id="ak-album" class="ak-input" type="text" name="favorite_album"
+
+value="{{ favorite_album | escape }}" placeholder="ex: Bad Music Vol. 1" maxlength="40">
+
+</div>
+
+<div class="ak-field ak-span-2">
+
+<label class="ak-label" for="ak-dream">DREAM AMERIKID PIECE (MAX 60)</label>
+
+<textarea id="ak-dream" class="ak-input ak-textarea" name="dream_piece"
+
+maxlength="60" rows="2"
+
+placeholder="ex: a zombie-slayer hat with glow ink">{% if dream_piece %}{{ dream_piece | escape }}{% endif %}</textarea>
+
+</div>
+
+</div>
+
+<div class="ak-form-footer">
+
+<button class="ak-id-btn ak-primary" type="submit">
+
+                    SAVE PROFILE
+
+</button>
+
+<div class="ak-save-note" id="ak-save-note">
+
+                    Saved to your member profile.
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<!-- Watermark seal — visible bottom-left of logged-in card -->
+
+<div class="ak-card-seal" aria-hidden="true">
+  <img
+    src="https://cdn.shopify.com/s/files/1/0930/3267/7656/files/KID_SCRIBBLE_OUTLINE_6bd5ffa8-d310-4eb9-be67-23cf56737678.png?v=1747881692"
+    alt=""
+    loading="lazy"
+    decoding="async"
+  >
+</div>
+
+
+</div>
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+<style>
+
+/* IMPACT FONT: Force across entire Club Hub */
+.ak-clubhub, .ak-clubhub *{
+font-family: Impact, Haettenschweiler, "Arial Black", "Arial Narrow Bold", sans-serif !important;
+  }
+
+:root{
+
+--ak-purple:#ff33ff;
+
+--ak-cyan:#33ffff;
+
+--ak-green:#33ff66;
+
+--ak-black:#000;
+
+--ak-paper:#f6f4ee;
+
+--ak-ink:#121218;
+
+  }
+
+.ak-clubhub-page body,
+
+.ak-clubhub-page #MainContent{
+
+background:#000 !important;
+
+  }
+
+.ak-clubhub-page #MainContent .page-width{
+
+max-width: none !important;
+
+padding-left: 0 !important;
+
+padding-right: 0 !important;
+
+  }
+
+.ak-clubhub{
+
+background:#000;
+
+color:#fff;
+
+padding: clamp(14px, 2vw, 26px) 18px clamp(40px, 7vw, 90px);
+
+min-height: 100svh;
+
+display:flex;
+
+align-items:flex-start;
+
+position: relative;
+
+isolation: isolate;
+
+overflow: hidden;
+
+  }
+
+.ak-clubhub .ak-clubhub-field{
+
+position:absolute;
+
+inset:0;
+
+width:100%;
+
+height:100%;
+
+z-index:0;
+
+pointer-events:none;
+
+mix-blend-mode:screen;
+
+opacity:1;
+
+filter:contrast(1.10) saturate(1.10);
+
+  }
+
+.ak-clubhub-inner{
+
+width:100%;
+
+max-width: 1180px;
+
+margin: 0 auto;
+
+position: relative;
+
+z-index: 1;
+
+  }
+
+.ak-id-shell{
+
+width: 100%;
+
+display:flex;
+
+justify-content:center;
+
+  }
+
+.ak-id-card{
+
+width: 100%;
+
+border-radius: 22px;
+
+border: 2px solid rgba(255,51,255,0.35);
+
+background:
+
+radial-gradient(900px 400px at 20% -10%, rgba(255,51,255,0.18), transparent 55%),
+
+radial-gradient(900px 400px at 80% 0%, rgba(51,255,255,0.14), transparent 55%),
+
+linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+
+box-shadow:
+
+0 22px 55px rgba(0,0,0,0.60),
+
+0 0 55px rgba(255,51,255,0.12);
+
+backdrop-filter: blur(12px);
+
+-webkit-backdrop-filter: blur(12px);
+
+padding: clamp(16px, 2.4vw, 26px);
+
+overflow:hidden;
+
+position: relative;
+
+isolation: isolate;
+
+  }
+
+/* ADDED: Watermark background using kid logo */
+
+{% if ak_kid_watermark_src != blank %}
+
+.ak-logged-in .ak-id-card::before{
+
+content: '';
+
+position: absolute;
+
+inset: 0;
+
+background-image: url('{{ ak_kid_watermark_src }}');
+
+background-repeat: no-repeat;
+
+background-position: center center;
+
+background-size: 45% auto;
+
+opacity: 0.05;
+
+pointer-events: none;
+
+z-index: 0;
+
+filter: grayscale(100%) brightness(2);
+
+  }
+
+{% endif %}
+
+/* Guilloche / microline security pattern overlay */
+
+.ak-logged-in .ak-id-card::after{
+
+content: '';
+
+position: absolute;
+
+inset: 0;
+
+pointer-events: none;
+
+z-index: 0;
+
+opacity: 0.025;
+
+background-image:
+
+repeating-linear-gradient(
+
+0deg,
+
+transparent 0px,
+
+transparent 2px,
+
+rgba(255,255,255,0.5) 2px,
+
+rgba(255,255,255,0.5) 3px
+
+      ),
+
+repeating-linear-gradient(
+
+90deg,
+
+transparent 0px,
+
+transparent 2px,
+
+rgba(255,255,255,0.3) 2px,
+
+rgba(255,255,255,0.3) 3px
+
+      ),
+
+repeating-linear-gradient(
+
+45deg,
+
+transparent 0px,
+
+transparent 8px,
+
+rgba(255,51,255,0.2) 8px,
+
+rgba(255,51,255,0.2) 9px
+
+      ),
+
+repeating-linear-gradient(
+
+-45deg,
+
+transparent 0px,
+
+transparent 8px,
+
+rgba(51,255,255,0.2) 8px,
+
+rgba(51,255,255,0.2) 9px
+
+      );
+
+mix-blend-mode: overlay;
+
+  }
+
+/* Watermark seal — bottom-left of logged-in card, VISIBLE */
+.ak-card-seal{
+  position: absolute;
+  bottom: 18px;
+  left: 22px;
+  width: 130px;
+  height: 130px;
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 6;
+  transform: rotate(-12deg);
+  filter: brightness(2.2) contrast(1.1) drop-shadow(0 0 18px rgba(255,51,255,0.20));
+}
+
+.ak-card-seal img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+
+.ak-id-title,
+
+.ak-id-sub,
+
+.ak-id-section-title,
+
+.ak-label,
+
+.ak-mini-label,
+
+.ak-mini-value{
+
+color:#fff !important;
+
+position: relative;
+
+z-index: 1;
+
+  }
+
+.ak-id-topbar{
+
+display:flex;
+
+align-items:flex-start;
+
+justify-content:space-between;
+
+gap: 16px;
+
+flex-wrap:wrap;
+
+margin-bottom: 16px;
+
+position: relative;
+
+z-index: 1;
+
+  }
+
+.ak-id-title{
+
+font-weight: 900;
+
+letter-spacing: 0.14em;
+
+text-transform: uppercase;
+
+font-size: clamp(20px, 2.1vw, 28px);
+
+line-height: 1.1;
+
+  }
+
+.ak-id-sub{
+
+margin-top: 6px;
+
+color: rgba(255,255,255,0.80) !important;
+
+font-size: 12px;
+
+letter-spacing: 0.06em;
+
+text-transform: uppercase;
+
+  }
+
+.ak-dot{ margin: 0 8px; opacity: 0.8; }
+
+.ak-id-chips{
+
+display:flex;
+
+gap: 10px;
+
+flex-wrap:wrap;
+
+margin-top: 10px;
+
+  }
+
+.ak-chip{
+
+display:inline-flex;
+
+gap: 6px;
+
+align-items:center;
+
+padding: 9px 12px;
+
+border-radius: 999px;
+
+border: 1px solid rgba(255,255,255,0.16);
+
+background: rgba(0,0,0,0.35);
+
+font-size: 12px;
+
+font-weight: 800;
+
+letter-spacing: 0.08em;
+
+text-transform: uppercase;
+
+  }
+
+.ak-id-actions{
+
+display:flex;
+
+gap: 10px;
+
+flex-wrap:wrap;
+
+position: relative;
+
+z-index: 1;
+
+  }
+
+.ak-id-btn{
+
+display:inline-flex;
+
+align-items:center;
+
+justify-content:center;
+
+padding: 12px 16px;
+
+border-radius: 14px;
+
+border: 1px solid rgba(255,255,255,0.20);
+
+background: rgba(0,0,0,0.38);
+
+color:#fff !important;
+
+text-decoration:none;
+
+font-weight: 900;
+
+letter-spacing: 0.10em;
+
+text-transform: uppercase;
+
+font-size: 12px;
+
+transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, filter 160ms ease;
+
+user-select:none;
+
+position: relative;
+
+z-index: 1;
+
+  }
+
+.ak-id-btn:hover{
+
+transform: translateY(-1px);
+
+background: rgba(255,255,255,0.06);
+
+border-color: rgba(255,255,255,0.30);
+
+  }
+
+.ak-primary{
+
+border-color: rgba(255,51,255,0.65);
+
+box-shadow: 0 0 34px rgba(255,51,255,0.18);
+
+  }
+
+.ak-warn{
+
+border-color: rgba(255,255,255,0.26);
+
+  }
+
+.ak-id-body{
+
+display:grid;
+
+grid-template-columns: 260px minmax(0, 1fr);
+
+gap: 18px;
+
+align-items:start;
+
+position: relative;
+
+z-index: 1;
+
+  }
+
+.ak-id-body--loggedout{
+
+grid-template-columns: 260px minmax(0, 1fr);
+
+  }
+
+.ak-id-photo-frame{
+
+border-radius: 18px;
+
+border: 1px solid rgba(255,255,255,0.18);
+
+background: rgba(0,0,0,0.45);
+
+padding: 12px;
+
+position: relative;
+
+overflow:hidden;
+
+min-height: 260px;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+  }
+
+/* Holographic strip effect */
+
+.ak-holo-strip{
+
+position: absolute;
+
+bottom: 52px;
+
+left: 12px;
+
+width: calc(100% - 24px);
+
+height: 6px;
+
+border-radius: 3px;
+
+pointer-events: none;
+
+z-index: 2;
+
+background: linear-gradient(
+
+90deg,
+
+rgba(255,51,255,0.3) 0%,
+
+rgba(51,255,255,0.4) 20%,
+
+rgba(255,211,74,0.3) 40%,
+
+rgba(51,255,102,0.4) 60%,
+
+rgba(255,51,255,0.3) 80%,
+
+rgba(51,255,255,0.4) 100%
+
+    );
+
+background-size: 200% 100%;
+
+animation: ak-holo-shift 4s ease-in-out infinite;
+
+opacity: 0.7;
+
+mix-blend-mode: screen;
+
+  }
+
+@keyframes ak-holo-shift{
+
+    0%, 100% { background-position: 0% 50%; }
+
+    50% { background-position: 100% 50%; }
+
+  }
+
+.ak-id-photo-img{
+
+width:100%;
+
+height:100%;
+
+object-fit: cover;
+
+border-radius: 12px;
+
+display:block;
+
+  }
+
+.ak-id-photo-placeholder{
+
+width:100%;
+
+height:100%;
+
+min-height: 220px;
+
+border-radius: 12px;
+
+display:flex;
+
+flex-direction:column;
+
+align-items:center;
+
+justify-content:center;
+
+border: 1px dashed rgba(255,255,255,0.22);
+
+background: rgba(255,255,255,0.04);
+
+text-align:center;
+
+  }
+
+.ak-id-photo-mark{
+
+font-weight: 900;
+
+letter-spacing: 0.18em;
+
+text-transform: uppercase;
+
+font-size: 14px;
+
+  }
+
+.ak-id-photo-note{
+
+margin-top: 8px;
+
+opacity: 0.75;
+
+font-size: 12px;
+
+letter-spacing: 0.08em;
+
+text-transform: uppercase;
+
+  }
+
+.ak-id-photo-upload{
+
+position:absolute;
+
+bottom: 12px;
+
+right: 12px;
+
+cursor:pointer;
+
+user-select:none;
+
+display:inline-flex;
+
+align-items:center;
+
+justify-content:center;
+
+padding: 10px 12px;
+
+border-radius: 12px;
+
+border: 1px solid rgba(255,255,255,0.22);
+
+background: rgba(0,0,0,0.55);
+
+font-weight: 900;
+
+letter-spacing: 0.10em;
+
+text-transform: uppercase;
+
+font-size: 11px;
+
+z-index: 3;
+
+  }
+
+.ak-id-photo-upload input{
+
+display:none;
+
+  }
+
+.ak-id-photo-upload.is-busy{
+
+opacity: 0.6;
+
+pointer-events: none;
+
+  }
+
+.ak-id-photo-error{
+
+position: absolute;
+
+bottom: 52px;
+
+right: 12px;
+
+left: 12px;
+
+text-align: center;
+
+font-size: 11px;
+
+font-weight: 700;
+
+letter-spacing: 0.06em;
+
+color: #ff6b6b;
+
+background: rgba(0,0,0,0.75);
+
+border-radius: 8px;
+
+padding: 6px 8px;
+
+display: none;
+
+z-index: 4;
+
+  }
+
+.ak-id-photo-error.is-visible{
+
+display: block;
+
+  }
+
+.ak-id-mini{
+
+margin-top: 10px;
+
+border-radius: 14px;
+
+border: 1px solid rgba(255,255,255,0.14);
+
+background: rgba(0,0,0,0.30);
+
+padding: 12px;
+
+  }
+
+.ak-mini-label{
+
+font-size: 11px;
+
+letter-spacing: 0.12em;
+
+text-transform: uppercase;
+
+opacity: 1;
+
+color: rgba(255,255,255,0.95) !important;
+
+margin-bottom: 6px;
+
+  }
+
+.ak-mini-value{
+
+font-weight: 900;
+
+font-size: 14px;
+
+line-height: 1.4;
+
+word-break: break-word;
+
+  }
+
+.ak-id-fields{
+
+border-radius: 18px;
+
+border: 1px solid rgba(255,255,255,0.14);
+
+background: rgba(0,0,0,0.28);
+
+padding: 16px;
+
+min-width: 0;
+
+position: relative;
+
+z-index: 1;
+
+  }
+
+.ak-id-section-title{
+
+font-weight: 900;
+
+letter-spacing: 0.16em;
+
+text-transform: uppercase;
+
+font-size: 12px;
+
+margin-bottom: 12px;
+
+opacity: 0.98;
+
+  }
+
+.ak-grid{
+
+display:grid;
+
+grid-template-columns: repeat(2, minmax(0, 1fr));
+
+gap: 12px;
+
+  }
+
+.ak-span-2{ grid-column: 1 / -1; }
+
+.ak-field{
+
+min-width: 0;
+
+  }
+
+.ak-label{
+
+display:block;
+
+font-size: 11px;
+
+letter-spacing: 0.10em;
+
+text-transform: uppercase;
+
+opacity: 1;
+
+color: rgba(255,255,255,0.95) !important;
+
+margin-bottom: 8px;
+
+font-weight: 700;
+
+  }
+
+.ak-input{
+
+width: 100%;
+
+border-radius: 14px;
+
+border: 1px solid rgba(255,255,255,0.20);
+
+background: rgba(255,255,255,0.08);
+
+color: #fff;
+
+padding: 14px 14px;
+
+font-weight: 700;
+
+font-size: 17px;
+
+line-height: 1.4;
+
+letter-spacing: 0.01em;
+
+outline: none;
+
+transition: border-color 150ms ease, background 150ms ease;
+
+  }
+
+.ak-input:focus{
+
+border-color: rgba(255,51,255,0.5);
+
+background: rgba(255,255,255,0.10);
+
+  }
+
+.ak-input::placeholder{
+
+color: rgba(255,255,255,0.45);
+
+font-weight: 600;
+
+font-size: 15px;
+
+  }
+
+.ak-input option{
+
+background: #1a1a1a;
+
+color: #fff;
+
+font-size: 16px;
+
+padding: 8px;
+
+  }
+
+.ak-textarea{
+
+resize: none;
+
+line-height: 1.5;
+
+  }
+
+.ak-form-footer{
+
+display:flex;
+
+align-items:center;
+
+justify-content:space-between;
+
+gap: 12px;
+
+flex-wrap:wrap;
+
+margin-top: 14px;
+
+  }
+
+.ak-save-note{
+
+font-size: 12px;
+
+color: rgba(255,255,255,0.75);
+
+line-height: 1.35;
+
+max-width: 520px;
+
+  }
+
+.ak-id-hint{
+
+margin-top: 10px;
+
+font-size: 13px;
+
+color: rgba(255,255,255,0.78);
+
+line-height: 1.5;
+
+  }
+
+/* LOGGED-IN LAYOUT: stack drops bar above card */
+.ak-id-shell.ak-logged-in{
+flex-direction: column;
+align-items: center;
+gap: 12px;
+  }
+.ak-id-shell.ak-logged-in .ak-id-card,
+.ak-id-shell.ak-logged-in .ak-drops-module{
+width: 100%;
+max-width: 880px;
+  }
+
+/* EMAIL DROPS MODULE (outer wrapper — transparent, no clipping) */
+.ak-drops-module{
+margin: 0;
+overflow: visible;
+animation: ak-drops-fadein 0.45s ease both;
+text-align: left;
+  }
+@keyframes ak-drops-fadein{
+from{ opacity:0; transform:translateY(-6px); }
+to{ opacity:1; transform:translateY(0); }
+  }
+
+/* Form container stacks bar + captcha vertically */
+.ak-drops-inner{
+width: 100%;
+display: flex;
+flex-direction: column;
+gap: 0;
+  }
+
+/* Pill bar (visual pill shape lives here) */
+.ak-drops-bar{
+border-radius: 999px;
+border: 1px solid rgba(255,255,255,0.14);
+background: rgba(0,0,0,0.38);
+backdrop-filter: blur(20px);
+-webkit-backdrop-filter: blur(20px);
+padding: 10px 12px;
+box-shadow: 0 10px 26px rgba(0,0,0,0.40), 0 0 18px rgba(255,51,255,0.06);
+overflow: visible;
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 10px 12px;
+flex-wrap: wrap;
+  }
+.ak-drops-heading{
+margin: 0;
+font-weight: 900;
+font-size: 11px;
+letter-spacing: 0.18em;
+text-transform: uppercase;
+color: rgba(255,255,255,0.92);
+white-space: nowrap;
+text-shadow: 0 0 10px rgba(255,51,255,0.14);
+  }
+.ak-drops-row{
+flex: 1 1 420px;
+display: flex;
+gap: 10px;
+align-items: center;
+justify-content: flex-end;
+max-width: none;
+margin: 0;
+  }
+.ak-drops-email{
+flex: 1 1 auto;
+min-width: 180px;
+border-radius: 999px !important;
+font-size: 14px !important;
+padding: 10px 12px !important;
+  }
+.ak-drops-btn{
+border-radius: 999px;
+padding: 10px 14px;
+white-space: nowrap;
+  }
+.ak-drops-btn[disabled]{
+opacity: 0.55;
+pointer-events: none;
+  }
+
+/* Errors wrap below bar content */
+.ak-drops-error{
+flex: 0 0 100%;
+order: 99;
+margin: 2px 0 0;
+padding: 0 12px;
+color: rgba(255,120,120,0.92);
+font-size: 12px;
+font-weight: 800;
+letter-spacing: 0.06em;
+  }
+.ak-drops-error ul{
+list-style: none;
+margin: 0;
+padding: 0;
+  }
+.ak-drops-error li{
+margin: 0;
+padding: 2px 0;
+  }
+
+/* ============================================
+   CAPTCHA DRAWER — smooth expand, no jank
+   ============================================ */
+.ak-drops-captcha{
+max-height: 0;
+opacity: 0;
+overflow: hidden;
+transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+            opacity 0.4s ease 0.06s,
+            padding 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+text-align: center;
+padding: 0 16px;
+border-radius: 0 0 22px 22px;
+background: rgba(0,0,0,0.22);
+  }
+.ak-drops-module.is-captcha-open .ak-drops-captcha{
+max-height: 340px;
+opacity: 1;
+padding: 16px 16px 12px;
+  }
+.ak-captcha-note{
+font-weight: 900;
+font-size: 11px;
+letter-spacing: 0.14em;
+text-transform: uppercase;
+color: rgba(255,255,255,0.78);
+text-shadow: 0 0 8px rgba(255,51,255,0.10);
+margin-bottom: 4px;
+  }
+.ak-captcha-helper{
+font-size: 11px;
+font-weight: 600;
+letter-spacing: 0.04em;
+color: rgba(255,255,255,0.50);
+margin-bottom: 12px;
+  }
+
+/* Loading spinner shown while captcha widget initializes */
+.ak-captcha-loading{
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 10px;
+padding: 14px 0;
+font-size: 11px;
+font-weight: 800;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+color: rgba(255,255,255,0.5);
+  }
+.ak-captcha-loading.is-hidden{
+display: none;
+  }
+.ak-captcha-spinner{
+width: 16px;
+height: 16px;
+border: 2px solid rgba(255,255,255,0.15);
+border-top-color: var(--ak-purple);
+border-radius: 50%;
+animation: ak-spin 0.7s linear infinite;
+  }
+@keyframes ak-spin{
+to{ transform: rotate(360deg); }
+  }
+
+/* Captcha widget container — center the iframe */
+.ak-captcha-widget{
+display: flex;
+align-items: center;
+justify-content: center;
+min-height: 0;
+  }
+.ak-captcha-widget > *{
+margin: 0 auto;
+  }
+
+/* Hide Shopify-injected junk labels like "CustomerContactFormDrop" */
+.ak-drops-inner > label,
+.ak-drops-inner > span:not([class]),
+.ak-captcha-widget > label,
+.ak-captcha-widget > span:not([class]){
+display: none !important;
+  }
+
+/* Force hCaptcha / reCAPTCHA to center, not float bottom-right */
+.ak-captcha-widget iframe{
+margin: 0 auto !important;
+  }
+.ak-captcha-widget .h-captcha,
+.ak-captcha-widget .g-recaptcha{
+display: flex !important;
+justify-content: center !important;
+  }
+
+/* Success stays clean in the bar */
+.ak-drops-success{
+width: 100%;
+text-align: center;
+font-weight: 900;
+font-size: 12px;
+letter-spacing: 0.18em;
+text-transform: uppercase;
+color: var(--ak-green, #33ff66);
+text-shadow: 0 0 14px rgba(51,255,102,0.35);
+padding: 2px 0;
+animation: ak-drops-collapse 0.4s ease 3s forwards;
+  }
+.ak-drops-module:has(.ak-drops-success){
+animation: ak-drops-collapse 0.4s ease 3s forwards;
+  }
+@keyframes ak-drops-collapse{
+to{ opacity:0; max-height:0; padding-top:0; padding-bottom:0; margin-bottom:0; border-width:0; overflow:hidden; }
+  }
+
+@media (max-width: 980px){
+
+.ak-id-body{
+
+grid-template-columns: 1fr;
+
+    }
+
+.ak-id-photo-frame{
+
+min-height: 240px;
+
+    }
+
+.ak-grid{
+
+grid-template-columns: 1fr;
+
+    }
+
+.ak-span-2{ grid-column: auto; }
+
+.ak-input{
+
+font-size: 16px;
+
+padding: 12px 12px;
+
+    }
+
+.ak-input::placeholder{
+
+font-size: 14px;
+
+    }
+
+.ak-mini-value{
+
+font-size: 13px;
+
+    }
+
+.ak-id-shell.ak-logged-in .ak-id-card,
+.ak-id-shell.ak-logged-in .ak-drops-module{
+max-width: 100%;
+    }
+.ak-drops-row{
+flex: 1 1 100%;
+justify-content: stretch;
+flex-direction: column;
+    }
+.ak-drops-email,
+.ak-drops-btn{
+width: 100%;
+    }
+.ak-drops-email{ font-size: 16px !important; }
+
+.ak-card-seal{
+width: 90px;
+height: 90px;
+bottom: 12px;
+left: 14px;
+    }
+
+  }
+
+@media (prefers-reduced-motion: reduce){
+
+.ak-clubhub .ak-clubhub-field{ display:none !important; }
+
+.ak-holo-strip{ animation: none; }
+
+.ak-drops-module, .ak-drops-module:has(.ak-drops-success){ animation: none; }
+
+.ak-drops-captcha{ transition: none; }
+
+.ak-captcha-spinner{ animation: none; }
+
+  }
+
+</style>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', () => {
+
+const akProxyAction = '{{ ak_proxy_action }}';
+
+const input = document.getElementById('ak-id-photo-input');
+
+const uploadLabel = input ? input.closest('.ak-id-photo-upload') : null;
+
+const uploadLabelSpan = uploadLabel ? uploadLabel.querySelector('span') : null;
+
+const errorEl = document.getElementById('ak-id-photo-error');
+
+function showError(msg) {
+
+if (!errorEl) return;
+
+errorEl.textContent = msg || 'Upload failed. Try again.';
+
+errorEl.classList.add('is-visible');
+
+    }
+
+function hideError() {
+
+if (!errorEl) return;
+
+errorEl.textContent = '';
+
+errorEl.classList.remove('is-visible');
+
+    }
+
+function setBusy(busy, text) {
+
+if (!uploadLabel || !uploadLabelSpan) return;
+
+if (busy) {
+
+uploadLabel.classList.add('is-busy');
+
+uploadLabelSpan.textContent = text || 'UPLOADING…';
+
+if (input) input.disabled = true;
+
+      } else {
+
+uploadLabel.classList.remove('is-busy');
+
+uploadLabelSpan.textContent = text || 'UPLOAD';
+
+if (input) input.disabled = false;
+
+      }
+
+    }
+
+function normalizeMime(t) {
+
+const s = (t || '').toString().toLowerCase().trim();
+
+if (s === 'image/jpg') return 'image/jpeg';
+
+return s;
+
+    }
+
+async function readJsonSafe(res) {
+
+const txt = await res.text();
+
+if (!txt) return null;
+
+try { return JSON.parse(txt); } catch(e) {
+
+return { ok:false, _nonJson:true, _raw: txt };
+
+      }
+
+    }
+
+function safeErrMessage(data, fallback) {
+
+if (!data) return fallback;
+
+if (data.userErrors && data.userErrors.length && data.userErrors[0] && data.userErrors[0].message) {
+
+return data.userErrors[0].message;
+
+      }
+
+if (data._nonJson) return fallback;
+
+if (typeof data.error === 'string' && data.error.length < 240) return data.error;
+
+if (typeof data.message === 'string' && data.message.length < 240) return data.message;
+
+return fallback;
+
+    }
+
+if (input) {
+
+input.addEventListener('change', async (e) => {
+
+const file = e.target.files && e.target.files[0];
+
+if (!file) return;
+
+hideError();
+
+const mime = normalizeMime(file.type);
+
+const allowedTypes = ['image/jpeg', 'image/png'];
+
+if (!allowedTypes.includes(mime)) {
+
+showError('Please upload a JPG or PNG (HEIC/WEBP not supported).');
+
+input.value = '';
+
+return;
+
+        }
+
+const frame = document.querySelector('.ak-id-photo-frame');
+
+if (!frame) return;
+
+// Local preview
+
+const previewUrl = URL.createObjectURL(file);
+
+let img = frame.querySelector('.ak-id-photo-img');
+
+const placeholder = frame.querySelector('.ak-id-photo-placeholder');
+
+if (!img) {
+
+img = document.createElement('img');
+
+img.className = 'ak-id-photo-img';
+
+img.alt = 'Member photo preview';
+
+frame.insertBefore(img, frame.firstChild);
+
+        }
+
+img.src = previewUrl;
+
+if (placeholder) placeholder.remove();
+
+setBusy(true, 'UPLOADING…');
+
+try {
+
+// B) photo_stage
+
+const stageRes = await fetch(`${akProxyAction}?op=photo_stage`, {
+
+method: 'POST',
+
+credentials: 'same-origin',
+
+headers: {
+
+'Content-Type': 'application/json',
+
+'Accept': 'application/json'
+
+            },
+
+body: JSON.stringify({
+
+filename: file.name,
+
+mimeType: mime,
+
+fileSize: file.size
+
+            })
+
+          });
+
+const stageData = await readJsonSafe(stageRes);
+
+if (!stageRes.ok || (stageData && stageData.ok === false)) {
+
+if (stageData && stageData._nonJson && stageData._raw) console.error('photo_stage non-JSON:', stageData._raw);
+
+const msg = safeErrMessage(stageData, `Failed to stage upload (${stageRes.status}).`);
+
+throw new Error(msg);
+
+          }
+
+const uploadUrl = (stageData && (stageData.uploadUrl || stageData.url)) || '';
+
+const resourceUrl = (stageData && stageData.resourceUrl) || '';
+
+let parameters = (stageData && stageData.parameters) || [];
+
+if (parameters && !Array.isArray(parameters) && typeof parameters === 'object') {
+
+parameters = Object.entries(parameters).map(([name, value]) => ({ name, value }));
+
+          }
+
+if (!uploadUrl || !resourceUrl) {
+
+throw new Error('Stage response missing uploadUrl/resourceUrl.');
+
+          }
+
+// C) Upload to staged URL
+
+const form = new FormData();
+
+if (parameters && Array.isArray(parameters)) {
+
+for (const param of parameters) {
+
+if (param && param.name != null && param.value != null) {
+
+form.append(param.name, param.value);
+
+              }
+
+            }
+
+          }
+
+form.append('file', file);
+
+const uploadRes = await fetch(uploadUrl, {
+
+method: 'POST',
+
+body: form
+
+          });
+
+if (!uploadRes.ok) {
+
+let bodyText = '';
+
+try { bodyText = await uploadRes.text(); } catch(err) {}
+
+const trimmed = (bodyText || '').replace(/\s+/g, ' ').trim();
+
+if (trimmed) console.error('storage upload error body:', trimmed);
+
+throw new Error(`Upload to storage failed (${uploadRes.status}).`);
+
+          }
+
+// D) photo_finish
+
+const finishRes = await fetch(`${akProxyAction}?op=photo_finish`, {
+
+method: 'POST',
+
+credentials: 'same-origin',
+
+headers: {
+
+'Content-Type': 'application/json',
+
+'Accept': 'application/json'
+
+            },
+
+body: JSON.stringify({ resourceUrl })
+
+          });
+
+const finishData = await readJsonSafe(finishRes);
+
+if (!finishRes.ok || (finishData && finishData.ok === false)) {
+
+if (finishData && finishData._nonJson && finishData._raw) console.error('photo_finish non-JSON:', finishData._raw);
+
+const msg = safeErrMessage(finishData, `Failed to finalize upload (${finishRes.status}).`);
+
+throw new Error(msg);
+
+          }
+
+const finalUrl =
+
+            (finishData && (finishData.photo_url || finishData.photoUrl || finishData.imageUrl || finishData.url)) || '';
+
+if (finalUrl && img) {
+
+img.src = finalUrl + (finalUrl.indexOf('?') === -1 ? '?' : '&') + 'v=' + Date.now();
+
+setTimeout(() => { try { URL.revokeObjectURL(previewUrl); } catch(e) {} }, 2000);
+
+          } else {
+
+// Keep preview if backend did not return a URL yet
+
+console.warn('photo_finish succeeded but no URL returned. Response:', finishData);
+
+          }
+
+setBusy(false, 'SAVED');
+
+setTimeout(() => {
+
+setBusy(false, 'UPLOAD');
+
+          }, 1500);
+
+        } catch (err) {
+
+console.error('Photo upload error:', err);
+
+showError((err && err.message) ? err.message : 'Upload failed. Try again.');
+
+setBusy(false, 'UPLOAD');
+
+        } finally {
+
+input.value = '';
+
+        }
+
+      });
+
+    }
+
+// Prevent submit until backend is wired
+
+document.addEventListener('submit', (e) => {
+
+const form = e.target;
+
+if (!form || !form.classList || !form.classList.contains('ak-id-form')) return;
+
+const enabled = (form.dataset.backend || '').toString() === 'true';
+
+if (!enabled) {
+
+e.preventDefault();
+
+const note = document.getElementById('ak-save-note');
+
+if (note) note.textContent = 'Backend not wired yet. Next step: App Proxy endpoint to save customer metafields securely.';
+
+      }
+
+    });
+
+/* ============================================
+   EMAIL DROPS: Captcha UX — fully reworked
+   ============================================ */
+(function(){
+  var dropsForm = document.getElementById('ak-drops-form');
+  var dropsModule = document.getElementById('ak-drops-module');
+  var dropsBtn = document.getElementById('ak-drops-submit');
+  var captchaDrawer = document.getElementById('ak-drops-captcha');
+  var captchaLoading = document.getElementById('ak-captcha-loading');
+  var captchaWidget = document.getElementById('ak-captcha-widget');
+  if(!dropsForm || !dropsModule || !dropsBtn) return;
+
+  var captchaOpened = false;
+  var autoSubmitted = false;
+  var pollTimer = null;
+  var pollCount = 0;
+  var POLL_INTERVAL = 300;
+  var MAX_POLLS = Math.ceil(90000 / POLL_INTERVAL); /* 90s timeout */
+  var originalBtnText = dropsBtn.textContent;
+
+  /* ---------- Hide Shopify-injected junk text ---------- */
+  function scrubJunkText(root){
+    if(!root) return;
+    /* Remove bare text nodes and labels that Shopify injects (e.g. "CustomerContactFormDrop") */
+    var walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+    var toRemove = [];
+    while(walk.nextNode()){
+      var n = walk.currentNode;
+      var txt = (n.textContent || '').trim();
+      if(!txt) continue;
+      /* Detect Shopify form label junk — anything containing "FormDrop" or the raw form ID pattern */
+      if(/FormDrop|CustomerContact|contact_form/i.test(txt)){
+        toRemove.push(n);
+      }
+    }
+    toRemove.forEach(function(n){
+      if(n.parentNode) n.parentNode.removeChild(n);
+    });
+    /* Also hide any stray <label> elements not inside our own fields */
+    root.querySelectorAll('label').forEach(function(el){
+      var txt = (el.textContent || '').trim();
+      if(/FormDrop|CustomerContact|contact_form/i.test(txt) || (!el.closest('.ak-drops-bar') && !el.querySelector('input,select,textarea'))){
+        el.style.display = 'none';
+      }
+    });
+  }
+
+  /* MutationObserver: catch dynamically-injected captcha nodes and junk text */
+  if('MutationObserver' in window){
+    var observer = new MutationObserver(function(mutations){
+      var needsScrub = false;
+      for(var i = 0; i < mutations.length; i++){
+        if(mutations[i].addedNodes && mutations[i].addedNodes.length){
+          needsScrub = true;
+          break;
+        }
+      }
+      if(needsScrub){
+        scrubJunkText(dropsForm);
+        /* Once captcha iframe appears, hide loading spinner */
+        if(captchaWidget && captchaLoading){
+          var hasIframe = captchaWidget.querySelector('iframe');
+          var hasCheckbox = captchaWidget.querySelector('.h-captcha, .g-recaptcha, [data-sitekey]');
+          if(hasIframe || hasCheckbox){
+            captchaLoading.classList.add('is-hidden');
+          }
+        }
+      }
+    });
+    observer.observe(dropsForm, { childList:true, subtree:true });
+  }
+
+  /* Initial scrub */
+  scrubJunkText(dropsForm);
+
+  /* ---------- Token detection ---------- */
+  function findToken(){
+    var selectors = [
+      'textarea[name="g-recaptcha-response"]',
+      'textarea[name="h-captcha-response"]',
+      'input[name="g-recaptcha-response"]',
+      'input[name="h-captcha-response"]'
+    ];
+    for(var k = 0; k < selectors.length; k++){
+      var el = dropsForm.querySelector(selectors[k]) || document.querySelector(selectors[k]);
+      if(el && el.value && el.value.length > 10) return true;
+    }
+    return false;
+  }
+
+  /* ---------- Polling for auto-submit ---------- */
+  function startPolling(){
+    if(pollTimer) return;
+    pollCount = 0;
+    pollTimer = setInterval(function(){
+      pollCount++;
+      if(autoSubmitted || pollCount > MAX_POLLS){
+        clearInterval(pollTimer);
+        pollTimer = null;
+        if(!autoSubmitted){
+          dropsBtn.textContent = originalBtnText;
+          dropsBtn.removeAttribute('disabled');
+        }
+        return;
+      }
+      if(findToken()){
+        autoSubmitted = true;
+        clearInterval(pollTimer);
+        pollTimer = null;
+        dropsBtn.textContent = 'JOINING…';
+        dropsBtn.setAttribute('disabled', '');
+        dropsForm.submit();
+      }
+    }, POLL_INTERVAL);
+  }
+
+  /* ---------- Smooth scroll helper ---------- */
+  function scrollDrawerIntoView(){
+    if(!captchaDrawer) return;
+    setTimeout(function(){
+      captchaDrawer.scrollIntoView({ behavior:'smooth', block:'center' });
+    }, 180);
+  }
+
+  /* ---------- Form submit handler ---------- */
+  dropsForm.addEventListener('submit', function(ev){
+    /* Always prevent default — we auto-submit programmatically once token exists */
+    if(autoSubmitted) return; /* let the real submit go through */
+
+    ev.preventDefault();
+
+    if(!captchaOpened){
+      captchaOpened = true;
+      dropsModule.classList.add('is-captcha-open');
+      dropsBtn.textContent = 'VERIFY…';
+      dropsBtn.setAttribute('disabled', '');
+      scrollDrawerIntoView();
+      startPolling();
+      /* Check if captcha widget already loaded (cached) */
+      if(captchaWidget && captchaLoading){
+        var alreadyLoaded = captchaWidget.querySelector('iframe') || captchaWidget.querySelector('.h-captcha, .g-recaptcha, [data-sitekey]');
+        if(alreadyLoaded){
+          captchaLoading.classList.add('is-hidden');
+        }
+      }
+      return;
+    }
+
+    /* If captcha already open but token exists (edge case: user somehow clicks again) */
+    if(findToken()){
+      autoSubmitted = true;
+      dropsBtn.textContent = 'JOINING…';
+      dropsBtn.setAttribute('disabled', '');
+      dropsForm.submit();
+    }
+  });
+
+})();
+
+  });
+
+</script>
+
+<!-- Ambient particles + shooting stars system -->
+
+<script>
+
+(function(){
+
+var canvas = document.getElementById('ak-clubhub-field');
+
+var root = document.querySelector('.ak-clubhub');
+
+if(!canvas || !root) return;
+
+if(canvas.dataset.akInit === '1') return;
+
+canvas.dataset.akInit = '1';
+
+var reduced = false;
+
+try { reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){}
+
+if(reduced) return;
+
+var ctx = canvas.getContext('2d', { alpha:true });
+
+var w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+var dust = [];
+
+var floaters = [];
+
+var shooters = [];
+
+var nextShooterAt = 0;
+
+var lastFrameTime = 0;
+
+var isVisible = true;
+
+var COLORS = {
+
+white:  { rgb: "255,255,255", hex: "#ffffff" },
+
+purple: { rgb: "255,51,255",  hex: "#ff33ff" },
+
+blue:   { rgb: "127,212,255", hex: "#7fd4ff" },
+
+yellow: { rgb: "255,211,74",  hex: "#ffd34a" }
+
+  };
+
+function clamp(v, a, b){ return Math.min(b, Math.max(a, v)); }
+
+function rand(a, b){ return a + Math.random() * (b - a); }
+
+function resize(){
+
+var rect = root.getBoundingClientRect();
+
+w = Math.max(1, Math.floor(rect.width));
+
+h = Math.max(1, Math.floor(rect.height));
+
+dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+canvas.width = Math.floor(w * dpr);
+
+canvas.height = Math.floor(h * dpr);
+
+canvas.style.width = w + "px";
+
+canvas.style.height = h + "px";
+
+ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  }
+
+function pickAccent(){
+
+var r = Math.random();
+
+if(r < 0.44) return COLORS.purple;
+
+if(r < 0.76) return COLORS.blue;
+
+return COLORS.yellow;
+
+  }
+
+function pickDustColor(){ return (Math.random() < 0.90) ? COLORS.white : pickAccent(); }
+
+function pickFloaterColor(){ return (Math.random() < 0.78) ? COLORS.white : pickAccent(); }
+
+function densityScale(){
+
+var mobile = (window.innerWidth || 1200) < 750;
+
+return mobile ? 0.85 : 1.15;
+
+  }
+
+function seedDust(){
+
+var area = w * h;
+
+var s = densityScale();
+
+var count = Math.round(clamp((area / 140) * s, 1200, 20000));
+
+dust = new Array(count);
+
+for(var i=0;i<count;i++){
+
+var color = pickDustColor();
+
+var isAccent = (color !== COLORS.white);
+
+var vx = rand(-0.028, 0.028);
+
+var vy = rand(-0.022, 0.022);
+
+var tw = rand(0.25, 1.05);
+
+var ph = rand(0, Math.PI * 2);
+
+var a0 = isAccent ? rand(0.20, 0.44) : rand(0.06, 0.18);
+
+var size = isAccent ? rand(2.6, 6.0) : rand(1.3, 3.6);
+
+dust[i] = { x: rand(0,w), y: rand(0,h), vx:vx, vy:vy, color:color, isAccent:isAccent, a0:a0, size:size, tw:tw, ph:ph };
+
+    }
+
+  }
+
+function pickFloaterKind(){
+
+var r = Math.random();
+
+if(r < 0.02) return "blob";
+
+if(r < 0.22) return "pill";
+
+return "dot";
+
+  }
+
+function seedFloaters(){
+
+var area = w * h;
+
+var s = densityScale();
+
+var count = Math.round(clamp((area / 2200) * s, 240, 1400));
+
+floaters = new Array(count);
+
+for(var i=0;i<count;i++){
+
+var kind = pickFloaterKind();
+
+var color = pickFloaterColor();
+
+var isAccent = (color !== COLORS.white);
+
+var vx = rand(-0.16, 0.16);
+
+var vy = rand(-0.13, 0.13);
+
+var tw = rand(0.35, 1.30);
+
+var ph = rand(0, Math.PI * 2);
+
+var a0 = isAccent ? rand(0.20, 0.52) : rand(0.08, 0.22);
+
+if(kind === "blob") a0 *= 0.80;
+
+var p = { x: rand(0,w), y: rand(0,h), vx:vx, vy:vy, kind:kind, color:color, isAccent:isAccent, a0:a0, tw:tw, ph:ph };
+
+if(kind === "dot"){
+
+p.r = isAccent ? rand(3.8, 9.2) : rand(2.8, 6.8);
+
+      } else if(kind === "pill"){
+
+p.pw = rand(12, 40);
+
+p.phh = rand(3.2, 8.0);
+
+p.rot = rand(-0.85, 0.85);
+
+      } else {
+
+p.br = rand(10, 24);
+
+      }
+
+if(isAccent) p.glowSize = rand(14, 34);
+
+floaters[i] = p;
+
+    }
+
+  }
+
+function drawRoundRect(x,y,ww,hh,rr){
+
+var r = Math.min(rr, ww/2, hh/2);
+
+ctx.beginPath();
+
+ctx.moveTo(x+r,y);
+
+ctx.lineTo(x+ww-r,y);
+
+ctx.quadraticCurveTo(x+ww,y,x+ww,y+r);
+
+ctx.lineTo(x+ww,y+hh-r);
+
+ctx.quadraticCurveTo(x+ww,y+hh,x+ww-r,y+hh);
+
+ctx.lineTo(x+r,y+hh);
+
+ctx.quadraticCurveTo(x,y+hh,x,y+hh-r);
+
+ctx.lineTo(x,y+r);
+
+ctx.quadraticCurveTo(x,y,x+r,y);
+
+ctx.closePath();
+
+ctx.fill();
+
+  }
+
+function scheduleNextShooter(now){ nextShooterAt = now + rand(2200, 6200); }
+
+function pickMeteorColor(){ return (Math.random() < 0.80) ? COLORS.white : pickAccent(); }
+
+function spawnShooter(now){
+
+var fromLeft = (Math.random() < 0.5);
+
+var depth = rand(0.55, 1.0);
+
+var y = rand(h * 0.10, h * 0.90);
+
+var startX = fromLeft ? -rand(60, 160) : (w + rand(60, 160));
+
+var angle = fromLeft ? rand(-0.42, 0.42) : rand(Math.PI - 0.42, Math.PI + 0.42);
+
+var speed = rand(650, 1250) * (0.70 + depth * 0.40);
+
+var life = rand(0.60, 1.20);
+
+shooters.push({
+
+x:startX, y:y,
+
+vx: Math.cos(angle) * speed,
+
+vy: Math.sin(angle) * speed,
+
+t:0, life:life, depth:depth,
+
+tail: rand(95, 215) * depth * (speed/1000),
+
+w: rand(0.95, 2.1) * depth,
+
+color: pickMeteorColor()
+
+    });
+
+scheduleNextShooter(now);
+
+  }
+
+function drawShooter(s){
+
+var p = clamp(s.t / s.life, 0, 1);
+
+var fadeIn = Math.pow(clamp(p / 0.12, 0, 1), 0.75);
+
+var fadeOut = 1 - Math.pow(clamp((p - 0.45) / 0.55, 0, 1), 1.9);
+
+var alpha = fadeIn * fadeOut;
+
+if(alpha < 0.01) return;
+
+var spd = Math.sqrt(s.vx*s.vx + s.vy*s.vy) || 1;
+
+var dx = s.vx / spd;
+
+var dy = s.vy / spd;
+
+var tailX = s.x - dx * s.tail;
+
+var tailY = s.y - dy * s.tail;
+
+ctx.save();
+
+ctx.lineCap = "round";
+
+var g1 = ctx.createLinearGradient(tailX, tailY, s.x, s.y);
+
+g1.addColorStop(0, "rgba(" + s.color.rgb + ",0)");
+
+g1.addColorStop(0.55, "rgba(" + s.color.rgb + "," + (0.09*alpha).toFixed(4) + ")");
+
+g1.addColorStop(1, "rgba(" + s.color.rgb + "," + (0.26*alpha).toFixed(4) + ")");
+
+ctx.strokeStyle = g1;
+
+ctx.lineWidth = s.w * 4.9;
+
+ctx.beginPath();
+
+ctx.moveTo(tailX, tailY);
+
+ctx.lineTo(s.x, s.y);
+
+ctx.stroke();
+
+var g2 = ctx.createLinearGradient(tailX, tailY, s.x, s.y);
+
+g2.addColorStop(0, "rgba(255,255,255,0)");
+
+g2.addColorStop(0.55, "rgba(255,255,255," + (0.20*alpha).toFixed(4) + ")");
+
+g2.addColorStop(1, "rgba(255,255,255," + (0.72*alpha).toFixed(4) + ")");
+
+ctx.strokeStyle = g2;
+
+ctx.lineWidth = s.w * 1.10;
+
+ctx.beginPath();
+
+ctx.moveTo(s.x - dx * s.tail * 0.45, s.y - dy * s.tail * 0.45);
+
+ctx.lineTo(s.x, s.y);
+
+ctx.stroke();
+
+ctx.shadowBlur = 14 * s.depth;
+
+ctx.shadowColor = s.color.hex;
+
+var r = s.w * 2.2 * s.depth;
+
+var hg = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r * 3.0);
+
+hg.addColorStop(0, "rgba(255,255,255," + (0.82*alpha).toFixed(4) + ")");
+
+hg.addColorStop(0.18, "rgba(" + s.color.rgb + "," + (0.50*alpha).toFixed(4) + ")");
+
+hg.addColorStop(0.55, "rgba(" + s.color.rgb + "," + (0.15*alpha).toFixed(4) + ")");
+
+hg.addColorStop(1, "rgba(" + s.color.rgb + ",0)");
+
+ctx.fillStyle = hg;
+
+ctx.beginPath();
+
+ctx.arc(s.x, s.y, r * 3.0, 0, Math.PI*2);
+
+ctx.fill();
+
+ctx.restore();
+
+ctx.shadowBlur = 0;
+
+ctx.shadowColor = "transparent";
+
+  }
+
+/* =========================================================
+
+     FIX: Mobile scroll/viewport resize should NOT reseed particles.
+
+     Instead, resize canvas and scale existing particle positions.
+
+  ========================================================= */
+
+var seededOnce = false;
+
+var resizeRaf = 0;
+
+function hardSeedOnce(){
+
+resize();
+
+seedDust();
+
+seedFloaters();
+
+shooters.length = 0;
+
+nextShooterAt = 0;
+
+lastFrameTime = 0;
+
+seededOnce = true;
+
+  }
+
+function softResizeKeepPositions(){
+
+var oldW = w || 1;
+
+var oldH = h || 1;
+
+resize();
+
+if(!seededOnce){
+
+seedDust();
+
+seedFloaters();
+
+seededOnce = true;
+
+return;
+
+    }
+
+var sx = w / oldW;
+
+var sy = h / oldH;
+
+for(var i = 0; i < dust.length; i++){
+
+dust[i].x *= sx;
+
+dust[i].y *= sy;
+
+    }
+
+for(var j = 0; j < floaters.length; j++){
+
+floaters[j].x *= sx;
+
+floaters[j].y *= sy;
+
+    }
+
+/* meteors are ephemeral, clear them cleanly on resize */
+
+shooters.length = 0;
+
+nextShooterAt = 0;
+
+  }
+
+function requestSoftResize(){
+
+if(resizeRaf) return;
+
+resizeRaf = requestAnimationFrame(function(){
+
+resizeRaf = 0;
+
+softResizeKeepPositions();
+
+    });
+
+  }
+
+function step(t){
+
+if(!isVisible){
+
+requestAnimationFrame(step);
+
+return;
+
+    }
+
+var now = (t || performance.now());
+
+var time = now * 0.001;
+
+var dt = lastFrameTime ? clamp((now - lastFrameTime) / 1000, 0.001, 0.05) : (1/60);
+
+lastFrameTime = now;
+
+ctx.clearRect(0,0,w,h);
+
+ctx.globalCompositeOperation = "lighter";
+
+for(var i=0;i<dust.length;i++){
+
+var d = dust[i];
+
+d.x += d.vx; d.y += d.vy;
+
+if(d.x < -2) d.x = w + 2;
+
+if(d.x > w + 2) d.x = -2;
+
+if(d.y < -2) d.y = h + 2;
+
+if(d.y > h + 2) d.y = -2;
+
+var twk = 0.70 + 0.30 * Math.sin(time * d.tw + d.ph);
+
+var a = d.a0 * twk;
+
+if(d.isAccent){
+
+ctx.shadowBlur = 3;
+
+ctx.shadowColor = d.color.hex;
+
+      } else {
+
+ctx.shadowBlur = 0;
+
+      }
+
+ctx.fillStyle = "rgba(" + d.color.rgb + "," + a.toFixed(3) + ")";
+
+ctx.fillRect(d.x - d.size*0.5, d.y - d.size*0.5, d.size, d.size);
+
+    }
+
+for(var j=0;j<floaters.length;j++){
+
+var p = floaters[j];
+
+p.x += p.vx; p.y += p.vy;
+
+if(p.x < -30) p.x = w + 30;
+
+if(p.x > w + 30) p.x = -30;
+
+if(p.y < -30) p.y = h + 30;
+
+if(p.y > h + 30) p.y = -30;
+
+var twk2 = 0.65 + 0.35 * Math.sin(time * p.tw + p.ph);
+
+var a2 = p.a0 * twk2;
+
+if(p.isAccent && p.glowSize){
+
+ctx.shadowBlur = p.glowSize * twk2;
+
+ctx.shadowColor = p.color.hex;
+
+      } else {
+
+ctx.shadowBlur = 0;
+
+ctx.shadowColor = "transparent";
+
+      }
+
+ctx.fillStyle = "rgba(" + p.color.rgb + "," + a2.toFixed(3) + ")";
+
+if(p.kind === "dot"){
+
+ctx.beginPath();
+
+ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+
+ctx.fill();
+
+      } else if(p.kind === "pill"){
+
+ctx.save();
+
+ctx.translate(p.x, p.y);
+
+ctx.rotate(p.rot);
+
+drawRoundRect(-p.pw/2, -p.phh/2, p.pw, p.phh, p.phh/2);
+
+ctx.restore();
+
+      } else {
+
+var r2 = p.br;
+
+ctx.beginPath();
+
+ctx.arc(p.x, p.y, r2, 0, Math.PI*2);
+
+ctx.arc(p.x + r2*0.5, p.y - r2*0.2, r2*0.7, 0, Math.PI*2);
+
+ctx.arc(p.x - r2*0.4, p.y + r2*0.15, r2*0.6, 0, Math.PI*2);
+
+ctx.fill();
+
+      }
+
+    }
+
+if(!nextShooterAt) scheduleNextShooter(now);
+
+if(now >= nextShooterAt) spawnShooter(now);
+
+for(var k=shooters.length-1;k>=0;k--){
+
+var s = shooters[k];
+
+s.t += dt;
+
+s.x += s.vx * dt;
+
+s.y += s.vy * dt;
+
+drawShooter(s);
+
+var margin = 420;
+
+if(s.t >= s.life || s.x < -margin || s.x > w + margin || s.y < -margin || s.y > h + margin){
+
+shooters.splice(k, 1);
+
+      }
+
+    }
+
+ctx.globalCompositeOperation = "source-over";
+
+ctx.shadowBlur = 0;
+
+ctx.shadowColor = "transparent";
+
+requestAnimationFrame(step);
+
+  }
+
+/* initial seed */
+
+hardSeedOnce();
+
+requestAnimationFrame(step);
+
+/* resize listeners now do SOFT resize, not reseed */
+
+window.addEventListener('resize', requestSoftResize, { passive:true });
+
+if(window.visualViewport){
+
+window.visualViewport.addEventListener('resize', requestSoftResize, { passive:true });
+
+  }
+
+if('ResizeObserver' in window){
+
+var ro = new ResizeObserver(function(){ requestSoftResize(); });
+
+ro.observe(root);
+
+  }
+
+if('IntersectionObserver' in window){
+
+var io = new IntersectionObserver(function(entries){
+
+entries.forEach(function(entry){ isVisible = entry.isIntersecting; });
+
+    }, { threshold: 0 });
+
+io.observe(root);
+
+  }
+
+})();
+
+</script>

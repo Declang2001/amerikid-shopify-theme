@@ -1,0 +1,124 @@
+<!-- snippets/neon-social-links.liquid -->
+<style>
+  .neon-social-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    font-family: 'Arial Black', Arial, sans-serif;
+    font-size: 2.5rem;
+    text-align: center;
+    padding: 1rem 0;
+  }
+
+  .neon-social-links a {
+    text-decoration: none;
+    background: linear-gradient(
+      270deg,
+      #ff0000,
+      #ff7f00,
+      #ffff00,
+      #00ff00,
+      #0000ff,
+      #4b0082,
+      #8f00ff,
+      #ff0000
+    );
+    background-size: 1600% 1600%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: smoothColorShift 20s ease infinite;
+    text-shadow: none;
+  }
+
+  @keyframes smoothColorShift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  /* Neon hover styles */
+  .neon-social-links a.instagram:hover {
+    color: #E1306C;
+    -webkit-text-fill-color: #E1306C;
+    background: none;
+    text-shadow:
+      0 0 10px #E1306C,
+      0 0 20px #E1306C,
+      0 0 30px #E1306C,
+      0 0 40px #E1306C;
+  }
+
+  .neon-social-links a.tiktok:hover {
+    color: #69C9D0;
+    -webkit-text-fill-color: #69C9D0;
+    background: none;
+    text-shadow:
+      0 0 10px #69C9D0,
+      0 0 20px #69C9D0,
+      0 0 30px #69C9D0,
+      0 0 40px #69C9D0;
+  }
+
+  .neon-social-links a.twitter:hover {
+    color: #1DA1F2;
+    -webkit-text-fill-color: #1DA1F2;
+    background: none;
+    text-shadow:
+      0 0 10px #1DA1F2,
+      0 0 20px #1DA1F2,
+      0 0 30px #1DA1F2,
+      0 0 40px #1DA1F2;
+  }
+
+  .neon-social-links a.youtube:hover {
+    color: #FF0000;
+    -webkit-text-fill-color: #FF0000;
+    background: none;
+    text-shadow:
+      0 0 10px #FF0000,
+      0 0 20px #FF0000,
+      0 0 30px #FF0000,
+      0 0 40px #FF0000;
+  }
+</style>
+
+<div class="neon-social-links">
+  <a
+    href="https://www.instagram.com/amerikid.ca/"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="instagram"
+    aria-label="Instagram"
+    >Instagram</a
+  >
+  <a
+    href="https://www.tiktok.com/@amerikid.ca"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="tiktok"
+    aria-label="TikTok"
+    >TikTok</a
+  >
+  <a
+    href="https://x.com/xx_amerikid"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="twitter"
+    aria-label="Twitter / X"
+    >Twitter</a
+  >
+  <a
+    href="https://www.youtube.com/channel/UCdh2i0KtdQDJ_ks6NcttEag"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="youtube"
+    aria-label="YouTube"
+    >YouTube</a
+  >
+</div>
