@@ -6,20 +6,25 @@
 ## Custom Amerikid Overrides
 - **Font Forcing:** "Impact" font is frequently forced via inline styles or custom CSS blocks targeting specific sections.
 - **Glass Navigation:** A highly custom navigation drawer with tilt effects and a "MENU" label, combined with a starfield canvas.
-- **Canvases:** Multiple HTML `<canvas>` elements used for particle effects (found in nav, product pages, and the mystery crate page).
+- **Canvases:** Multiple HTML `<canvas>` elements used for particle effects.
+    - **Confirmed Redundancy:** Product pages run up to 5 canvases concurrently.
+    - **Confirmed IDs:** `aknav-field` (nav), `ak-product-field` (product), `ak-back-field` (background), `holo-rail-field` (rail), and `confetti`.
+    - **Offscreen Cancellation:** `ak-product-field` has true rAF cancellation when offscreen (shipped 2026-03-19). Other canvases still run continuously.
 
-## Page Builder Traces
-The repository shows evidence of three separate page builders, which likely contributes to lag:
-- **PageFly:** Contains `layout/theme.pagefly.liquid`, `assets/pagefly-main.css`, `snippets/pagefly-app-header.liquid`.
-- **GemPages:** Contains `layout/theme.gempages.blank.liquid`, `snippets/gp-head.liquid`, `assets/gp-global.css`, and multiple `.gem-` backup templates.
-- **EComposer:** Contains `layout/ecom.liquid`, `snippets/ecom_header.liquid`, `snippets/ecom_footer.liquid`.
+## Page Builder Traces (Verified 2026-03-19)
+The repository shows evidence of three separate page builders:
+- **PageFly (Active):** Driving the homepage and providing scripts globally. `layout/theme.liquid` includes `pagefly-app-header`.
+- **GemPages (Inactive):** Not currently observed loading at runtime. `gp-global.css` and `snippets/gp-head.liquid` are present but not called in the main layout.
+- **EComposer (Inactive):** Not currently observed driving layouts, but `layout/theme.liquid` still includes `ecom_header` and `ecom_footer`, which triggers preconnects/prefetches to `cdn.ecomposer.app`.
+
+## Key Global Scripts
+- **Videeo:** `popclips-player`, `popclips-likes-and-views`, and related SDK scripts load globally.
+- **Gameball:** `gb-init-shopify.js` and widget scripts load globally.
+- **JustSell:** `latest.js` loads globally.
+- **GSAP:** Loaded twice in some cases (via PageFly and theme assets).
 
 ## Key Directories and Files
 - `layout/theme.liquid`: The main entry point. Currently includes `ecom_header`, `gameball`, `pagefly-app-header`, and large inline styling blocks.
 - `templates/`: Contains massive JSON template sprawl. Over 15 `collection.[name].json` templates exist, almost all containing a duplicated `custom_liquid` block for the navigation.
 - `sections/`: Contains duplicate variations of core sections (e.g., `featured-collection.liquid` vs `featured-collection2.liquid`, and various `image-banner-*.liquid` files).
 - `assets/`: Contains standard Dawn assets (`base.css`, `global.js`) mixed with builder assets (`gp-global.css`, `pagefly-animation.css`) and large media (`sparkle.gif`).
-
-## Unproven / Needs Runtime Verification
-- **Active Builder:** It is Unknown which of the three page builders is actively controlling current live pages versus which are just leftover scripts.
-- **Asset Usage:** It is Unknown if `assets/gp-global.css` is required globally or if it can be conditionally loaded.

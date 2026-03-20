@@ -20,17 +20,20 @@ This theme is based on Shopify Dawn but contains heavy custom aesthetic override
 Make the theme less glitchy, faster, leaner, and more maintainable while preserving the exact current experience.
 
 ## Mystery Crate Note
-The Mystery Crate is currently implemented as an iframe embed pointing to an external Vercel app. The wrapper logic contains fragile styling and its own canvas animation. Do not break this integration. 
+The Mystery Crate is currently implemented as an iframe embed pointing to an external Vercel app. The wrapper logic contains fragile styling and its own canvas animation. 
+- **Verified Runtime Finding:** The Vercel app is currently returning a 404 for `crate.glb`. This is an external issue but affects the "glitchy" feel.
 
-## Initial Analysis Learnings
-- **Bloat:** The theme suffers from multi-system bloat (PageFly, GemPages, EComposer remnants).
-- **Duplication:** Navigation code (Glass menu + Starfield) is hardcoded inside `custom_liquid` blocks across dozens of JSON templates (e.g., `collection.watermelon.json`, `product.json`, etc.).
-- **Fragility:** `sections/main-product.liquid` is massive (2800+ lines) with extensive inline CSS and canvas logic.
+## Verified Runtime Findings (2026-03-19)
+- **Active Builder:** **PageFly** is confirmed active and driving the homepage.
+- **App Bloat:** **Videeo**, **Gameball**, and **JustSell** are initializing globally on every page (Home, Product, Collection, Mystery Box).
+- **Redundant Canvas Systems:** Product pages and Mystery Box pages are running up to 5 and 4 concurrent `<canvas>` elements respectively (e.g., `aknav-field`, `ak-product-field`, `ak-back-field`, `holo-rail-field`). This is a major source of GPU lag.
+  - **Confirmed Optimization (2026-03-19):** `ak-product-field` now uses true offscreen cancellation — its `requestAnimationFrame` loop stops entirely when scrolled out of viewport and restarts on re-entry. Other canvas systems (`aknav-field`, `ak-back-field`, `holo-rail-field`) have not yet been patched.
+- **Builder Remnants:** **EComposer** and **GemPages** are inactive in terms of page layout, but EComposer still has an active preconnect/prefetch in `theme.liquid`. GemPages assets (`gp-global.css`) were not observed loading at runtime.
 
 ## Needs Verification
-- Which page builder is actively used versus which ones are just leaving leftover asset requests in `theme.liquid`.
 - Whether all the `image-banner-[name].liquid` sections are genuinely required or if they can be consolidated.
 - How much of `global.js` and `animations.js` is custom versus stock Dawn.
+- If `assets/gp-global.css` is truly orphaned (it appears so from runtime traces).
 
 ## AI Workflow Expectations
 1. Read `AGENTS.md` and this file.
