@@ -28,7 +28,8 @@ The Mystery Crate is currently implemented as an iframe embed pointing to an ext
 - **App Bloat:** **Videeo**, **Gameball**, and **JustSell** are initializing globally on every page (Home, Product, Collection, Mystery Box).
 - **Redundant Canvas Systems:** Product pages and Mystery Box pages are running up to 5 and 4 concurrent `<canvas>` elements respectively (e.g., `aknav-field`, `ak-product-field`, `ak-back-field`, `holo-rail-field`). This is a major source of GPU lag.
   - **Confirmed Optimization (2026-03-19):** `ak-product-field` now uses true offscreen cancellation — its `requestAnimationFrame` loop stops entirely when scrolled out of viewport and restarts on re-entry.
-  - **Confirmed Optimization (2026-03-20):** `ak-collection-field` now uses the same true offscreen cancellation pattern. Its rAF loop stops entirely when the collection product grid scrolls out of viewport and restarts on re-entry. Remaining unpatched canvas systems: `aknav-field`, `ak-back-field`, `holo-rail-field`.
+  - **Confirmed Optimization (2026-03-20):** `ak-collection-field` now uses the same true offscreen cancellation pattern. Its rAF loop stops entirely when the collection product grid scrolls out of viewport and restarts on re-entry.
+  - **Confirmed Optimization (2026-03-20):** `ak-back-field` now uses the same true offscreen cancellation pattern. Its existing partial `IntersectionObserver` (which previously kept scheduling rAF frames while offscreen) was upgraded to fully cancel the loop when offscreen and restart cleanly on re-entry. Remaining unpatched canvas systems: `aknav-field`, `holo-rail-field`.
 - **Builder Remnants:** **EComposer** and **GemPages** are inactive in terms of page layout, but EComposer still has an active preconnect/prefetch in `theme.liquid`. GemPages assets (`gp-global.css`) were not observed loading at runtime.
 
 ## Needs Verification
