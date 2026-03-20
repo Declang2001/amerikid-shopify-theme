@@ -377,6 +377,8 @@
   var shooters = [];
   var nextShooterAt = 0;
   var lastFrameTime = 0;
+  var isVisible = true;
+  var animationId = null;
 
   var COLORS = {
     white:  { rgb: "255,255,255", hex: "#ffffff" },
@@ -606,6 +608,11 @@
   }
 
   function step(t){
+    if(!isVisible){
+      animationId = null;
+      return;
+    }
+
     var now = (t || performance.now());
     var time = now * 0.001;
 
@@ -709,7 +716,7 @@
     ctx.shadowBlur = 0;
     ctx.shadowColor = "transparent";
 
-    requestAnimationFrame(step);
+    animationId = requestAnimationFrame(step);
   }
 
   function reseed(){
@@ -722,7 +729,7 @@
   }
 
   reseed();
-  requestAnimationFrame(step);
+  animationId = requestAnimationFrame(step);
 
   window.addEventListener('resize', function(){
     reseed();
@@ -733,6 +740,23 @@
       reseed();
     });
     ro.observe(wrap);
+  }
+
+  /* IntersectionObserver to pause when offscreen */
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var wasVisible = isVisible;
+        isVisible = entry.isIntersecting;
+        if(isVisible && !wasVisible){
+          lastFrameTime = 0;
+          if(!animationId){
+            animationId = requestAnimationFrame(step);
+          }
+        }
+      });
+    }, { threshold: 0 });
+    io.observe(wrap);
   }
 })();
 </script>

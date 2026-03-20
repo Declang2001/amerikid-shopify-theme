@@ -14,6 +14,7 @@
 - **Brand Overrides:** Many custom sections like `featured-collection2.liquid` use `#collection-{{ section.id }} * { font-family: Impact !important; }`. Refactoring CSS may accidentally break these targeted brand styles.
 - **Multiple Canvases:** The interaction between multiple active canvases (`aknav-field`, `ak-product-field`, etc.) is likely sensitive to initialization timing.
   - **Note (2026-03-19):** `ak-product-field` now uses a cancel/restart pattern via `IntersectionObserver`. Its rAF loop stops when offscreen and restarts on re-entry. When applying similar patches to other canvases, follow this same pattern: set `animationId = null` on pause, reset `lastFrameTime = 0` on resume, guard against double-start with `if(!animationId)`.
+  - **Note (2026-03-20):** `ak-collection-field` now uses the same cancel/restart pattern. Two of five known canvas systems are now patched. Remaining: `aknav-field`, `ak-back-field`, `holo-rail-field`.
 
 ## DO NOT TOUCH FIRST list
 - Do not refactor `sections/main-product.liquid` yet.
