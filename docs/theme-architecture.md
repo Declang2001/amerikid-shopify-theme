@@ -9,7 +9,7 @@
 - **Canvases:** Multiple HTML `<canvas>` elements used for particle effects.
     - **Confirmed Redundancy:** Product pages run up to 5 canvases concurrently.
     - **Confirmed IDs:** `aknav-field` (nav), `ak-product-field` (product), `ak-back-field` (background), `holo-rail-field` (rail), and `confetti`.
-    - **Offscreen Cancellation:** `ak-product-field` (shipped 2026-03-19), `ak-collection-field` (shipped 2026-03-20), `ak-back-field` (shipped 2026-03-20), and `holo-rail-field` (shipped 2026-03-26) have true rAF cancellation when offscreen. Remaining canvas (`aknav-field`) still runs continuously.
+    - **Offscreen Cancellation:** `ak-product-field` (shipped 2026-03-19), `ak-collection-field` (shipped 2026-03-20), `ak-back-field` (shipped 2026-03-20), `holo-rail-field` (shipped 2026-03-26), and `aknav-field` (shipped 2026-03-27) have true rAF cancellation when offscreen. All 5/5 known canvas systems are now patched.
 
 ## Page Builder Traces (Verified 2026-03-19)
 The repository shows evidence of three separate page builders:
