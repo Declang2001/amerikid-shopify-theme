@@ -25,7 +25,7 @@ The Mystery Crate is currently implemented as an iframe embed pointing to an ext
 
 ## Verified Runtime Findings (2026-03-19)
 - **Active Builder:** **PageFly** is confirmed active and driving the homepage.
-- **App Bloat:** **Videeo**, **Gameball**, and **JustSell** are initializing globally on every page (Home, Product, Collection, Mystery Box).
+- **App Bloat:** **Videeo** and **JustSell** are initializing globally on every page (Home, Product, Collection, Mystery Box). **Gameball** has been fully removed from theme code (2026-03-27): hardcoded snippet includes removed from both layouts, snippet file deleted, app embed disabled in settings_data.json. Note: the Gameball Shopify app may still need to be uninstalled from the Shopify admin separately.
 - **Redundant Canvas Systems:** Product pages and Mystery Box pages are running up to 5 and 4 concurrent `<canvas>` elements respectively (e.g., `aknav-field`, `ak-product-field`, `ak-back-field`, `holo-rail-field`). This is a major source of GPU lag.
   - **Confirmed Optimization (2026-03-19):** `ak-product-field` now uses true offscreen cancellation — its `requestAnimationFrame` loop stops entirely when scrolled out of viewport and restarts on re-entry.
   - **Confirmed Optimization (2026-03-20):** `ak-collection-field` now uses the same true offscreen cancellation pattern. Its rAF loop stops entirely when the collection product grid scrolls out of viewport and restarts on re-entry.

@@ -19,12 +19,12 @@ The repository shows evidence of three separate page builders:
 
 ## Key Global Scripts
 - **Videeo:** `popclips-player`, `popclips-likes-and-views`, and related SDK scripts load globally.
-- **Gameball:** `gb-init-shopify.js` and widget scripts load globally.
+- **Gameball (Removed 2026-03-27):** Hardcoded snippet includes removed from `theme.liquid` and `theme.pagefly.liquid`, snippet file deleted, app embed disabled in `settings_data.json`. The Gameball Shopify app may still need to be uninstalled from the Shopify admin.
 - **JustSell:** `latest.js` loads globally.
 - **GSAP:** Loaded twice in some cases (via PageFly and theme assets).
 
 ## Key Directories and Files
-- `layout/theme.liquid`: The main entry point. Currently includes `gameball`, `pagefly-app-header`, and large inline styling blocks. EComposer render calls (`ecom_header`, `ecom_footer`) removed 2026-03-27.
+- `layout/theme.liquid`: The main entry point. Currently includes `pagefly-app-header` and large inline styling blocks. EComposer render calls removed 2026-03-27. Gameball include removed 2026-03-27.
 - `templates/`: Contains massive JSON template sprawl. Over 15 `collection.[name].json` templates exist, almost all containing a duplicated `custom_liquid` block for the navigation.
 - `sections/`: Contains duplicate variations of core sections (e.g., `featured-collection.liquid` vs `featured-collection2.liquid`, and various `image-banner-*.liquid` files).
 - `assets/`: Contains standard Dawn assets (`base.css`, `global.js`) mixed with builder assets (`gp-global.css`, `pagefly-animation.css`) and large media (`sparkle.gif`).

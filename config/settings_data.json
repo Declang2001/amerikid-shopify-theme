@@ -151,7 +151,7 @@
       },
       "17699460525988123968": {
         "type": "shopify://apps/gameball/blocks/gb-widget/4b916a35-b345-4d7d-9eb4-f51fec3f8c05",
-        "disabled": false,
+        "disabled": true,
         "settings": {}
       },
       "15404810374585504564": {
