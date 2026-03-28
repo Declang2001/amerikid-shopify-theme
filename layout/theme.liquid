@@ -1,7 +1,6 @@
 <!doctype html>
 <html class="js" lang="{{ request.locale.iso_code }}">
   <head>
-    {%- render 'ecom_header' -%}
     <style>
       /* Hides scrollbar across all browsers but allows scrolling */
       * {
@@ -386,7 +385,6 @@
     {%- if settings.cart_type == 'drawer' -%}
       <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
-    {%- render 'ecom_footer' -%}
     <style>
       @media screen and (max-width: 767px){
       footer.site-footer {

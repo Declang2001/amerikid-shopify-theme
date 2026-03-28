@@ -15,7 +15,7 @@
 The repository shows evidence of three separate page builders:
 - **PageFly (Active):** Driving the homepage and providing scripts globally. `layout/theme.liquid` includes `pagefly-app-header`.
 - **GemPages (Inactive):** Not currently observed loading at runtime. `gp-global.css` and `snippets/gp-head.liquid` are present but not called in the main layout.
-- **EComposer (Inactive):** Not currently observed driving layouts, but `layout/theme.liquid` still includes `ecom_header` and `ecom_footer`, which triggers preconnects/prefetches to `cdn.ecomposer.app`.
+- **EComposer (Inactive):** Not currently observed driving layouts. Render calls removed from `layout/theme.liquid` (2026-03-27). Still rendered in `theme.pagefly.liquid` and `layout/ecom.liquid`. Snippet files preserved in repo.
 
 ## Key Global Scripts
 - **Videeo:** `popclips-player`, `popclips-likes-and-views`, and related SDK scripts load globally.
@@ -24,7 +24,7 @@ The repository shows evidence of three separate page builders:
 - **GSAP:** Loaded twice in some cases (via PageFly and theme assets).
 
 ## Key Directories and Files
-- `layout/theme.liquid`: The main entry point. Currently includes `ecom_header`, `gameball`, `pagefly-app-header`, and large inline styling blocks.
+- `layout/theme.liquid`: The main entry point. Currently includes `gameball`, `pagefly-app-header`, and large inline styling blocks. EComposer render calls (`ecom_header`, `ecom_footer`) removed 2026-03-27.
 - `templates/`: Contains massive JSON template sprawl. Over 15 `collection.[name].json` templates exist, almost all containing a duplicated `custom_liquid` block for the navigation.
 - `sections/`: Contains duplicate variations of core sections (e.g., `featured-collection.liquid` vs `featured-collection2.liquid`, and various `image-banner-*.liquid` files).
 - `assets/`: Contains standard Dawn assets (`base.css`, `global.js`) mixed with builder assets (`gp-global.css`, `pagefly-animation.css`) and large media (`sparkle.gif`).
