@@ -22,6 +22,7 @@ Make the theme less glitchy, faster, leaner, and more maintainable while preserv
 ## Mystery Crate Note
 The Mystery Crate is currently implemented as an iframe embed pointing to an external Vercel app. The wrapper logic contains fragile styling and its own canvas animation. 
 - **Verified Runtime Finding:** The Vercel app is currently returning a 404 for `crate.glb`. This is an external issue but affects the "glitchy" feel.
+- **Static Lock Removed (2026-04-02):** The wrapper's `LOCKED_DEFAULT` boolean was changed from `true` to `false` on the unpublished theme. The blur overlay and pointer-events block are now disabled, exposing the iframe for interaction. No dynamic entitlement gating exists — the wrapper does not check `customer.tags`, `crate_spins:*`, or metafields. It passes `customer_id` and `demo` to the iframe but no entitlement data. Future entitlement gating will require new Liquid conditionals and potentially new iframe params.
 
 ## Verified Runtime Findings (2026-03-19)
 - **Active Builder:** **PageFly** is confirmed active and driving the homepage.
