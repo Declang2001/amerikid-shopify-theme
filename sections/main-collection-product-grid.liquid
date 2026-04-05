@@ -369,7 +369,7 @@
   if(reduced) return;
 
   var ctx = canvas.getContext('2d', { alpha:true });
-  var w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var w = 0, h = 0, dpr = 1;
   var dust = [];
   var floaters = [];
 
@@ -394,7 +394,7 @@
     var rect = wrap.getBoundingClientRect();
     w = Math.max(1, Math.floor(rect.width));
     h = Math.max(1, Math.floor(rect.height));
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    dpr = 1;
     canvas.width = Math.floor(w * dpr);
     canvas.height = Math.floor(h * dpr);
     canvas.style.width = w + "px";
@@ -432,8 +432,8 @@
     var area = w * h;
     var s = densityScale();
 
-    /* was: clamp((area / 120) * s, 4000, 24000) */
-    var count = Math.round(clamp((area / 140) * s, 3600, 20000));
+    /* was: clamp((area / 140) * s, 3600, 20000) */
+    var count = Math.round(clamp((area / 140) * s, 800, 2000));
     dust = new Array(count);
 
     for(var i = 0; i < count; i++){
@@ -461,8 +461,8 @@
     var area = w * h;
     var s = densityScale();
 
-    /* was: clamp((area / 1400) * s, 600, 2200) */
-    var count = Math.round(clamp((area / 1600) * s, 520, 1800));
+    /* was: clamp((area / 1600) * s, 520, 1800) */
+    var count = Math.round(clamp((area / 1600) * s, 200, 800));
     floaters = new Array(count);
 
     for(var i = 0; i < count; i++){
@@ -493,7 +493,7 @@
         p.br = rand(12, 24);
       }
 
-      if(isAccent) p.glowSize = rand(14, 32);
+      if(isAccent) p.glowSize = rand(8, 18);
       floaters[i] = p;
     }
   }
@@ -639,12 +639,7 @@
       var twk = 0.70 + 0.30 * Math.sin(time * d.tw + d.ph);
       var a = d.a0 * twk;
 
-      if(d.isAccent){
-        ctx.shadowBlur = 4;
-        ctx.shadowColor = d.color.hex;
-      } else {
-        ctx.shadowBlur = 0;
-      }
+      ctx.shadowBlur = 0;
 
       ctx.fillStyle = "rgba(" + d.color.rgb + "," + a.toFixed(3) + ")";
       ctx.fillRect(d.x - d.size * 0.5, d.y - d.size * 0.5, d.size, d.size);
