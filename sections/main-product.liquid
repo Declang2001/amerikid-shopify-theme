@@ -991,7 +991,7 @@
       var area = w * h;
       var s = densityScale();
 
-      var count = Math.round(clamp((area / 1600) * s, 440, 1530));
+      var count = Math.round(clamp((area / 1600) * s, 200, 800));
       floaters = new Array(count);
 
       for(var i = 0; i < count; i++){
@@ -1021,7 +1021,7 @@
           p.br = rand(12, 24);
         }
 
-        if(isAccent) p.glowSize = rand(14, 32);
+        if(isAccent) p.glowSize = rand(8, 18);
         floaters[i] = p;
       }
     }
