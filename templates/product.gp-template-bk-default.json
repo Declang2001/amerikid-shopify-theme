@@ -110,7 +110,7 @@
         "constrain_to_viewport": true,
         "enable_sticky_info": true,
         "enable_video_looping": false,
-        "gallery_layout": "thumbnail",
+        "gallery_layout": "stacked",
         "hide_variants": false,
         "image_zoom": "lightbox",
         "media_fit": "cover",
