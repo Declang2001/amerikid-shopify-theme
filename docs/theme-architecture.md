@@ -10,7 +10,7 @@
     - **Confirmed Redundancy:** Product pages run up to 5 canvases concurrently.
     - **Confirmed IDs:** `aknav-field` (nav), `ak-product-field` (product), `ak-back-field` (background), `holo-rail-field` (rail), and `confetti`.
     - **Offscreen Cancellation:** `ak-product-field` (shipped 2026-03-19), `ak-collection-field` (shipped 2026-03-20), `ak-back-field` (shipped 2026-03-20), `holo-rail-field` (shipped 2026-03-26), and `aknav-field` (shipped 2026-03-27) have true rAF cancellation when offscreen. All 5/5 known canvas systems are now patched.
-    - **Combined Top-of-Page (ak-top):** `sections/ak-top.liquid` (shipped 2026-04-04) replaces the two adjacent `custom_liquid` sections (holo-rail + aknav) with a single shared section containing one canvas. Cart-only prototype deployed to `templates/cart.json`; remaining 17 templates still use the old two-section pattern.
+    - **Combined Top-of-Page (ak-top):** `sections/ak-top.liquid` (shipped 2026-04-04) replaces the two adjacent `custom_liquid` sections (holo-rail + aknav) with a single shared section containing one canvas. Rolled out site-wide (2026-04-04) to all 18 templates that had the two-section pattern. 15 aknav-only collection templates (no holo-rail) remain on the old single-section pattern.
 
 ## Page Builder Traces (Verified 2026-03-19)
 The repository shows evidence of three separate page builders:
