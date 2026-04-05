@@ -964,7 +964,7 @@
       var area = w * h;
       var s = densityScale();
 
-      var count = Math.round(clamp((area / 140) * s, 3000, 17000));
+      var count = Math.round(clamp((area / 140) * s, 800, 2000));
       dust = new Array(count);
 
       for(var i = 0; i < count; i++){
@@ -1165,12 +1165,7 @@
         var twk = 0.70 + 0.30 * Math.sin(time * d.tw + d.ph);
         var a = d.a0 * twk;
 
-        if(d.isAccent){
-          ctx.shadowBlur = 4;
-          ctx.shadowColor = d.color.hex;
-        } else {
-          ctx.shadowBlur = 0;
-        }
+        ctx.shadowBlur = 0;
 
         ctx.fillStyle = "rgba(" + d.color.rgb + "," + a.toFixed(3) + ")";
         ctx.fillRect(d.x - d.size * 0.5, d.y - d.size * 0.5, d.size, d.size);
