@@ -32,12 +32,19 @@
     margin-right: auto;
   }
 
-  /* Make product title bigger */
+  /* Make product title bigger + Impact uppercase */
   .card-wrapper .card__heading,
   .card-wrapper .card__heading a,
   .card-wrapper .card__information .full-unstyled-link {
+    font-family: Impact, sans-serif !important;
     font-size: 3.0rem !important;
     line-height: 1.25;
+    text-transform: uppercase;
+  }
+
+  /* Remove title underline on hover (overrides component-card.css) */
+  .card-wrapper.underline-links-hover:hover a {
+    text-decoration: none !important;
   }
 
   /* Hide all price amounts */

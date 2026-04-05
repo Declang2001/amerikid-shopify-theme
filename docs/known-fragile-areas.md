@@ -11,7 +11,7 @@
 
 ## Fragile Systems
 - **Starfield Navigation:** The entire `amerikid-button-wrapper` block (glass menu, canvas background, hover glows) is duplicated across many JSON files. Modifying it requires updating it everywhere or successfully consolidating it first.
-- **Brand Overrides:** Many custom sections like `featured-collection2.liquid` use `#collection-{{ section.id }} * { font-family: Impact !important; }`. Refactoring CSS may accidentally break these targeted brand styles.
+- **Brand Overrides:** Many custom sections like `featured-collection2.liquid` use `#collection-{{ section.id }} * { font-family: Impact !important; }`. The main collection grid (`main-collection-product-grid.liquid`) now also forces Impact + uppercase + no-underline on card titles via its `{%- style -%}` block. Refactoring CSS may accidentally break these targeted brand styles.
 - **Multiple Canvases:** The interaction between multiple active canvases (`aknav-field`, `ak-product-field`, etc.) is likely sensitive to initialization timing.
   - **Note (2026-03-19):** `ak-product-field` now uses a cancel/restart pattern via `IntersectionObserver`. Its rAF loop stops when offscreen and restarts on re-entry. When applying similar patches to other canvases, follow this same pattern: set `animationId = null` on pause, reset `lastFrameTime = 0` on resume, guard against double-start with `if(!animationId)`.
   - **Note (2026-04-04):** `ak-product-field` visible-cost reduction (Phase 1). Dust particle cap reduced from 3,000–17,000 to 800–2,000 and `ctx.shadowBlur` removed from dust draws. Floater/shooter glow intact. This is the proven pattern for propagating to other canvas systems if successful.
