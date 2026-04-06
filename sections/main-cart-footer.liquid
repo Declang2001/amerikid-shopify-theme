@@ -15,7 +15,27 @@
     }
   }
 
-  /* Remove the forced 60vh "dead space" so it hugs the cart items above */
+  /* Section wrapper: owns the starfield canvas behind the footer card */
+  #main-cart-footer{
+    position:relative;
+    isolation:isolate;
+    overflow:hidden;
+  }
+
+  /* Starfield canvas: full section background, not trapped in card */
+  #main-cart-footer > .ak-cart-footer-field{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    z-index:0;
+    pointer-events:none;
+    mix-blend-mode:screen;
+    opacity:1;
+    filter:contrast(1.10);
+  }
+
+  /* Remove the forced 60vh “dead space” so it hugs the cart items above */
   @media(min-width:990px){
     #main-cart-footer .page-width{
       width:100%;
@@ -28,7 +48,13 @@
     }
   }
 
-  /* ───── FOOTER PANEL: MATCH ITEM CARDS (Option 1) ───── */
+  /* Page-width layer above canvas */
+  #main-cart-footer .page-width{
+    position:relative;
+    z-index:1;
+  }
+
+  /* ───── FOOTER PANEL: glass card on starfield ───── */
   #main-cart-footer .cart__footer{
     width:100%;
     max-width:1200px;
@@ -48,27 +74,11 @@
     overflow:hidden;
 
     transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-
-    /* ADDED: contain ambient canvas cleanly */
-    isolation:isolate;
-  }
-
-  /* ADDED: ambient particle canvas layer (same system as cart items) */
-  #main-cart-footer .cart__footer .ak-cart-footer-field{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    z-index:0;
-    pointer-events:none;
-    mix-blend-mode:screen;
-    opacity:1;
-    filter:contrast(1.10);
   }
 
   /* subtle micro “HUD” scanline overlay (same vibe as item cards) */
   #main-cart-footer .cart__footer:before{
-    content:"";
+    content:””;
     position:absolute;
     inset:0;
     pointer-events:none;
@@ -87,12 +97,6 @@
     border-color:rgba(255,51,255,.22);
     box-shadow:0 0 0 1px rgba(255,51,255,.10), 0 18px 40px rgba(0,0,0,.55);
     transform:translateY(-2px);
-  }
-
-  /* Keep all inner content above overlay + canvas */
-  #main-cart-footer .cart__footer > *:not(.ak-cart-footer-field){
-    position:relative;
-    z-index:1;
   }
 
   /* ————— REMAINDER (STRUCTURE SAFE) ————— */
@@ -245,7 +249,7 @@
   }
 
   @media (prefers-reduced-motion: reduce){
-    #main-cart-footer .cart__footer .ak-cart-footer-field{ display:none !important; }
+    #main-cart-footer > .ak-cart-footer-field{ display:none !important; }
   }
 {%- endstyle -%}
 
@@ -254,10 +258,11 @@
   id="main-cart-footer"
   data-id="{{ section.id }}"
 >
+  <!-- Starfield canvas: section-level background behind footer card -->
+  <canvas class="ak-cart-footer-field" id="ak-cart-footer-canvas-{{ section.id }}" aria-hidden="true"></canvas>
+
   <div class="page-width">
-    <div class="cart__footer isolate section-{{ section.id }}-padding">
-      <!-- ADDED: Ambient particles canvas (same system as cart items) -->
-      <canvas class="ak-cart-footer-field" id="ak-cart-footer-canvas-{{ section.id }}" aria-hidden="true"></canvas>
+    <div class="cart__footer section-{{ section.id }}-padding">
 
       {%- if settings.show_cart_note -%}
         <cart-note class="cart__note field">
