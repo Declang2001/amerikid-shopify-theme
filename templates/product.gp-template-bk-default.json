@@ -54,12 +54,11 @@
     "main": {
       "block_order": [
         "title",
-        "description",
-        "custom_liquid_KbTzPh",
         "price",
         "variant_picker",
         "quantity_selector",
         "buy_buttons",
+        "description",
         "share"
       ],
       "blocks": {
@@ -69,12 +68,6 @@
             "show_gift_card_recipient": true
           },
           "type": "buy_buttons"
-        },
-        "custom_liquid_KbTzPh": {
-          "settings": {
-            "custom_liquid": ""
-          },
-          "type": "custom_liquid"
         },
         "description": {
           "settings": {},

@@ -5,7 +5,7 @@
 - Do not normalize typography if it removes the "Impact" font. Hardcoded font declarations exist for a reason.
 
 ## Major Fragile Files
-- `sections/main-product.liquid`: This file is exceptionally large (2800+ lines). It contains custom canvas implementation (`ak-product-field`), deeply nested CSS overrides for transparency, and layout hacks. Product gallery uses `"stacked"` layout + `"lightbox"` zoom (settled 2026-04-05 after testing thumbnail/hover/stacked/lightbox combos). Stacked shows all images vertically; lightbox enables click-to-zoom.
+- `sections/main-product.liquid`: This file is exceptionally large (2800+ lines). It contains custom canvas implementation (`ak-product-field`), deeply nested CSS overrides for transparency, and layout hacks. Product gallery uses `"stacked"` layout + `"lightbox"` zoom (settled 2026-04-05 after testing thumbnail/hover/stacked/lightbox combos). Stacked shows all images vertically; lightbox enables click-to-zoom. Product info block order (settled 2026-04-05): title → price → variant_picker → quantity_selector → buy_buttons → description → share. Empty `custom_liquid_KbTzPh` block removed.
 - `layout/theme.liquid`: Contains heavy inline CSS defining color schemes and CSS variables, as well as multiple app embeds. Changing script load order here is risky.
 - `templates/page.mystery-box.json`: Contains the Vercel iframe embed wrapped in a highly specific locked layout (`ak-mb-wrap`, `ak-mb-canvas`).
 

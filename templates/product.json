@@ -31,12 +31,6 @@
           "type": "description",
           "settings": {}
         },
-        "custom_liquid_KbTzPh": {
-          "type": "custom_liquid",
-          "settings": {
-            "custom_liquid": ""
-          }
-        },
         "price": {
           "type": "price",
           "settings": {}
@@ -68,12 +62,11 @@
       },
       "block_order": [
         "title",
-        "description",
-        "custom_liquid_KbTzPh",
         "price",
         "variant_picker",
         "quantity_selector",
         "buy_buttons",
+        "description",
         "share"
       ],
       "settings": {
