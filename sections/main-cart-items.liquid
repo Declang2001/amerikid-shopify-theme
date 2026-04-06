@@ -30,7 +30,7 @@
     pointer-events:none;
     mix-blend-mode:screen;
     opacity:1;
-    filter: contrast(1.10) saturate(1.10);
+    filter: contrast(1.10);
   }
   .cart-glow-box > .page-width{
     position:relative;
@@ -450,7 +450,7 @@
   if(reduced) return;
 
   var ctx = canvas.getContext('2d', { alpha:true });
-  var w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var w = 0, h = 0, dpr = 1;
 
   var dust = [];
   var floaters = [];
@@ -458,6 +458,7 @@
   var nextShooterAt = 0;
   var lastFrameTime = 0;
   var isVisible = true;
+  var animationId = null;
 
   var COLORS = {
     white:  { rgb: "255,255,255", hex: "#ffffff" },
@@ -473,7 +474,7 @@
     var rect = root.getBoundingClientRect();
     w = Math.max(1, Math.floor(rect.width));
     h = Math.max(1, Math.floor(rect.height));
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    dpr = 1;
     canvas.width = Math.floor(w * dpr);
     canvas.height = Math.floor(h * dpr);
     canvas.style.width = w + "px";
@@ -491,15 +492,21 @@
   function pickFloaterColor(){ return (Math.random() < 0.78) ? COLORS.white : pickAccent(); }
 
   function densityScale(){
-    var mobile = (window.innerWidth || 1200) < 750;
-    return mobile ? 0.85 : 1.15;
+    var vw = window.innerWidth || 1200;
+    if(vw < 520) return 0.28;
+    if(vw < 750) return 0.38;
+    return 0.85;
   }
 
   function seedDust(){
     var area = w * h;
     var s = densityScale();
-
-    var count = Math.round(clamp((area / 140) * s, 1200, 20000));
+    var vw = window.innerWidth || 1200;
+    var tiny = vw < 520, mobile = vw < 750;
+    var div = mobile ? (tiny ? 600 : 500) : 400;
+    var minC = mobile ? (tiny ? 120 : 160) : 400;
+    var maxC = mobile ? (tiny ? 300 : 450) : 800;
+    var count = Math.round(clamp((area / div) * s, minC, maxC));
     dust = new Array(count);
 
     for(var i=0;i<count;i++){
@@ -512,8 +519,8 @@
       var tw = rand(0.25, 1.05);
       var ph = rand(0, Math.PI * 2);
 
-      var a0 = isAccent ? rand(0.20, 0.44) : rand(0.06, 0.18);
-      var size = isAccent ? rand(2.6, 6.0) : rand(1.3, 3.6);
+      var a0 = isAccent ? rand(0.18, 0.40) : rand(0.05, 0.15);
+      var size = isAccent ? rand(1.8, 3.2) : ((Math.random() < 0.78) ? rand(1.2, 2.2) : rand(2.2, 3.0));
 
       dust[i] = { x: rand(0,w), y: rand(0,h), vx:vx, vy:vy, color:color, isAccent:isAccent, a0:a0, size:size, tw:tw, ph:ph };
     }
@@ -529,8 +536,12 @@
   function seedFloaters(){
     var area = w * h;
     var s = densityScale();
-
-    var count = Math.round(clamp((area / 2200) * s, 240, 1400));
+    var vw = window.innerWidth || 1200;
+    var tiny = vw < 520, mobile = vw < 750;
+    var div = mobile ? (tiny ? 7000 : 6000) : 1800;
+    var minC = mobile ? (tiny ? 40 : 50) : 200;
+    var maxC = mobile ? (tiny ? 100 : 130) : 400;
+    var count = Math.round(clamp((area / div) * s, minC, maxC));
     floaters = new Array(count);
 
     for(var i=0;i<count;i++){
@@ -550,16 +561,16 @@
       var p = { x: rand(0,w), y: rand(0,h), vx:vx, vy:vy, kind:kind, color:color, isAccent:isAccent, a0:a0, tw:tw, ph:ph };
 
       if(kind === "dot"){
-        p.r = isAccent ? rand(3.8, 9.2) : rand(2.8, 6.8);
+        p.r = isAccent ? rand(3.0, 6.0) : ((Math.random() < 0.60) ? rand(2.0, 3.6) : rand(3.6, 5.2));
       } else if(kind === "pill"){
-        p.pw = rand(12, 40);
-        p.phh = rand(3.2, 8.0);
+        p.pw = rand(10, 28);
+        p.phh = rand(2.4, 5.0);
         p.rot = rand(-0.85, 0.85);
       } else {
-        p.br = rand(10, 24);
+        p.br = rand(7, 14);
       }
 
-      if(isAccent) p.glowSize = rand(14, 34);
+      if(isAccent) p.glowSize = rand(7, 16);
       floaters[i] = p;
     }
   }
@@ -674,7 +685,7 @@
 
   function step(t){
     if(!isVisible){
-      requestAnimationFrame(step);
+      animationId = null;
       return;
     }
 
@@ -685,6 +696,7 @@
 
     ctx.clearRect(0,0,w,h);
     ctx.globalCompositeOperation = "lighter";
+    ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
 
     for(var i=0;i<dust.length;i++){
       var d = dust[i];
@@ -697,13 +709,6 @@
 
       var twk = 0.70 + 0.30 * Math.sin(time * d.tw + d.ph);
       var a = d.a0 * twk;
-
-      if(d.isAccent){
-        ctx.shadowBlur = 3;
-        ctx.shadowColor = d.color.hex;
-      } else {
-        ctx.shadowBlur = 0;
-      }
 
       ctx.fillStyle = "rgba(" + d.color.rgb + "," + a.toFixed(3) + ")";
       ctx.fillRect(d.x - d.size*0.5, d.y - d.size*0.5, d.size, d.size);
@@ -773,11 +778,11 @@
     ctx.shadowBlur = 0;
     ctx.shadowColor = "transparent";
 
-    requestAnimationFrame(step);
+    animationId = requestAnimationFrame(step);
   }
 
   reseed();
-  requestAnimationFrame(step);
+  animationId = requestAnimationFrame(step);
 
   window.addEventListener('resize', function(){ reseed(); }, { passive:true });
 
@@ -788,7 +793,13 @@
 
   if('IntersectionObserver' in window){
     var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){ isVisible = entry.isIntersecting; });
+      entries.forEach(function(entry){
+        isVisible = entry.isIntersecting;
+        if(isVisible && !animationId){
+          lastFrameTime = 0;
+          animationId = requestAnimationFrame(step);
+        }
+      });
     }, { threshold: 0 });
     io.observe(root);
   }
