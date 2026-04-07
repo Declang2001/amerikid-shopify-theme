@@ -31,6 +31,11 @@
   - **Note (2026-04-05):** Life & Style content canvases optimized. Three inline canvases in `templates/page.json` (Adventures `custom_liquid_X46wQm`, Kid Radio `custom_liquid_kkxqR3`, Social Dock `custom_liquid_PRGR7i`) now have offscreen cancellation, DPR 1, reduced dust (800–2,000) and floaters (200–400), dust shadowBlur removed, and `filter: contrast(1.1)` removed. Each module uses slightly different variable names (`lastFrame` vs `lastT`) — the IO restart block resets the correct timing variable per module.
   - **Note (2026-04-04):** Visual continuity refinement — removed frosted-glass effect (backdrop-filter, border, box-shadow) from nav area so particles show through it the same way they do through the header. Nav area is now fully transparent with no glass overlay. Added subtle gradient divider between header/nav and bottom-fade on wrap.
 
+## Archive Page (ak-archive)
+- `sections/ak-archive.liquid` is a self-contained card-stack section. All 18 collection cards are hardcoded with Shopify CDN image references and collection URLs. If collections are added/removed/renamed, the section HTML must be updated manually.
+- The old 18 `image-banner-*.liquid` section files still exist in `sections/` but are no longer referenced by `templates/list-collections.json`. Do not delete them yet — they serve as rollback reference.
+- The drag interaction uses pointer/touch events on the front card. The `touch-action: pan-x` on `.ak-archive` prevents vertical scroll but allows horizontal browser gestures. If touch behavior is unreliable on certain devices, this is the first thing to check.
+
 ## DO NOT TOUCH FIRST list
 - Do not refactor `sections/main-product.liquid` yet.
 - Do not edit or attempt to clean up `templates/page.mystery-box.json` yet.

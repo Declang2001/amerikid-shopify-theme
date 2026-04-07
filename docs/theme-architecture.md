@@ -24,6 +24,11 @@ The repository shows evidence of three separate page builders:
 - **JustSell:** `latest.js` loads globally.
 - **GSAP:** Loaded twice in some cases (via PageFly and theme assets).
 
+## Archive Page (Card Stack)
+- **Route:** `/collections/` (list-collections template)
+- **Section:** `sections/ak-archive.liquid` (shipped 2026-04-07) — single-screen card-stack selector replacing 18 vertical image-banner sections. Contains all HTML, CSS, and JS inline. No canvas particle system (ak-top provides the header starfield). 18 collection cards with images, titles, and links. Navigation: prev/next buttons, tap zones, keyboard arrows, drag/swipe, progress dots.
+- **Previous structure:** 18 individual `image-banner-*.liquid` sections + 2 emoji marquee `custom_liquid` sections, all orchestrated by `templates/list-collections.json`. Those section files are preserved in `sections/` but no longer referenced by the template.
+
 ## Key Directories and Files
 - `layout/theme.liquid`: The main entry point. Currently includes `pagefly-app-header` and large inline styling blocks. EComposer render calls removed 2026-03-27. Gameball include removed 2026-03-27.
 - `templates/`: Contains massive JSON template sprawl. Over 15 `collection.[name].json` templates exist, almost all containing a duplicated `custom_liquid` block for the navigation.
