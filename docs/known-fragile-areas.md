@@ -32,9 +32,11 @@
   - **Note (2026-04-04):** Visual continuity refinement — removed frosted-glass effect (backdrop-filter, border, box-shadow) from nav area so particles show through it the same way they do through the header. Nav area is now fully transparent with no glass overlay. Added subtle gradient divider between header/nav and bottom-fade on wrap.
 
 ## Archive Page (ak-archive)
-- `sections/ak-archive.liquid` is a self-contained card-stack section. All 18 collection cards are hardcoded with Shopify CDN image references and collection URLs. If collections are added/removed/renamed, the section HTML must be updated manually.
+- `sections/ak-archive.liquid` is a self-contained card-deck section with inline spring physics engine. All 18 collection cards are hardcoded with Shopify CDN image references and collection URLs. If collections are added/removed/renamed, the section HTML must be updated manually.
 - The old 18 `image-banner-*.liquid` section files still exist in `sections/` but are no longer referenced by `templates/list-collections.json`. Do not delete them yet — they serve as rollback reference.
-- The drag interaction uses pointer/touch events on the front card. The `touch-action: pan-x` on `.ak-archive` prevents vertical scroll but allows horizontal browser gestures. If touch behavior is unreliable on certain devices, this is the first thing to check.
+- **Spring engine:** The section contains a custom `springTo()` function that drives all card animations via `requestAnimationFrame`. It stores per-element state on `el._sp` (position) and `el._sv` (velocity). If cards get stuck mid-animation, check that `_sp`/`_sv` are being reset on navigation transitions.
+- **Touch behavior:** `touch-action: pan-x` on `.ak-archive` prevents vertical scroll but allows horizontal browser gestures. `touchmove` calls `preventDefault()` only when `dragging=true`. If touch behavior is unreliable on certain devices, this is the first thing to check.
+- **Animation lock:** `anim` flag prevents overlapping transitions. If the deck gets stuck, the `anim` flag may not have been reset — check the `springTo` completion callbacks.
 
 ## DO NOT TOUCH FIRST list
 - Do not refactor `sections/main-product.liquid` yet.
