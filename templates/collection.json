@@ -115,6 +115,10 @@
     "ak-top": {
       "type": "ak-top",
       "settings": {}
+    },
+    "ak-footer": {
+      "type": "ak-footer",
+      "settings": {}
     }
   },
   "order": [
@@ -125,6 +129,7 @@
     "custom_liquid_pKDQXf",
     "product-grid",
     "custom_liquid_GRwzCK",
-    "rich_text_G8bCyk"
+    "rich_text_G8bCyk",
+    "ak-footer"
   ]
 }

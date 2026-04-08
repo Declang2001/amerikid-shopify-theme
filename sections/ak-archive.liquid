@@ -1,35 +1,49 @@
 {% comment %}
-  ak-archive.liquid — Wide-format card-deck Archive for /collections/
-  18 collection cards. Drag/swipe/click/keyboard navigation.
-  Self-contained: all CSS + JS inline. No external deps.
+  ak-archive.liquid v6 — Archive folder-deck for /collections/
+  18 collection folders. Self-contained: all CSS + JS inline.
+  v6: structural fix — cards bottom-aligned in taller stage so trailing
+  strips are always visible. Div-based cards with JS navigation.
+  Simplified drag model. Spring cancellation prevents orphaned animations.
 {% endcomment %}
 
 {%- style -%}
-/* ===== AK-ARCHIVE DECK ===== */
+/* ===== AK-ARCHIVE v6 ===== */
+/* kill white body bg bleed on Archive route */
+.ak-archive-section{background:#000}
+
 .ak-archive{
   position:relative;width:100%;
   height:100vh;height:100dvh;
   background:#000;overflow:hidden;
   display:flex;align-items:center;justify-content:center;
+  padding-bottom:clamp(30px,4vh,60px); /* bias deck slightly upward */
   user-select:none;-webkit-user-select:none;
-  touch-action:pan-x;
 }
 
-/* — stage — */
-.ak-archive-stage{
-  position:relative;
-  width:clamp(320px, 72vw, 920px);
-  aspect-ratio:16/10;
-  max-height:68vh;max-height:68dvh;
-}
-
-/* — card — */
-.ak-archive-card{
+/* — particle canvas — */
+.ak-archive-canvas{
   position:absolute;inset:0;
-  border-radius:16px;overflow:hidden;
+  width:100%;height:100%;
+  pointer-events:none;z-index:0;
+  mix-blend-mode:screen;
+}
+
+/* — stage: taller than card to hold the fan — */
+.ak-archive-stage{
+  position:relative;z-index:5;
+  width:clamp(320px, 72vw, 920px);
+  /* stage is tall enough for the card + ~160px of trailing fan above it */
+  height:clamp(340px, 52vw, 640px);
+}
+
+/* — folder card — */
+.ak-archive-card{
+  position:absolute;
+  left:0;right:0;bottom:0;
+  height:76%; /* card fills bottom 76% of stage — top 24% is fan headroom */
+  border-radius:14px;overflow:visible;
   will-change:transform,opacity;
-  transform-origin:center 80%;
-  box-shadow:0 8px 30px rgba(0,0,0,0.6);
+  transform-origin:center bottom;
   cursor:pointer;
   -webkit-tap-highlight-color:transparent;
   text-decoration:none;color:inherit;
@@ -38,10 +52,53 @@
 .ak-archive-card[data-active="false"]{
   pointer-events:none;
 }
+
+/* folder inner clip */
+.ak-archive-card-inner{
+  position:relative;width:100%;height:100%;
+  border-radius:14px;overflow:hidden;
+  background:#111;
+  border:1px solid rgba(255,255,255,0.05);
+}
+.ak-archive-card[data-depth="1"] .ak-archive-card-inner,
+.ak-archive-card[data-depth="2"] .ak-archive-card-inner,
+.ak-archive-card[data-depth="3"] .ak-archive-card-inner,
+.ak-archive-card[data-depth="4"] .ak-archive-card-inner,
+.ak-archive-card[data-depth="5"] .ak-archive-card-inner{
+  border-color:rgba(255,255,255,0.10);
+}
+
+/* folder tab on trailing cards */
+.ak-archive-tab{
+  position:absolute;
+  top:-18px;left:24px;
+  width:72px;height:20px;
+  background:#222;
+  border-radius:6px 6px 0 0;
+  border:1px solid rgba(255,255,255,0.10);
+  border-bottom:none;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .3s ease;
+}
+.ak-archive-card[data-depth="1"] .ak-archive-tab,
+.ak-archive-card[data-depth="2"] .ak-archive-tab,
+.ak-archive-card[data-depth="3"] .ak-archive-tab,
+.ak-archive-card[data-depth="4"] .ak-archive-tab,
+.ak-archive-card[data-depth="5"] .ak-archive-tab{
+  opacity:1;
+}
+.ak-archive-card[data-depth="1"] .ak-archive-tab{left:24px;width:72px;background:#2a2a2a}
+.ak-archive-card[data-depth="2"] .ak-archive-tab{left:44px;width:64px;background:#252525}
+.ak-archive-card[data-depth="3"] .ak-archive-tab{left:60px;width:56px;background:#202020}
+.ak-archive-card[data-depth="4"] .ak-archive-tab{left:72px;width:48px;background:#1c1c1c}
+.ak-archive-card[data-depth="5"] .ak-archive-tab{left:82px;width:40px;background:#181818}
+
 .ak-archive-card img{
   display:block;width:100%;height:100%;
   object-fit:cover;pointer-events:none;
   -webkit-user-drag:none;
+  user-select:none;-webkit-user-select:none;
 }
 
 /* — title label — */
@@ -59,6 +116,7 @@
   font-size:clamp(1.5rem,3.2vw,2.6rem);
   line-height:1.1;color:#fff;margin:0;
   letter-spacing:0.015em;
+  text-transform:uppercase;
   text-shadow:0 2px 12px rgba(0,0,0,0.5);
 }
 
@@ -89,155 +147,301 @@
   stroke-linecap:round;stroke-linejoin:round;
 }
 
-/* — bottom bar: counter + progress rail — */
-.ak-archive-bar{
-  position:absolute;
-  bottom:clamp(16px,3.5vh,34px);
-  left:50%;transform:translateX(-50%);
-  display:flex;align-items:center;gap:14px;
-  z-index:30;
-}
-.ak-archive-counter{
-  font-family:Impact,sans-serif;
-  font-size:0.95rem;letter-spacing:0.08em;
-  color:rgba(255,255,255,0.55);
-  white-space:nowrap;
-  min-width:3.6em;text-align:center;
-}
-.ak-archive-rail{
-  width:clamp(100px,18vw,200px);height:3px;
-  background:rgba(255,255,255,0.12);
-  border-radius:2px;overflow:hidden;
-  position:relative;
-}
-.ak-archive-fill{
-  position:absolute;left:0;top:0;height:100%;
-  background:#fff;border-radius:2px;
-  transition:width .4s cubic-bezier(.22,1,.36,1);
-}
-
-/* — tap zones — */
-.ak-archive-tap{
-  position:absolute;top:0;bottom:0;z-index:20;
-  cursor:pointer;-webkit-tap-highlight-color:transparent;
-}
-.ak-archive-tap--prev{left:0;width:25%}
-.ak-archive-tap--next{right:0;width:25%}
-
 /* — responsive — */
 @media(max-width:680px){
   .ak-archive-stage{
     width:92vw;
-    aspect-ratio:4/3;
-    max-height:55vh;max-height:55dvh;
+    height:clamp(280px, 65vw, 500px);
   }
   .ak-archive-label{padding:20px 16px 16px}
   .ak-archive-prev,.ak-archive-next{width:40px;height:40px}
   .ak-archive-prev svg,.ak-archive-next svg{width:18px;height:18px}
+  .ak-archive-tab{top:-14px;height:16px}
 }
-@media(max-width:400px){
-  .ak-archive-stage{aspect-ratio:3/2}
+
+/* reduced motion */
+@media(prefers-reduced-motion:reduce){
+  .ak-archive-canvas{display:none}
 }
+
+/* ===== CASSETTE CASE SKIN =====
+   Visual-only reskin. Turns flat cards into cassette-case / cassette-box
+   objects with visible housing, inset cover-art window, plastic sheen,
+   hinge line, and spine-style trailing tabs.
+   REMOVE THIS ENTIRE BLOCK to revert to folder-deck appearance.
+   No JS, no HTML, no layout changes. */
+
+/* — case housing: visible shell frame around cover art — */
+.ak-archive-card-inner{
+  padding:8px 8px 0 8px;
+  border-radius:6px;
+  background:linear-gradient(168deg,#1a1a1a 0%,#0e0e0e 40%,#111 100%);
+  border:1px solid rgba(255,255,255,0.08);
+}
+
+/* front card gets a slightly brighter shell edge */
+.ak-archive-card[data-depth="0"] .ak-archive-card-inner{
+  border-color:rgba(255,255,255,0.12);
+}
+
+/* — cover art insert: inset with small radius — */
+.ak-archive-card img{
+  border-radius:3px;
+  height:calc(100% - 8px); /* account for top padding; bottom has 0 padding so label overlaps */
+}
+
+/* — plastic sheen: diagonal highlight across the case surface — */
+.ak-archive-card-inner::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  border-radius:inherit;
+  background:linear-gradient(
+    135deg,
+    rgba(255,255,255,0.06) 0%,
+    rgba(255,255,255,0.02) 25%,
+    transparent 50%,
+    rgba(255,255,255,0.01) 75%,
+    rgba(255,255,255,0.04) 100%
+  );
+  mix-blend-mode:screen;
+}
+
+/* — case hinge: thin vertical accent on left edge — */
+.ak-archive-card-inner::after{
+  content:"";
+  position:absolute;
+  left:0;top:8px;bottom:0;
+  width:3px;
+  z-index:3;
+  pointer-events:none;
+  background:linear-gradient(to bottom,
+    rgba(255,255,255,0.08) 0%,
+    rgba(255,255,255,0.04) 30%,
+    rgba(255,255,255,0.02) 70%,
+    rgba(255,255,255,0.06) 100%
+  );
+  border-radius:3px 0 0 3px;
+}
+
+/* — snap-ridge: horizontal line near top of case — */
+/* (achieved via a top border on the image that reads as the lid-closure ridge) */
+.ak-archive-card img{
+  box-shadow:0 -1px 0 0 rgba(255,255,255,0.06);
+}
+
+/* — title label: adjust for inset art + slightly more "printed on case" feel — */
+.ak-archive-label{
+  left:8px;right:8px;
+  border-radius:0 0 3px 3px;
+  padding:24px 18px 18px;
+}
+
+/* — trailing card tabs → case spines — */
+.ak-archive-tab{
+  width:auto;
+  min-width:56px;
+  height:22px;
+  border-radius:4px 4px 0 0;
+  background:linear-gradient(to bottom,#2a2a2a,#1e1e1e);
+  border:1px solid rgba(255,255,255,0.08);
+  border-bottom:none;
+  /* subtle spine ridge */
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);
+}
+/* stagger spines more like stacked cases */
+.ak-archive-card[data-depth="1"] .ak-archive-tab{left:20px;min-width:80px;background:linear-gradient(to bottom,#2c2c2c,#202020)}
+.ak-archive-card[data-depth="2"] .ak-archive-tab{left:38px;min-width:70px;background:linear-gradient(to bottom,#272727,#1c1c1c)}
+.ak-archive-card[data-depth="3"] .ak-archive-tab{left:54px;min-width:60px;background:linear-gradient(to bottom,#222,#191919)}
+.ak-archive-card[data-depth="4"] .ak-archive-tab{left:66px;min-width:52px;background:linear-gradient(to bottom,#1e1e1e,#161616)}
+.ak-archive-card[data-depth="5"] .ak-archive-tab{left:76px;min-width:44px;background:linear-gradient(to bottom,#1a1a1a,#141414)}
+
+/* trailing card inner border — case edges visible in stack */
+.ak-archive-card[data-depth="1"] .ak-archive-card-inner,
+.ak-archive-card[data-depth="2"] .ak-archive-card-inner,
+.ak-archive-card[data-depth="3"] .ak-archive-card-inner,
+.ak-archive-card[data-depth="4"] .ak-archive-card-inner,
+.ak-archive-card[data-depth="5"] .ak-archive-card-inner{
+  border-color:rgba(255,255,255,0.09);
+}
+
+/* — mobile responsive for case skin — */
+@media(max-width:680px){
+  .ak-archive-card-inner{
+    padding:6px 6px 0 6px;
+  }
+  .ak-archive-card img{
+    height:calc(100% - 6px);
+    border-radius:2px;
+  }
+  .ak-archive-card-inner::after{
+    top:6px;width:2px;
+  }
+  .ak-archive-label{
+    left:6px;right:6px;
+    padding:18px 12px 12px;
+  }
+  .ak-archive-tab{
+    top:-16px;height:18px;
+    min-width:48px;
+  }
+}
+
+/* ===== END CASSETTE CASE SKIN ===== */
 {%- endstyle -%}
 
 <div class="ak-archive" id="AkArchive">
+  <canvas class="ak-archive-canvas" id="AkArchiveCanvas" aria-hidden="true"></canvas>
+
   <div class="ak-archive-stage" id="AkArchiveStage">
 
-    <a class="ak-archive-card" href="/collections/uh-oh-ghoul-aid-tee" data-card="0">
-      <img src="{{ 'HW_UH-OH_Tee_Closeup.jpg' | file_url }}" alt="Uh-Oh! Ghoul-Aid Tee" loading="eager" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">Uh-Oh! Ghoul-Aid Tee</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="0" data-href="/collections/uh-oh-ghoul-aid-tee">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ 'HW_UH-OH_Tee_Closeup.jpg' | file_url }}" alt="Uh-Oh! Ghoul-Aid Tee" loading="eager" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">Uh-Oh! Ghoul-Aid Tee</p></div>
+      </div>
+    </div>
 
-    <a class="ak-archive-card" href="/collections/bad-music" data-card="1">
-      <img src="{{ 'RICKY_BAD_2.jpg' | file_url }}" alt="Bad Music Rock Tee" loading="lazy" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">Bad Music Rock Tee</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="1" data-href="/collections/bad-music">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ 'RICKY_BAD_2.jpg' | file_url }}" alt="Bad Music Rock Tee" loading="lazy" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">Bad Music Rock Tee</p></div>
+      </div>
+    </div>
 
-    <a class="ak-archive-card" href="/collections/kandy" data-card="2">
-      <img src="{{ 'DSCN0470.jpg' | file_url }}" alt="Kandy Hoodie" loading="lazy" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">Kandy Hoodie</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="2" data-href="/collections/kandy">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ 'DSCN0470.jpg' | file_url }}" alt="Kandy Hoodie" loading="lazy" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">Kandy Hoodie</p></div>
+      </div>
+    </div>
 
-    <a class="ak-archive-card" href="/collections/uh-oh-tee" data-card="3">
-      <img src="{{ '0willco_0willco-R1-011-4.jpg' | file_url }}" alt="Uh-Oh! Tee" loading="lazy" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">Uh-Oh! Tee</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="3" data-href="/collections/uh-oh-tee">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ '0willco_0willco-R1-011-4.jpg' | file_url }}" alt="Uh-Oh! Tee" loading="lazy" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">Uh-Oh! Tee</p></div>
+      </div>
+    </div>
 
-    <a class="ak-archive-card" href="/collections/2024-election-tee" data-card="4">
-      <img src="{{ 'Screenshot_2025-06-02_at_4.55.20_PM.jpg' | file_url }}" alt="Election Tee" loading="lazy" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">Election Tee</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="4" data-href="/collections/2024-election-tee">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ 'Screenshot_2025-06-02_at_4.55.20_PM.jpg' | file_url }}" alt="Election Tee" loading="lazy" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">Election Tee</p></div>
+      </div>
+    </div>
 
-    <a class="ak-archive-card" href="/collections/gpr" data-card="5">
-      <img src="{{ 'A.kidxBusta_filmedited4.png' | file_url }}" alt="G.P.R. Tee" loading="lazy" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">G.P.R. Tee</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="5" data-href="/collections/gpr">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ 'A.kidxBusta_filmedited4.png' | file_url }}" alt="G.P.R. Tee" loading="lazy" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">G.P.R. Tee</p></div>
+      </div>
+    </div>
 
-    <a class="ak-archive-card" href="/collections/kid-zyn" data-card="6">
-      <img src="{{ 'Flying-Zyns.jpg' | file_url }}" alt="Kid Zyn" loading="lazy" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">Kid Zyn</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="6" data-href="/collections/kid-zyn">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ 'Flying-Zyns.jpg' | file_url }}" alt="Kid Zyn" loading="lazy" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">Kid Zyn</p></div>
+      </div>
+    </div>
 
-    <a class="ak-archive-card" href="/collections/bucket" data-card="7">
-      <img src="{{ 'MYSTIC420_HAT.heic' | file_url }}" alt="Liberty Bucket Hat" loading="lazy" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">Liberty Bucket Hat</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="7" data-href="/collections/bucket">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ 'MYSTIC420_HAT.heic' | file_url }}" alt="Liberty Bucket Hat" loading="lazy" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">Liberty Bucket Hat</p></div>
+      </div>
+    </div>
 
-    <a class="ak-archive-card" href="/collections/aperikid" data-card="8">
-      <img src="{{ 'IMG_3722.heic' | file_url }}" alt="Aparikid" loading="lazy" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">Aparikid</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="8" data-href="/collections/aperikid">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ 'IMG_3722.heic' | file_url }}" alt="Aparikid" loading="lazy" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">Aparikid</p></div>
+      </div>
+    </div>
 
-    <a class="ak-archive-card" href="/collections/love-amerikid" data-card="9">
-      <img src="{{ 'TREE_SQUAD.edited2.jpg' | file_url }}" alt="Love, Amerikid" loading="lazy" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">Love, Amerikid</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="9" data-href="/collections/love-amerikid">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ 'TREE_SQUAD.edited2.jpg' | file_url }}" alt="Love, Amerikid" loading="lazy" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">Love, Amerikid</p></div>
+      </div>
+    </div>
 
-    <a class="ak-archive-card" href="/collections/traveller-cap" data-card="10">
-      <img src="{{ 'KiD_Flag_Patch.png' | file_url }}" alt="Traveller Cap" loading="lazy" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">Traveller Cap</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="10" data-href="/collections/traveller-cap">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ 'KiD_Flag_Patch.png' | file_url }}" alt="Traveller Cap" loading="lazy" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">Traveller Cap</p></div>
+      </div>
+    </div>
 
-    <a class="ak-archive-card" href="/collections/kat-skan-tees" data-card="11">
-      <img src="{{ 'KAT_SKAN_CAMO.jpg' | file_url }}" alt="Kat Skan Sleeveless" loading="lazy" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">Kat Skan Sleeveless</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="11" data-href="/collections/kat-skan-tees">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ 'KAT_SKAN_CAMO.jpg' | file_url }}" alt="Kat Skan Sleeveless" loading="lazy" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">Kat Skan Sleeveless</p></div>
+      </div>
+    </div>
 
-    <a class="ak-archive-card" href="/collections/stones" data-card="12">
-      <img src="{{ 'amerikid_x_ST_50_Shirts.jpg' | file_url }}" alt="Stones Throw" loading="lazy" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">Stones Throw</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="12" data-href="/collections/stones">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ 'amerikid_x_ST_50_Shirts.jpg' | file_url }}" alt="Stones Throw" loading="lazy" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">Stones Throw</p></div>
+      </div>
+    </div>
 
-    <a class="ak-archive-card" href="/collections/say-it-with-your-chest-1" data-card="13">
-      <img src="{{ 'SIWYC_Full_Collection.jpg' | file_url }}" alt="Siwyc Collection" loading="lazy" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">Siwyc Collection</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="13" data-href="/collections/say-it-with-your-chest-1">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ 'SIWYC_Full_Collection.jpg' | file_url }}" alt="Siwyc Collection" loading="lazy" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">Siwyc Collection</p></div>
+      </div>
+    </div>
 
-    <a class="ak-archive-card" href="/collections/solo" data-card="14">
-      <img src="{{ 'PURPLE_HAZE_EDIT.jpg' | file_url }}" alt="Solo Una" loading="lazy" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">Solo Una</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="14" data-href="/collections/solo">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ 'PURPLE_HAZE_EDIT.jpg' | file_url }}" alt="Solo Una" loading="lazy" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">Solo Una</p></div>
+      </div>
+    </div>
 
-    <a class="ak-archive-card" href="/collections/weed" data-card="15">
-      <img src="{{ 'IMG_6998.jpg' | file_url }}" alt="The Weed Tee" loading="lazy" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">The Weed Tee</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="15" data-href="/collections/weed">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ 'IMG_6998.jpg' | file_url }}" alt="The Weed Tee" loading="lazy" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">The Weed Tee</p></div>
+      </div>
+    </div>
 
-    <a class="ak-archive-card" href="/collections/watermelon" data-card="16">
-      <img src="{{ 'watermelon_2.jpg' | file_url }}" alt="Watermelon Tee" loading="lazy" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">Watermelon Tee</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="16" data-href="/collections/watermelon">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ 'watermelon_2.jpg' | file_url }}" alt="Watermelon Tee" loading="lazy" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">Watermelon Tee</p></div>
+      </div>
+    </div>
 
-    <a class="ak-archive-card" href="/collections/skate-tables" data-card="17">
-      <img src="{{ 'Screenshot_2025-06-13_at_7.13.25_PM.png' | file_url }}" alt="The Skate Table" loading="lazy" draggable="false">
-      <div class="ak-archive-label"><p class="ak-archive-title">The Skate Table</p></div>
-    </a>
+    <div class="ak-archive-card" data-card="17" data-href="/collections/skate-tables">
+      <div class="ak-archive-tab"></div>
+      <div class="ak-archive-card-inner">
+        <img src="{{ 'Screenshot_2025-06-13_at_7.13.25_PM.png' | file_url }}" alt="The Skate Table" loading="lazy" draggable="false">
+        <div class="ak-archive-label"><p class="ak-archive-title">The Skate Table</p></div>
+      </div>
+    </div>
 
   </div>
-
-  <!-- tap zones -->
-  <div class="ak-archive-tap ak-archive-tap--prev" id="AkTapPrev"></div>
-  <div class="ak-archive-tap ak-archive-tap--next" id="AkTapNext"></div>
 
   <!-- prev / next -->
   <button class="ak-archive-prev" id="AkPrev" aria-label="Previous">
@@ -246,40 +450,40 @@
   <button class="ak-archive-next" id="AkNext" aria-label="Next">
     <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
   </button>
-
-  <!-- bottom bar -->
-  <div class="ak-archive-bar">
-    <div class="ak-archive-counter" id="AkCounter">01 / 18</div>
-    <div class="ak-archive-rail">
-      <div class="ak-archive-fill" id="AkFill" style="width:5.56%"></div>
-    </div>
-  </div>
 </div>
 
 <script>
 (function(){
   'use strict';
-  var N=18, VIS=4;
-  /* depth layout params */
-  var OFFSET_Y=14, OFFSET_X=0, SCALE_STEP=0.045, ROT_STEP=1.2;
+  var N=18, VIS=6;
+  /* v6 stack: bottom-aligned cards, upward fan via translateY only.
+     No perspective/translateZ — the reference is a flat vertical fan. */
+  var STRIP=26;     /* px of visible strip per trailing card */
+  var SCALE_STEP=0.018; /* slight scale reduction per depth for narrowing */
   /* drag */
-  var THRESH=60;
+  var THRESH=40, VEL_THRESH=400;
 
   var cards=[].slice.call(document.querySelectorAll('.ak-archive-card'));
-  var counter=document.getElementById('AkCounter');
-  var fill=document.getElementById('AkFill');
   var root=document.getElementById('AkArchive');
-  var cur=0, anim=false;
+  var stage=document.getElementById('AkArchiveStage');
+  var cur=0, anim=false, animSafetyTimer=null;
+
+  /* Per-card spring cancellation — prevents orphaned springs */
+  var springStops={};
 
   /* ---- spring helper ---- */
   function springTo(el,props,k,d,cb){
-    /* simple critically-damped spring via rAF */
+    var cardIdx=el.getAttribute('data-card');
+    /* cancel any running spring on this card */
+    if(cardIdx!==null && springStops[cardIdx]) springStops[cardIdx]();
+
     var keys=Object.keys(props);
     var vel={},pos={};
     keys.forEach(function(p){pos[p]=parseFloat(el._sp&&el._sp[p]||0);vel[p]=el._sv&&el._sv[p]||0;});
     el._sp=pos;el._sv=vel;
     var stiff=k||170,damp=d||22;
     var done=false;
+    function stop(){done=true;}
     function tick(){
       if(done)return;
       var allDone=true;
@@ -295,24 +499,47 @@
       });
       el._sp=pos;el._sv=vel;
       applyTransform(el,pos);
-      if(allDone){done=true;if(cb)cb();}
+      if(allDone){done=true;if(cardIdx!==null)springStops[cardIdx]=null;if(cb)cb();}
       else{requestAnimationFrame(tick);}
     }
+    if(cardIdx!==null) springStops[cardIdx]=stop;
     requestAnimationFrame(tick);
-    return function(){done=true;};
+    return stop;
   }
 
   function applyTransform(el,p){
-    var ty=p.ty||0,sc=p.sc||1,rot=p.rot||0,ox=p.ox||0,op=p.op;
-    el.style.transform='translate('+ox+'px,'+ty+'px) scale('+sc.toFixed(4)+') rotate('+rot.toFixed(2)+'deg)';
+    var ty=p.ty||0, sc=p.sc||1, rz=p.rz||0, op=p.op;
+    el.style.transform='translateY('+ty.toFixed(1)+'px) scale('+sc.toFixed(4)+')'+
+      (rz?(' rotateZ('+rz.toFixed(2)+'deg)'):'');
     if(op!==undefined)el.style.opacity=Math.max(0,Math.min(1,op)).toFixed(3);
   }
 
-  /* ---- layout ---- */
-  function layout(skipFront){
+  /* ---- layout: bottom-aligned, upward fan ---- */
+  function depthShadow(depth){
+    if(depth===0) return '0 8px 40px rgba(0,0,0,0.65), 0 2px 6px rgba(0,0,0,0.35)';
+    return '0 4px '+(12+depth*6)+'px rgba(0,0,0,'+(0.2+depth*0.06).toFixed(2)+')';
+  }
+
+  function setRestState(el,depth,instant){
+    var target={
+      ty: -depth*STRIP,
+      sc: 1-depth*SCALE_STEP,
+      rz: 0,
+      op: depth===0?1:Math.max(0.55, 1-depth*0.08)
+    };
+    if(instant){
+      el._sp=target;el._sv={ty:0,sc:0,rz:0,op:0};
+      applyTransform(el,target);
+    }else{
+      springTo(el,target,200,24);
+    }
+  }
+
+  function layout(skipFront,instant){
     for(var i=0;i<N;i++){
       var c=cards[i];
       var depth=(i-cur+N)%N;
+      c.setAttribute('data-depth',depth<VIS?depth:'hidden');
       if(depth>=VIS){
         c.style.opacity='0';c.style.zIndex=0;
         c.setAttribute('data-active','false');
@@ -321,168 +548,165 @@
       }
       c.setAttribute('data-active',depth===0?'true':'false');
       c.style.zIndex=N-depth;
-      c.style.boxShadow=depth===0
-        ?'0 12px 50px rgba(0,0,0,0.7), 0 2px 8px rgba(0,0,0,0.4)'
-        :'0 '+((depth+1)*4)+'px '+(20+depth*8)+'px rgba(0,0,0,'+(0.4+depth*0.1).toFixed(1)+')';
+      c.querySelector('.ak-archive-card-inner').style.boxShadow=depthShadow(depth);
       if(depth===0&&skipFront)continue;
-      var target={
-        ty:depth*OFFSET_Y,
-        ox:depth*OFFSET_X,
-        sc:1-depth*SCALE_STEP,
-        rot:depth*ROT_STEP,
-        op:depth===0?1:Math.max(0.45, 1-depth*0.22)
-      };
-      springTo(c,target,200,24);
+      setRestState(c,depth,instant);
     }
-    /* counter + rail */
-    var num=cur+1;
-    counter.textContent=(num<10?'0':'')+num+' / '+N;
-    fill.style.width=(num/N*100).toFixed(1)+'%';
   }
 
   /* ---- navigate ---- */
+  function clearAnimSafety(){if(animSafetyTimer){clearTimeout(animSafetyTimer);animSafetyTimer=null;}}
+  function startAnimSafety(){clearAnimSafety();animSafetyTimer=setTimeout(function(){anim=false;animSafetyTimer=null;},700);}
+
   function goNext(){
     if(anim)return;
-    anim=true;
+    anim=true;startAnimSafety();
     var front=cards[cur];
-    /* spring the front card off-screen upward with rotation */
-    springTo(front,{ty:-500,sc:0.88,rot:-8,op:0},180,18,function(){
+    springTo(front,{ty:-400,sc:0.88,rz:-4,op:0},180,18,function(){
       front._sp=null;front._sv=null;
       cur=(cur+1)%N;
-      layout(false);
-      anim=false;
+      layout(false,false);
+      clearAnimSafety();anim=false;
     });
-    /* simultaneously spring the next cards into their new positions */
-    var next1=(cur+1)%N, next2=(cur+2)%N, next3=(cur+3)%N;
-    [next1,next2,next3].forEach(function(idx){
+    /* pre-spring trailing cards toward new positions */
+    for(var d=1;d<VIS;d++){
+      var idx=(cur+d)%N;
       var c=cards[idx];
-      var futureDepth=(idx-(cur+1)+N)%N;
-      if(futureDepth>=VIS)return;
-      c.style.zIndex=N-futureDepth;
-      c.style.opacity=futureDepth===0?'1':String(Math.max(0.45,1-futureDepth*0.22));
-      c.setAttribute('data-active',futureDepth===0?'true':'false');
-      springTo(c,{
-        ty:futureDepth*OFFSET_Y,
-        ox:futureDepth*OFFSET_X,
-        sc:1-futureDepth*SCALE_STEP,
-        rot:futureDepth*ROT_STEP,
-        op:futureDepth===0?1:Math.max(0.45,1-futureDepth*0.22)
-      },200,24);
-    });
-    /* update counter immediately for responsiveness */
-    var num=((cur+1)%N)+1;
-    counter.textContent=(num<10?'0':'')+num+' / '+N;
-    fill.style.width=(num/N*100).toFixed(1)+'%';
+      var fd=d-1;
+      c.style.zIndex=N-fd;
+      c.setAttribute('data-active',fd===0?'true':'false');
+      c.setAttribute('data-depth',fd);
+      c.querySelector('.ak-archive-card-inner').style.boxShadow=depthShadow(fd);
+      setRestState(c,fd,false);
+    }
+    /* bring next hidden card into back of stack */
+    var backIdx=(cur+VIS)%N;
+    var bc=cards[backIdx];
+    bc.style.opacity='0';bc.style.zIndex=N-VIS+1;
+    bc.setAttribute('data-depth',VIS-1);
+    bc._sp={ty:-(VIS)*STRIP,sc:1-VIS*SCALE_STEP,rz:0,op:0};
+    bc._sv={ty:0,sc:0,rz:0,op:0};
+    applyTransform(bc,bc._sp);
+    setRestState(bc,VIS-1,false);
   }
 
   function goPrev(){
     if(anim)return;
-    anim=true;
+    anim=true;startAnimSafety();
     var front=cards[cur];
-    /* spring front card off to the right-down */
-    springTo(front,{ty:400,sc:0.88,rot:8,op:0},180,18,function(){
+    springTo(front,{ty:300,sc:0.9,rz:3,op:0},180,18,function(){
       front._sp=null;front._sv=null;
       cur=(cur-1+N)%N;
-      layout(false);
-      anim=false;
+      layout(false,false);
+      clearAnimSafety();anim=false;
     });
+    /* bring previous card in from above */
     var prev1=(cur-1+N)%N;
     var c=cards[prev1];
     c.style.zIndex=N;c.style.opacity='0';
     c.setAttribute('data-active','true');
-    c._sp={ty:-300,sc:0.92,rot:-6,op:0,ox:0};c._sv={ty:0,sc:0,rot:0,op:0,ox:0};
+    c.setAttribute('data-depth','0');
+    c._sp={ty:-250,sc:0.92,rz:0,op:0};c._sv={ty:0,sc:0,rz:0,op:0};
     applyTransform(c,c._sp);
-    springTo(c,{ty:0,sc:1,rot:0,op:1,ox:0},200,24);
-    var num=((cur-1+N)%N)+1;
-    counter.textContent=(num<10?'0':'')+num+' / '+N;
-    fill.style.width=(num/N*100).toFixed(1)+'%';
+    springTo(c,{ty:0,sc:1,rz:0,op:1},200,24);
   }
 
-  /* ---- controls ---- */
-  document.getElementById('AkNext').addEventListener('click',goNext);
-  document.getElementById('AkPrev').addEventListener('click',goPrev);
-  document.getElementById('AkTapNext').addEventListener('click',goNext);
-  document.getElementById('AkTapPrev').addEventListener('click',goPrev);
-
-  /* ---- drag ---- */
-  var dragging=false,dragCard=null,startY=0,dy=0,didDrag=false,lastTime=0,velocity=0;
-
-  function ptrDown(e){
-    if(anim)return;
-    var el=e.target;
-    if(el&&el.closest)el=el.closest('.ak-archive-card');
-    if(!el||el.getAttribute('data-active')!=='true')return;
-    dragging=true;didDrag=false;
-    dragCard=el;
-    startY=e.clientY;dy=0;velocity=0;lastTime=Date.now();
-    /* kill any running spring on this card */
-    dragCard._sp={ty:0,sc:1,rot:0,op:1,ox:0};
-    dragCard._sv={ty:0,sc:0,rot:0,op:0,ox:0};
-  }
-  function ptrMove(e){
-    if(!dragging||!dragCard)return;
-    var clientY=e.clientY;
-    var now=Date.now();
-    var dt=Math.max(1,now-lastTime);
-    var newDy=clientY-startY;
-    velocity=(newDy-dy)/dt*1000; /* px/s */
-    dy=newDy;lastTime=now;
-    if(Math.abs(dy)>4)didDrag=true;
-    /* live transform with rubber-band feel */
-    var rot=dy*-0.04;
-    var sc=1-Math.abs(dy)*0.0003;
-    var op=1-Math.abs(dy)/600;
-    dragCard.style.transform='translateY('+dy+'px) scale('+sc.toFixed(4)+') rotate('+rot.toFixed(2)+'deg)';
-    dragCard.style.opacity=Math.max(0.15,op).toFixed(3);
-  }
-  function ptrUp(){
-    if(!dragging||!dragCard)return;
-    dragging=false;
-    var card=dragCard;dragCard=null;
-    var absD=Math.abs(dy),absV=Math.abs(velocity);
-    /* determine if swipe is strong enough */
-    if(absD>THRESH||absV>600){
-      anim=true;
-      var dir=dy<0?-1:(dy>0?1:(velocity<0?-1:1));
-      springTo(card,{ty:dir*-600,sc:0.85,rot:dir*-12,op:0},160,16,function(){
-        card._sp=null;card._sv=null;
-        if(dir<0)cur=(cur+1)%N; else cur=(cur-1+N)%N;
-        layout(false);
-        anim=false;
-      });
-      var num=(dir<0?(cur+1)%N:(cur-1+N)%N)+1;
-      counter.textContent=(num<10?'0':'')+num+' / '+N;
-      fill.style.width=(num/N*100).toFixed(1)+'%';
-    }else{
-      /* snap back via spring */
-      card._sp={ty:dy,sc:1-Math.abs(dy)*0.0003,rot:dy*-0.04,op:Math.max(0.15,1-Math.abs(dy)/600),ox:0};
-      card._sv={ty:velocity*0.016,sc:0,rot:0,op:0,ox:0};
-      springTo(card,{ty:0,sc:1,rot:0,op:1,ox:0},220,26);
-    }
-    dy=0;velocity=0;
-  }
-
-  /* prevent link nav on drag */
-  cards.forEach(function(c){
-    c.addEventListener('click',function(e){if(didDrag){e.preventDefault();didDrag=false;}});
+  /* ---- controls: arrows always work, never blocked by drag state ---- */
+  document.getElementById('AkNext').addEventListener('click',function(e){
+    e.preventDefault();e.stopPropagation();goNext();
+  });
+  document.getElementById('AkPrev').addEventListener('click',function(e){
+    e.preventDefault();e.stopPropagation();goPrev();
   });
 
-  /* mouse */
-  root.addEventListener('mousedown',ptrDown);
-  root.addEventListener('mousemove',ptrMove);
-  root.addEventListener('mouseup',ptrUp);
-  root.addEventListener('mouseleave',ptrUp);
-  /* touch */
-  root.addEventListener('touchstart',function(e){
-    if(!e.touches[0])return;
-    ptrDown({target:e.target,clientY:e.touches[0].clientY});
-  },{passive:true});
-  root.addEventListener('touchmove',function(e){
-    if(!e.touches[0])return;
-    if(dragging)e.preventDefault();
-    ptrMove({clientY:e.touches[0].clientY});
-  },{passive:false});
-  root.addEventListener('touchend',function(){ptrUp();},{passive:true});
+  /* ---- drag + click: clean separation ---- */
+  var dragging=false,dragCard=null;
+  var startX=0,startY=0,dy=0,lastTime=0,velocity=0,pointerId=null;
+  var didMove=false; /* true if pointer moved beyond tap threshold */
+
+  function resetDrag(){
+    dragging=false;dragCard=null;pointerId=null;
+    dy=0;velocity=0;didMove=false;
+  }
+
+  stage.addEventListener('pointerdown',function(e){
+    if(anim||dragging)return;
+    /* only on active front card */
+    var el=e.target.closest?e.target.closest('.ak-archive-card'):null;
+    if(!el||el.getAttribute('data-active')!=='true')return;
+    /* ignore buttons */
+    if(e.target.closest&&e.target.closest('button'))return;
+
+    dragging=true;didMove=false;
+    dragCard=el;pointerId=e.pointerId;
+    startX=e.clientX;startY=e.clientY;
+    dy=0;velocity=0;lastTime=Date.now();
+    /* seed spring state at rest */
+    dragCard._sp={ty:0,sc:1,rz:0,op:1};
+    dragCard._sv={ty:0,sc:0,rz:0,op:0};
+    /* capture on stage so we get move/up even if pointer leaves */
+    try{stage.setPointerCapture(e.pointerId);}catch(ex){}
+    e.preventDefault(); /* prevent text selection / native drag */
+  });
+
+  stage.addEventListener('pointermove',function(e){
+    if(!dragging||!dragCard||e.pointerId!==pointerId)return;
+    var now=Date.now();
+    var dt=Math.max(1,now-lastTime);
+    var newDy=e.clientY-startY;
+    if(!didMove&&(Math.abs(e.clientX-startX)+Math.abs(e.clientY-startY))>5) didMove=true;
+    velocity=(newDy-dy)/dt*1000;
+    dy=newDy;lastTime=now;
+    var rot=dy*-0.03;
+    var sc=1-Math.abs(dy)*0.0003;
+    var op=1-Math.abs(dy)/600;
+    dragCard.style.transform='translateY('+dy+'px) scale('+Math.max(0.85,sc).toFixed(4)+') rotateZ('+rot.toFixed(2)+'deg)';
+    dragCard.style.opacity=Math.max(0.15,op).toFixed(3);
+  });
+
+  function finishDrag(e){
+    if(!dragging||!dragCard||e.pointerId!==pointerId)return;
+    try{stage.releasePointerCapture(e.pointerId);}catch(ex){}
+    var card=dragCard, localDy=dy, localVel=velocity, moved=didMove;
+    resetDrag();
+
+    var absD=Math.abs(localDy),absV=Math.abs(localVel);
+    if(moved&&(absD>THRESH||absV>VEL_THRESH)){
+      /* fling — dismiss card */
+      anim=true;startAnimSafety();
+      var dir=localDy<0?-1:(localDy>0?1:(localVel<0?-1:1));
+      card._sp={ty:localDy,sc:1-absD*0.0003,rz:localDy*-0.03,op:Math.max(0.15,1-absD/600)};
+      card._sv={ty:localVel*0.016,sc:0,rz:0,op:0};
+      springTo(card,{ty:dir*-600,sc:0.85,rz:dir*-10,op:0},160,16,function(){
+        card._sp=null;card._sv=null;
+        if(dir<0)cur=(cur+1)%N; else cur=(cur-1+N)%N;
+        layout(false,false);
+        clearAnimSafety();anim=false;
+      });
+    }else if(moved){
+      /* short drag — snap back */
+      card._sp={ty:localDy,sc:1-absD*0.0003,rz:localDy*-0.03,op:Math.max(0.15,1-absD/600)};
+      card._sv={ty:localVel*0.016,sc:0,rz:0,op:0};
+      springTo(card,{ty:0,sc:1,rz:0,op:1},220,26);
+    }else{
+      /* no meaningful movement — navigate */
+      var href=card.getAttribute('data-href');
+      if(href) window.location.href=href;
+    }
+  }
+
+  stage.addEventListener('pointerup',finishDrag);
+  stage.addEventListener('pointercancel',function(e){
+    if(!dragging||!dragCard||e.pointerId!==pointerId)return;
+    try{stage.releasePointerCapture(e.pointerId);}catch(ex){}
+    var card=dragCard,localDy=dy;
+    resetDrag();
+    card._sp={ty:localDy,sc:1,rz:0,op:1};card._sv={ty:0,sc:0,rz:0,op:0};
+    springTo(card,{ty:0,sc:1,rz:0,op:1},220,26);
+  });
+
+  /* prevent touch scroll while dragging */
+  stage.addEventListener('touchmove',function(e){if(dragging)e.preventDefault();},{passive:false});
 
   /* keyboard */
   document.addEventListener('keydown',function(e){
@@ -491,8 +715,258 @@
     if(e.key==='ArrowLeft'||e.key==='ArrowUp')goPrev();
   });
 
-  /* init */
-  layout(false);
+  /* init deck — instant (no spring) so rest state is visible on first frame */
+  layout(false,true);
+
+  /* =========================================================
+     PARTICLE CANVAS — ak-top proven pattern, reduced density
+     Dust (no shadowBlur) + floaters (accent glow) + shooters
+     DPR capped to 1. IntersectionObserver cancel/restart.
+  ========================================================= */
+  var cv=document.getElementById('AkArchiveCanvas');
+  var prm=false;
+  try{prm=window.matchMedia('(prefers-reduced-motion:reduce)').matches;}catch(ex){}
+  if(!cv||prm) return;
+
+  (function(){
+    var ctx=cv.getContext('2d',{alpha:true});
+    var w=0,h=0,dpr=1; /* DPR capped to 1 */
+    var dust=[],floaters=[],shooters=[];
+    var nextShooterAt=0,lastFrameTime=0;
+    var animationId=null,seededOnce=false,resizeRaf=0;
+
+    var COLORS={
+      white:{rgb:'255,255,255',hex:'#ffffff'},
+      purple:{rgb:'255,51,255',hex:'#ff33ff'},
+      blue:{rgb:'127,212,255',hex:'#7fd4ff'},
+      yellow:{rgb:'255,211,74',hex:'#ffd34a'}
+    };
+
+    function clamp(v,mn,mx){return Math.min(mx,Math.max(mn,v));}
+    function rand(a,b){return a+Math.random()*(b-a);}
+
+    function resize(){
+      var rect=root.getBoundingClientRect();
+      w=Math.max(1,Math.floor(rect.width));
+      h=Math.max(1,Math.floor(rect.height));
+      cv.width=w;cv.height=h;
+      cv.style.width=w+'px';cv.style.height=h+'px';
+      ctx.setTransform(1,0,0,1,0,0);
+    }
+
+    function pickAccent(){
+      var r=Math.random();
+      if(r<0.40)return COLORS.purple;
+      if(r<0.72)return COLORS.blue;
+      return COLORS.yellow;
+    }
+    function pickDustColor(){return(Math.random()<0.88)?COLORS.white:pickAccent();}
+    function pickFloaterColor(){return(Math.random()<0.76)?COLORS.white:pickAccent();}
+
+    function densityScale(){
+      var vw=window.innerWidth||1200;
+      if(vw<520)return 0.25;
+      if(vw<750)return 0.35;
+      return 0.70;
+    }
+
+    /* DUST: lightweight, no shadowBlur */
+    function seedDust(){
+      var area=w*h,s=densityScale();
+      var vw=window.innerWidth||1200;
+      var tiny=vw<520,mobile=vw<750;
+      var div=mobile?(tiny?700:600):500;
+      var minC=mobile?(tiny?80:120):300;
+      var maxC=mobile?(tiny?200:350):700;
+      var count=Math.round(clamp((area/div)*s,minC,maxC));
+      dust=new Array(count);
+      for(var i=0;i<count;i++){
+        var color=pickDustColor();
+        var isAccent=(color!==COLORS.white);
+        dust[i]={
+          bx:rand(0,w),by:rand(0,h),
+          vx:rand(-0.025,0.025),vy:rand(-0.020,0.020),
+          color:color,isAccent:isAccent,
+          a0:isAccent?rand(0.15,0.35):rand(0.04,0.12),
+          size:isAccent?rand(1.6,2.8):((Math.random()<0.78)?rand(1.0,2.0):rand(2.0,2.8)),
+          tw:rand(0.25,1.10),ph:rand(0,Math.PI*2)
+        };
+      }
+    }
+
+    /* FLOATERS: reduced, accent glow preserved */
+    function seedFloaters(){
+      var area=w*h,s=densityScale();
+      var vw=window.innerWidth||1200;
+      var tiny=vw<520,mobile=vw<750;
+      var div=mobile?(tiny?8000:7000):2200;
+      var minC=mobile?(tiny?30:40):150;
+      var maxC=mobile?(tiny?70:100):350;
+      var count=Math.round(clamp((area/div)*s,minC,maxC));
+      floaters=new Array(count);
+      for(var i=0;i<count;i++){
+        var color=pickFloaterColor();
+        var isAccent=(color!==COLORS.white);
+        var a0=isAccent?rand(0.18,0.45):rand(0.06,0.15);
+        var r=isAccent?rand(2.5,5.0):((Math.random()<0.6)?rand(1.8,3.2):rand(3.2,4.8));
+        var p={
+          bx:rand(0,w),by:rand(0,h),
+          vx:rand(-0.14,0.14),vy:rand(-0.11,0.11),
+          color:color,isAccent:isAccent,
+          a0:a0,r:r,tw:rand(0.35,1.35),ph:rand(0,Math.PI*2)
+        };
+        if(isAccent)p.glowSize=rand(6,14);
+        floaters[i]=p;
+      }
+    }
+
+    /* SHOOTING STARS */
+    function scheduleNextShooter(now){nextShooterAt=now+rand(3000,8000);}
+    function pickMeteorColor(){return(Math.random()<0.78)?COLORS.white:pickAccent();}
+
+    function spawnShooter(now){
+      var fromLeft=Math.random()<0.5;
+      var depth=rand(0.4,1.0);
+      var y=rand(h*0.05,h*0.95);
+      var sx=fromLeft?-rand(50,140):(w+rand(50,140));
+      var angle=fromLeft?rand(-0.45,0.45):rand(Math.PI-0.45,Math.PI+0.45);
+      var speed=rand(650,1400)*(0.65+depth*0.45);
+      var life=rand(0.55,1.15);
+      var color=pickMeteorColor();
+      shooters.push({
+        x:sx,y:y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,
+        speed:speed,t:0,life:life,depth:depth,
+        tailLen:rand(90,180)*depth*(speed/1000),w:rand(1.0,2.2)*depth,
+        color:color,fromLeft:fromLeft
+      });
+      scheduleNextShooter(now);
+    }
+
+    function drawShooter(s,dt){
+      var p=clamp(s.t/s.life,0,1);
+      var fadeIn=Math.pow(clamp(p/0.12,0,1),0.7);
+      var fadeOut=1-Math.pow(clamp((p-0.45)/0.55,0,1),1.8);
+      var fa=fadeIn*fadeOut;
+      if(fa<0.005)return;
+      var spd=Math.sqrt(s.vx*s.vx+s.vy*s.vy)||1;
+      var dx=s.vx/spd,dy=s.vy/spd;
+      var dtl=s.tailLen*(0.6+0.4*fa);
+      var tx=s.x-dx*dtl,ty=s.y-dy*dtl;
+
+      ctx.save();ctx.lineCap='round';
+      /* outer glow tail */
+      var g1=ctx.createLinearGradient(tx,ty,s.x,s.y);
+      g1.addColorStop(0,'rgba('+s.color.rgb+',0)');
+      g1.addColorStop(0.5,'rgba('+s.color.rgb+','+(0.08*fa).toFixed(4)+')');
+      g1.addColorStop(1,'rgba('+s.color.rgb+','+(0.20*fa).toFixed(4)+')');
+      ctx.strokeStyle=g1;ctx.lineWidth=s.w*5*s.depth;
+      ctx.beginPath();ctx.moveTo(tx,ty);ctx.lineTo(s.x,s.y);ctx.stroke();
+      /* core */
+      var g2=ctx.createLinearGradient(tx+(s.x-tx)*0.4,ty+(s.y-ty)*0.4,s.x,s.y);
+      g2.addColorStop(0,'rgba(255,255,255,0)');
+      g2.addColorStop(0.5,'rgba(255,255,255,'+(0.5*fa).toFixed(4)+')');
+      g2.addColorStop(1,'rgba(255,255,255,'+(0.9*fa).toFixed(4)+')');
+      ctx.strokeStyle=g2;ctx.lineWidth=s.w*0.9;
+      ctx.beginPath();ctx.moveTo(tx+(s.x-tx)*0.4,ty+(s.y-ty)*0.4);ctx.lineTo(s.x,s.y);ctx.stroke();
+      /* head dot */
+      var hr=s.w*2*s.depth;
+      ctx.shadowBlur=10*s.depth;ctx.shadowColor=s.color.hex;
+      ctx.fillStyle='rgba(255,255,255,'+(0.9*fa).toFixed(4)+')';
+      ctx.beginPath();ctx.arc(s.x,s.y,hr,0,Math.PI*2);ctx.fill();
+      ctx.shadowBlur=0;ctx.shadowColor='transparent';
+      ctx.restore();
+    }
+
+    /* ---- MAIN LOOP ---- */
+    function step(t){
+      t=t||performance.now();
+      var time=t*0.001;
+      var rdt=lastFrameTime?clamp((t-lastFrameTime)/1000,0.001,0.05):(1/60);
+      lastFrameTime=t;
+
+      ctx.clearRect(0,0,w,h);
+      ctx.globalCompositeOperation='lighter';
+
+      /* dust */
+      ctx.shadowBlur=0;ctx.shadowColor='transparent';
+      for(var i=0;i<dust.length;i++){
+        var d=dust[i];
+        d.bx+=d.vx;d.by+=d.vy;
+        if(d.bx<-3)d.bx=w+3;if(d.bx>w+3)d.bx=-3;
+        if(d.by<-3)d.by=h+3;if(d.by>h+3)d.by=-3;
+        var twk=0.70+0.30*Math.sin(time*d.tw+d.ph);
+        ctx.fillStyle='rgba('+d.color.rgb+','+(d.a0*twk).toFixed(3)+')';
+        ctx.fillRect(d.bx-d.size*0.5,d.by-d.size*0.5,d.size,d.size);
+      }
+
+      /* floaters */
+      for(var j=0;j<floaters.length;j++){
+        var f=floaters[j];
+        f.bx+=f.vx;f.by+=f.vy;
+        if(f.bx<-30)f.bx=w+30;if(f.bx>w+30)f.bx=-30;
+        if(f.by<-30)f.by=h+30;if(f.by>h+30)f.by=-30;
+        var tw2=0.65+0.35*Math.sin(time*f.tw+f.ph);
+        var a2=f.a0*tw2;
+        if(f.isAccent&&f.glowSize){
+          ctx.shadowBlur=f.glowSize*tw2;ctx.shadowColor=f.color.hex;
+        }else{
+          ctx.shadowBlur=0;ctx.shadowColor='transparent';
+        }
+        ctx.fillStyle='rgba('+f.color.rgb+','+a2.toFixed(3)+')';
+        ctx.beginPath();ctx.arc(f.bx,f.by,f.r,0,Math.PI*2);ctx.fill();
+      }
+
+      /* shooters */
+      if(!nextShooterAt)scheduleNextShooter(t);
+      if(t>=nextShooterAt)spawnShooter(t);
+      for(var k=shooters.length-1;k>=0;k--){
+        var s=shooters[k];
+        s.t+=rdt;
+        s.x+=s.vx*rdt;s.y+=s.vy*rdt;
+        drawShooter(s,rdt);
+        var mg=300;
+        if(s.t>=s.life||s.x<-mg||s.x>w+mg||s.y<-mg||s.y>h+mg)shooters.splice(k,1);
+      }
+
+      ctx.globalCompositeOperation='source-over';
+      ctx.shadowBlur=0;ctx.shadowColor='transparent';
+      animationId=requestAnimationFrame(step);
+    }
+
+    function hardSeed(){resize();seedDust();seedFloaters();seededOnce=true;}
+    function softResize(){
+      var ow=w||1,oh=h||1;
+      resize();
+      if(!seededOnce){seedDust();seedFloaters();seededOnce=true;return;}
+      var sx=w/ow,sy=h/oh;
+      for(var i=0;i<dust.length;i++){dust[i].bx*=sx;dust[i].by*=sy;}
+      for(var j=0;j<floaters.length;j++){floaters[j].bx*=sx;floaters[j].by*=sy;}
+      shooters.length=0;nextShooterAt=0;
+    }
+    function reqSoftResize(){
+      if(resizeRaf)return;
+      resizeRaf=requestAnimationFrame(function(){resizeRaf=0;softResize();});
+    }
+
+    hardSeed();
+    animationId=requestAnimationFrame(step);
+
+    /* offscreen cancel/restart — proven IO pattern */
+    if('IntersectionObserver' in window){
+      var io=new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){lastFrameTime=0;if(!animationId)animationId=requestAnimationFrame(step);}
+          else{if(animationId){cancelAnimationFrame(animationId);animationId=null;}}
+        });
+      },{threshold:0});
+      io.observe(root);
+    }
+
+    window.addEventListener('resize',reqSoftResize,{passive:true});
+    if(window.visualViewport)window.visualViewport.addEventListener('resize',reqSoftResize,{passive:true});
+    if('ResizeObserver' in window){var ro=new ResizeObserver(function(){reqSoftResize();});ro.observe(root);}
+  })();
+
 })();
 </script>
 

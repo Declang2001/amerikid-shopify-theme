@@ -1,0 +1,180 @@
+{% comment %}
+  ============================================================
+  AK-MB-RELEASE: Time-gated release countdown for Mystery Box.
+
+  This section renders NO visible HTML of its own. It is a JS/CSS
+  orchestrator that controls the EXISTING lock overlay (#akMbLock)
+  inside the Mystery Box embed section. The overlay covers only the
+  iframe/frame area — not the full viewport, not ak-top/nav, not
+  the footer.
+
+  ENFORCEMENT: Client-side only. This is a theme-level JS time gate.
+  It can be bypassed by disabling JavaScript or manipulating the
+  browser clock. Stronger enforcement would require server-side or
+  app-level logic (Vercel app time check, Shopify app proxy, or
+  metafield gating).
+
+  TARGET: Thursday, April 9, 2026 at 12:00 AM America/Los_Angeles
+          (PDT / UTC-7 → 2026-04-09T07:00:00Z)
+
+  REMOVAL: Delete this section from page.mystery-box.json to
+  permanently disable the release gate. The existing lock overlay
+  in the embed section will remain hidden (LOCKED_DEFAULT = false).
+  ============================================================
+{% endcomment %}
+
+{%- style -%}
+/* ===== AK-MB-RELEASE COUNTDOWN (injected into existing lock card) ===== */
+
+/* countdown row */
+.ak-mb-lock-timer{
+  display:flex;
+  justify-content:center;
+  gap:6px;
+  margin-top:16px;
+}
+.ak-mb-lock-unit{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  min-width:52px;
+}
+.ak-mb-lock-digits{
+  font-family:Impact,Haettenschweiler,'Arial Narrow Bold',sans-serif;
+  font-size:32px;
+  letter-spacing:0.06em;
+  line-height:1;
+  color:#fff;
+  font-variant-numeric:tabular-nums;
+}
+.ak-mb-lock-dlabel{
+  margin-top:4px;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  font-size:9px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,0.38);
+  line-height:1;
+}
+/* colon separator */
+.ak-mb-lock-sep{
+  font-family:Impact,Haettenschweiler,'Arial Narrow Bold',sans-serif;
+  font-size:32px;
+  line-height:1;
+  color:rgba(255,255,255,0.18);
+  align-self:flex-start;
+}
+
+/* responsive */
+@media(max-width:480px){
+  .ak-mb-lock-digits{
+    font-size:24px;
+  }
+  .ak-mb-lock-sep{
+    font-size:24px;
+  }
+  .ak-mb-lock-unit{
+    min-width:40px;
+  }
+}
+/* ===== END AK-MB-RELEASE COUNTDOWN ===== */
+{%- endstyle -%}
+
+<script>
+(function(){
+  /* Target: Thursday April 9, 2026 at 12:00 AM America/Los_Angeles (PDT = UTC-7)
+     Absolute UTC: 2026-04-09T07:00:00Z */
+  var TARGET_UTC = Date.UTC(2026, 3, 9, 7, 0, 0); /* month is 0-indexed: 3 = April */
+
+  /* If already past release, do nothing — lock stays hidden as the embed set it */
+  if(Date.now() >= TARGET_UTC) return;
+
+  /* Find the existing lock overlay elements in the embed section */
+  var lockEl = document.getElementById('akMbLock');
+  var iframe  = document.getElementById('akMbIframe');
+  var lockSub = lockEl ? lockEl.querySelector('.ak-mb-lock-sub') : null;
+  var lockCard = lockEl ? lockEl.querySelector('.ak-mb-lock-card') : null;
+  if(!lockEl || !iframe || !lockCard) return;
+
+  /* Show the existing lock overlay (embed JS set it to display:none) */
+  lockEl.style.display = 'grid';
+  lockEl.setAttribute('aria-hidden', 'false');
+  iframe.style.pointerEvents = 'none';
+
+  /* Update the sub text with the drop date */
+  if(lockSub) lockSub.textContent = 'Drops Thursday, April 9 at Midnight PT';
+
+  /* Inject countdown timer into the existing lock card (before the glint) */
+  var glint = lockCard.querySelector('.ak-mb-lock-glint');
+  var timerHTML =
+    '<div class="ak-mb-lock-timer">' +
+      '<div class="ak-mb-lock-unit"><span class="ak-mb-lock-digits" id="akMbRelD">--</span><span class="ak-mb-lock-dlabel">Days</span></div>' +
+      '<span class="ak-mb-lock-sep">:</span>' +
+      '<div class="ak-mb-lock-unit"><span class="ak-mb-lock-digits" id="akMbRelH">--</span><span class="ak-mb-lock-dlabel">Hours</span></div>' +
+      '<span class="ak-mb-lock-sep">:</span>' +
+      '<div class="ak-mb-lock-unit"><span class="ak-mb-lock-digits" id="akMbRelM">--</span><span class="ak-mb-lock-dlabel">Min</span></div>' +
+      '<span class="ak-mb-lock-sep">:</span>' +
+      '<div class="ak-mb-lock-unit"><span class="ak-mb-lock-digits" id="akMbRelS">--</span><span class="ak-mb-lock-dlabel">Sec</span></div>' +
+    '</div>';
+
+  var timerDiv = document.createElement('div');
+  timerDiv.innerHTML = timerHTML;
+  var timerEl = timerDiv.firstChild;
+
+  if(glint){
+    lockCard.insertBefore(timerEl, glint);
+  } else {
+    lockCard.appendChild(timerEl);
+  }
+
+  var elD = document.getElementById('akMbRelD');
+  var elH = document.getElementById('akMbRelH');
+  var elM = document.getElementById('akMbRelM');
+  var elS = document.getElementById('akMbRelS');
+
+  function pad(n){ return n < 10 ? '0' + n : '' + n; }
+
+  function unlock(){
+    lockEl.style.display = 'none';
+    lockEl.setAttribute('aria-hidden', 'true');
+    iframe.style.pointerEvents = 'auto';
+  }
+
+  function tick(){
+    var diff = TARGET_UTC - Date.now();
+
+    if(diff <= 0){
+      clearInterval(timer);
+      if(elD) elD.textContent = '00';
+      if(elH) elH.textContent = '00';
+      if(elM) elM.textContent = '00';
+      if(elS) elS.textContent = '00';
+      unlock();
+      return;
+    }
+
+    var secs = Math.floor(diff / 1000);
+    var d = Math.floor(secs / 86400);
+    var h = Math.floor((secs % 86400) / 3600);
+    var m = Math.floor((secs % 3600) / 60);
+    var s = secs % 60;
+
+    if(elD) elD.textContent = pad(d);
+    if(elH) elH.textContent = pad(h);
+    if(elM) elM.textContent = pad(m);
+    if(elS) elS.textContent = pad(s);
+  }
+
+  tick();
+  var timer = setInterval(tick, 1000);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "AK MB Release Gate",
+  "tag": "section",
+  "class": "ak-mb-release-section",
+  "settings": []
+}
+{% endschema %}

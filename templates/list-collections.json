@@ -22,11 +22,16 @@
       "settings": {
         "color_scheme": "scheme-4"
       }
+    },
+    "ak-footer": {
+      "type": "ak-footer",
+      "settings": {}
     }
   },
   "order": [
     "main",
     "ak-top",
-    "ak-archive"
+    "ak-archive",
+    "ak-footer"
   ]
 }

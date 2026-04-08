@@ -21,7 +21,8 @@
         "color_scheme": "",
         "padding_top": 0,
         "padding_bottom": 0
-      }
+      },
+      "disabled": true
     },
     "custom_liquid_R4UBeg": {
       "type": "custom-liquid",
@@ -31,7 +32,8 @@
         "color_scheme": "",
         "padding_top": 0,
         "padding_bottom": 0
-      }
+      },
+      "disabled": true
     },
     "custom_liquid_Jdbfj4": {
       "type": "custom-liquid",
@@ -170,11 +172,22 @@
         "color_scheme": "",
         "padding_top": 0,
         "padding_bottom": 0
-      }
+      },
+      "disabled": true
+    },
+    "ak-top": {
+      "type": "ak-top",
+      "settings": {}
+    },
+    "ak-collection-bg": {
+      "type": "ak-collection-bg",
+      "settings": {}
     }
   },
   "order": [
+    "ak-collection-bg",
     "banner",
+    "ak-top",
     "custom_liquid_3ir9Jz",
     "custom_liquid_R4UBeg",
     "custom_liquid_Jdbfj4",

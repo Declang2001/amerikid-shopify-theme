@@ -48,6 +48,10 @@
     "ak-top": {
       "type": "ak-top",
       "settings": {}
+    },
+    "ak-footer": {
+      "type": "ak-footer",
+      "settings": {}
     }
   },
   "order": [
@@ -55,6 +59,7 @@
     "ak-top",
     "custom_liquid_4tbt7q",
     "custom_liquid_RnLA6b",
-    "custom_liquid_izr6z3"
+    "custom_liquid_izr6z3",
+    "ak-footer"
   ]
 }
