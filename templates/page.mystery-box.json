@@ -28,6 +28,10 @@
       "type": "ak-top",
       "settings": {}
     },
+    "ak-mb-prestart": {
+      "type": "ak-mb-prestart",
+      "settings": {}
+    },
     "ak-mb-release": {
       "type": "ak-mb-release",
       "settings": {}
@@ -41,6 +45,7 @@
     "main",
     "ak-top",
     "custom_liquid_mysterybox_embed",
+    "ak-mb-prestart",
     "ak-mb-release",
     "ak-footer"
   ]

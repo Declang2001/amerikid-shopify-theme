@@ -1,0 +1,837 @@
+{% comment %}
+  ============================================================
+  AK-MB-PRESTART: Pre-start briefing screen for Mystery Box.
+
+  This section renders NO Liquid DOM of its own. It is a
+  JS/CSS orchestrator that injects a styled overlay into the
+  EXISTING `.ak-mb-frame` inside the Mystery Box embed at
+  runtime, as a sibling of `#akMbIframe` and `#akMbLock`.
+
+  PURPOSE
+    A ceremonial, restricted-access "mission briefing" screen
+    that orients customers, frames the Combo Pass offer, and
+    hands off to the existing iframe flow when START is
+    clicked. The actual experience is $20 — the entry ritual
+    should read like $1,000.
+
+  SHOPIFY-SIDE ONLY
+    - No crate repo changes
+    - No edits to the embed custom_liquid JSON string
+    - No edits to layout/theme.liquid
+    - No edits to sections/ak-mb-release.liquid
+    - No iframe src mutation, no iframe reload, no postMessage
+    - No backend, entitlement, checkout, fulfillment logic
+
+  RELATIONSHIP TO AK-MB-RELEASE
+    Both orchestrators share the same TARGET_UTC constant
+    (2026-04-09T07:00:00Z). Pre-release, ak-mb-release owns
+    the screen via #akMbLock and ak-mb-prestart early-returns.
+    Post-release, ak-mb-release is a no-op and ak-mb-prestart
+    owns the screen until START is clicked.
+
+  Z-INDEX LADDER INSIDE .ak-mb-frame
+    canvas(0) → stage(2) → stage::before seam(3)
+      → .ak-mb-prestart(4)    ← this section
+      → .ak-mb-lock(5)        ← release gate (pre-drop only)
+      → frame ::before/::after bevel+LED(6)
+
+  DISMISSAL FLOW
+    1. User clicks START
+    2. Overlay gets .is-dismissing class (420ms opacity fade)
+    3. Overlay removed from DOM
+    4. iframe.style.pointerEvents restored to 'auto'
+    5. User sees the existing iframe tap-to-sound screen and
+       proceeds through the unchanged crate flow
+
+  REMOVAL / ROLLBACK
+    1. Delete this file.
+    2. In templates/page.mystery-box.json, remove the
+       "ak-mb-prestart" entry from the `sections` map and
+       remove "ak-mb-prestart" from the `order` array.
+    3. No other file edits required.
+
+  PHASE 1
+    Phase 1 ships Direction A "Classified / Mission Briefing"
+    visual treatment ready-to-read premium. Phase 2 follow-
+    ups (typewriter reveal, dynamic price via Liquid, session
+    dismissal policy, optional stamp watermarks) are deferred
+    until Phase 1 is verified on dev.
+
+  COPY CONFIRMATION
+    All user-facing strings in this file are draft pending
+    business confirmation (price, disclaimer wording, combo
+    terms). See TODO: confirm markers below.
+  ============================================================
+{% endcomment %}
+
+{%- style -%}
+/* ============================================================
+   AK-MB-PRESTART
+   Scoped under .ak-mb-prestart — zero global styles.
+   Material continuity: matte bunker housing + single amber accent.
+   ============================================================ */
+
+.ak-mb-prestart{
+  position:absolute;
+  inset:0;
+  z-index:4;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:28px 32px;
+  box-sizing:border-box;
+  background:linear-gradient(180deg,#080706 0%,#040403 100%);
+  color:#e8e4db;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  text-align:center;
+  overflow:hidden;
+  opacity:0;
+  animation:akMbPrestartIn 600ms ease-out forwards;
+  -webkit-font-smoothing:antialiased;
+  perspective:1200px;
+  transform-style:preserve-3d;
+}
+.ak-mb-prestart *{
+  box-sizing:border-box;
+}
+.ak-mb-prestart.is-dismissing{
+  opacity:0;
+  transition:opacity 420ms ease-out;
+  pointer-events:none;
+}
+
+/* ----- Ambient texture layers (vignette / grain / scanline) ----- */
+.ak-mb-prestart__vignette{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse 85% 72% at center,transparent 32%,rgba(0,0,0,0.62) 100%);
+  pointer-events:none;
+  z-index:0;
+}
+.ak-mb-prestart__grain{
+  position:absolute;
+  inset:0;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size:160px 160px;
+  opacity:0.048;
+  mix-blend-mode:overlay;
+  pointer-events:none;
+  z-index:1;
+}
+.ak-mb-prestart__scanline{
+  position:absolute;
+  inset:0;
+  background-image:repeating-linear-gradient(0deg,transparent 0px,transparent 3px,rgba(255,255,255,0.012) 3px,rgba(255,255,255,0.012) 4px);
+  pointer-events:none;
+  z-index:2;
+}
+
+/* ----- Inner content container ----- */
+.ak-mb-prestart__inner{
+  position:relative;
+  z-index:3;
+  width:100%;
+  max-width:560px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  transform:rotateX(0.6deg) rotateY(-0.15deg);
+  transform-style:preserve-3d;
+  transform-origin:50% 50%;
+}
+
+/* ----- Staggered entrance per child ----- */
+.ak-mb-prestart__serial,
+.ak-mb-prestart__hero,
+.ak-mb-prestart__plate,
+.ak-mb-prestart__ctas,
+.ak-mb-prestart__disclaimer{
+  opacity:0;
+  transform:translateY(8px);
+  animation:akMbPrestartChildRise 560ms ease-out forwards;
+  will-change:transform,opacity;
+}
+.ak-mb-prestart__serial{animation-delay:200ms;}
+.ak-mb-prestart__hero{animation-delay:280ms;}
+.ak-mb-prestart__plate:not(.ak-mb-prestart__plate--data){animation-delay:360ms;}
+.ak-mb-prestart__plate.ak-mb-prestart__plate--data{animation-delay:440ms;}
+.ak-mb-prestart__ctas{animation-delay:520ms;}
+.ak-mb-prestart__disclaimer{animation-delay:600ms;}
+
+/* ----- Top serial strip (physical recessed data bar) ----- */
+.ak-mb-prestart__serial{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:7px 12px 6px;
+  font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:9px;
+  letter-spacing:0.24em;
+  color:rgba(232,228,219,0.48);
+  text-transform:uppercase;
+  background:linear-gradient(180deg,#0a0908 0%,#060504 100%);
+  border-top:1px solid rgba(198,138,46,0.2);
+  border-bottom:1px solid rgba(0,0,0,0.75);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.035),
+    inset 0 -1px 0 rgba(0,0,0,0.78),
+    0 1px 0 rgba(0,0,0,0.55),
+    0 4px 10px -3px rgba(0,0,0,0.6);
+}
+.ak-mb-prestart__serial-dot{
+  display:inline-block;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#c68a2e;
+  margin-right:2px;
+  box-shadow:
+    0 0 6px rgba(198,138,46,0.78),
+    inset 0 1px 1px rgba(255,255,255,0.32),
+    inset 0 -1px 1px rgba(0,0,0,0.38),
+    0 0 0 2px #040302,
+    0 0 0 3px rgba(0,0,0,0.88);
+  animation:akMbPrestartPulse 4s ease-in-out infinite;
+}
+.ak-mb-prestart__serial-sep{
+  color:rgba(232,228,219,0.18);
+}
+
+/* ----- Hero block (kicker / title / subtitle) ----- */
+.ak-mb-prestart__hero{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  padding:10px 0 6px;
+}
+.ak-mb-prestart__kicker{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  font-size:10px;
+  letter-spacing:0.34em;
+  color:rgba(232,228,219,0.42);
+  text-transform:uppercase;
+}
+.ak-mb-prestart__title{
+  margin:0;
+  font-family:Impact,Haettenschweiler,'Arial Narrow Bold',sans-serif;
+  font-size:58px;
+  line-height:0.92;
+  letter-spacing:0.12em;
+  color:#f4f1e9;
+  text-transform:uppercase;
+  text-shadow:
+    0 1px 0 rgba(0,0,0,0.92),
+    0 2px 4px rgba(0,0,0,0.55),
+    0 0 22px rgba(198,138,46,0.07);
+}
+.ak-mb-prestart__subtitle{
+  display:inline-block;
+  margin-top:2px;
+  padding:4px 12px 3px;
+  border-top:1px solid rgba(198,138,46,0.48);
+  border-bottom:1px solid rgba(198,138,46,0.16);
+  font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:10px;
+  letter-spacing:0.28em;
+  color:#c68a2e;
+  text-transform:uppercase;
+}
+
+/* ----- Plates (engraved panels: outer drop + inner bevel recess) ----- */
+.ak-mb-prestart__plate{
+  position:relative;
+  padding:14px 16px 12px;
+  background:linear-gradient(180deg,#0a0908 0%,#050403 100%);
+  border:1px solid #1a1815;
+  border-top-color:rgba(198,138,46,0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.035),
+    inset 0 -1px 0 rgba(0,0,0,0.88),
+    0 3px 0 rgba(0,0,0,0.58),
+    0 8px 18px -6px rgba(0,0,0,0.72),
+    0 0 0 1px rgba(198,138,46,0.06);
+  text-align:left;
+}
+.ak-mb-prestart__plate::before{
+  content:'';
+  position:absolute;
+  inset:2px;
+  pointer-events:none;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.022),
+    inset 0 -1px 0 rgba(0,0,0,0.72);
+  z-index:0;
+}
+/* Engraved seam — data plate reads as connected to briefing plate above */
+.ak-mb-prestart__plate.ak-mb-prestart__plate--data{
+  margin-top:-4px;
+  border-top-color:rgba(198,138,46,0.26);
+}
+.ak-mb-prestart__plate-label{
+  position:absolute;
+  top:-7px;
+  left:14px;
+  padding:0 7px;
+  background:#060504;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  font-size:9px;
+  letter-spacing:0.28em;
+  color:rgba(198,138,46,0.72);
+  text-transform:uppercase;
+  line-height:1;
+  z-index:2;
+}
+.ak-mb-prestart__plate-body{
+  position:relative;
+  z-index:1;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+/* Briefing lines */
+.ak-mb-prestart__brief-line{
+  position:relative;
+  padding-left:18px;
+  font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:11.5px;
+  line-height:1.55;
+  color:rgba(232,228,219,0.82);
+  letter-spacing:0.035em;
+}
+.ak-mb-prestart__brief-line::before{
+  content:'>';
+  position:absolute;
+  left:2px;
+  top:0;
+  color:#c68a2e;
+  font-weight:700;
+}
+
+/* Combo data rows */
+.ak-mb-prestart__data-row{
+  display:flex;
+  align-items:baseline;
+  gap:14px;
+  padding:5px 0;
+  border-bottom:1px dashed rgba(255,255,255,0.045);
+}
+.ak-mb-prestart__data-row:last-child{
+  border-bottom:none;
+  padding-bottom:0;
+}
+.ak-mb-prestart__data-key{
+  flex:0 0 62px;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  font-size:9px;
+  letter-spacing:0.24em;
+  color:rgba(198,138,46,0.62);
+  text-transform:uppercase;
+}
+.ak-mb-prestart__data-val{
+  flex:1;
+  font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:12px;
+  color:rgba(244,241,233,0.92);
+  letter-spacing:0.05em;
+  font-variant-numeric:tabular-nums;
+}
+.ak-mb-prestart__data-val--ok{
+  color:#c68a2e;
+}
+
+/* ----- CTA row ----- */
+.ak-mb-prestart__ctas{
+  display:grid;
+  grid-template-columns:1.35fr 1fr;
+  gap:12px;
+  margin-top:6px;
+}
+.ak-mb-prestart__cta{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  min-height:60px;
+  padding:12px 18px;
+  font-family:Impact,Haettenschweiler,'Arial Narrow Bold',sans-serif;
+  text-transform:uppercase;
+  text-decoration:none;
+  cursor:pointer;
+  border-radius:1px;
+  overflow:hidden;
+  transition:background 160ms ease-out,border-color 160ms ease-out,color 160ms ease-out,transform 160ms ease-out,box-shadow 200ms ease-out;
+  -webkit-appearance:none;
+  appearance:none;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+.ak-mb-prestart__cta--primary{
+  background:linear-gradient(180deg,#121110 0%,#080706 100%);
+  border:1px solid #1c1a17;
+  border-top:1px solid rgba(198,138,46,0.52);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.072),
+    inset 0 2px 0 rgba(255,255,255,0.025),
+    inset 0 -1px 0 rgba(0,0,0,0.82),
+    inset 0 -2px 0 rgba(0,0,0,0.35),
+    0 2px 0 rgba(0,0,0,0.9),
+    0 6px 14px -4px rgba(0,0,0,0.65),
+    0 0 0 1px rgba(198,138,46,0.12),
+    0 0 18px -6px rgba(198,138,46,0.18);
+  color:#f4f1e9;
+}
+.ak-mb-prestart__cta--primary::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,0.048) 0%,rgba(255,255,255,0) 32%);
+  pointer-events:none;
+  z-index:0;
+}
+.ak-mb-prestart__cta--secondary{
+  background:linear-gradient(180deg,rgba(14,13,11,0.72) 0%,rgba(6,5,4,0.82) 100%);
+  border:1px solid #1a1815;
+  border-top:1px solid rgba(198,138,46,0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.025),
+    inset 0 -1px 0 rgba(0,0,0,0.55),
+    0 2px 0 rgba(0,0,0,0.72),
+    0 5px 12px -4px rgba(0,0,0,0.55),
+    0 0 0 1px rgba(198,138,46,0.05);
+  color:rgba(232,228,219,0.74);
+}
+.ak-mb-prestart__cta--secondary::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,0.022) 0%,rgba(255,255,255,0) 32%);
+  pointer-events:none;
+  z-index:0;
+}
+.ak-mb-prestart__cta-label{
+  position:relative;
+  z-index:1;
+  font-size:20px;
+  letter-spacing:0.12em;
+  line-height:1;
+}
+.ak-mb-prestart__cta-sub{
+  position:relative;
+  z-index:1;
+  font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:9px;
+  letter-spacing:0.22em;
+  opacity:0.6;
+  line-height:1;
+  margin-top:2px;
+}
+
+/* Hover (desktop only) */
+@media (hover:hover) and (pointer:fine){
+  .ak-mb-prestart__cta--primary:hover{
+    background:linear-gradient(180deg,#1a1815 0%,#0c0b09 100%);
+    border-top-color:rgba(198,138,46,0.78);
+    transform:translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.088),
+      inset 0 2px 0 rgba(255,255,255,0.032),
+      inset 0 -1px 0 rgba(0,0,0,0.82),
+      inset 0 -2px 0 rgba(0,0,0,0.35),
+      0 3px 0 rgba(0,0,0,0.92),
+      0 8px 18px -4px rgba(0,0,0,0.72),
+      0 0 0 1px rgba(198,138,46,0.24),
+      0 0 24px -4px rgba(198,138,46,0.32);
+  }
+  .ak-mb-prestart__cta--secondary:hover{
+    border-color:#2a2620;
+    border-top-color:rgba(198,138,46,0.42);
+    color:rgba(244,241,233,0.94);
+    transform:translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.03),
+      inset 0 -1px 0 rgba(0,0,0,0.55),
+      0 3px 0 rgba(0,0,0,0.82),
+      0 6px 14px -4px rgba(0,0,0,0.62),
+      0 0 0 1px rgba(198,138,46,0.12);
+  }
+}
+
+/* Active (pressed) — real translate + inner recess */
+.ak-mb-prestart__cta--primary:active{
+  transform:translateY(2px);
+  box-shadow:
+    inset 0 2px 5px rgba(0,0,0,0.85),
+    inset 0 -1px 0 rgba(198,138,46,0.18),
+    0 0 0 1px rgba(198,138,46,0.14),
+    0 0 12px -4px rgba(198,138,46,0.2);
+}
+.ak-mb-prestart__cta--secondary:active{
+  transform:translateY(2px);
+  box-shadow:
+    inset 0 2px 4px rgba(0,0,0,0.68),
+    inset 0 -1px 0 rgba(0,0,0,0.42),
+    0 0 0 1px rgba(198,138,46,0.08);
+}
+
+/* Focus (keyboard) */
+.ak-mb-prestart__cta:focus{
+  outline:none;
+}
+.ak-mb-prestart__cta--primary:focus-visible{
+  outline:none;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.055),
+    inset 0 -1px 0 rgba(0,0,0,0.72),
+    0 2px 0 rgba(0,0,0,0.82),
+    0 0 0 2px rgba(198,138,46,0.58);
+}
+.ak-mb-prestart__cta--secondary:focus-visible{
+  outline:none;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.02),
+    inset 0 -1px 0 rgba(0,0,0,0.5),
+    0 0 0 2px rgba(198,138,46,0.42);
+}
+
+/* ----- Bottom disclaimer strip (engraved panel) ----- */
+.ak-mb-prestart__disclaimer{
+  position:relative;
+  margin-top:4px;
+  padding:7px 14px 6px;
+  font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:8.5px;
+  letter-spacing:0.2em;
+  color:rgba(232,228,219,0.38);
+  text-transform:uppercase;
+  background:linear-gradient(180deg,#0a0908 0%,#060504 100%);
+  border-top:1px solid rgba(198,138,46,0.14);
+  border-bottom:1px solid rgba(0,0,0,0.62);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.025),
+    inset 0 -1px 0 rgba(0,0,0,0.68),
+    0 1px 0 rgba(0,0,0,0.52),
+    0 4px 10px -3px rgba(0,0,0,0.55);
+  line-height:1.5;
+}
+
+/* ----- Keyframes ----- */
+@keyframes akMbPrestartIn{
+  0%{opacity:0;}
+  100%{opacity:1;}
+}
+@keyframes akMbPrestartRise{
+  0%{opacity:0.6;transform:translateY(6px);}
+  100%{opacity:1;transform:translateY(0);}
+}
+@keyframes akMbPrestartChildRise{
+  0%{opacity:0;transform:translateY(8px);}
+  100%{opacity:1;transform:translateY(0);}
+}
+@keyframes akMbPrestartPulse{
+  0%,100%{opacity:0.5;}
+  50%{opacity:1;}
+}
+
+/* ----- Responsive: tablet ----- */
+@media (max-width:640px){
+  .ak-mb-prestart{
+    padding:20px 18px;
+    perspective:none;
+  }
+  .ak-mb-prestart__inner{
+    gap:13px;
+    transform:none;
+    transform-style:flat;
+  }
+  .ak-mb-prestart__cta--primary{
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.06),
+      inset 0 -1px 0 rgba(0,0,0,0.82),
+      0 2px 0 rgba(0,0,0,0.88),
+      0 4px 10px -4px rgba(0,0,0,0.58),
+      0 0 0 1px rgba(198,138,46,0.1),
+      0 0 12px -6px rgba(198,138,46,0.12);
+  }
+  .ak-mb-prestart__cta--secondary{
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.022),
+      inset 0 -1px 0 rgba(0,0,0,0.55),
+      0 2px 0 rgba(0,0,0,0.7),
+      0 4px 10px -4px rgba(0,0,0,0.5),
+      0 0 0 1px rgba(198,138,46,0.04);
+  }
+  .ak-mb-prestart__title{
+    font-size:42px;
+    letter-spacing:0.1em;
+  }
+  .ak-mb-prestart__hero{
+    padding:6px 0 4px;
+    gap:5px;
+  }
+  .ak-mb-prestart__ctas{
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+  .ak-mb-prestart__cta{
+    min-height:56px;
+    padding:11px 16px;
+  }
+  .ak-mb-prestart__cta-label{
+    font-size:18px;
+  }
+  .ak-mb-prestart__serial{
+    font-size:8px;
+    gap:6px;
+    padding:5px 8px;
+  }
+  .ak-mb-prestart__brief-line{
+    font-size:11px;
+  }
+  .ak-mb-prestart__data-key{
+    flex:0 0 54px;
+    font-size:8.5px;
+  }
+  .ak-mb-prestart__data-val{
+    font-size:11px;
+  }
+  .ak-mb-prestart__disclaimer{
+    font-size:7.5px;
+    letter-spacing:0.16em;
+  }
+}
+
+/* ----- Responsive: small mobile ----- */
+@media (max-width:380px){
+  .ak-mb-prestart{
+    padding:16px 14px;
+  }
+  .ak-mb-prestart__inner{
+    gap:11px;
+  }
+  .ak-mb-prestart__title{
+    font-size:34px;
+  }
+  .ak-mb-prestart__subtitle{
+    font-size:9px;
+    padding:3px 10px 2px;
+  }
+  .ak-mb-prestart__plate{
+    padding:12px 14px 10px;
+  }
+  .ak-mb-prestart__brief-line{
+    font-size:10.5px;
+    padding-left:16px;
+  }
+  .ak-mb-prestart__data-key{
+    flex:0 0 48px;
+    font-size:8px;
+    letter-spacing:0.2em;
+  }
+  .ak-mb-prestart__data-val{
+    font-size:10.5px;
+  }
+  .ak-mb-prestart__cta-label{
+    font-size:17px;
+  }
+  .ak-mb-prestart__serial{
+    font-size:7.5px;
+    gap:5px;
+  }
+}
+
+/* ----- Reduced motion ----- */
+@media (prefers-reduced-motion:reduce){
+  .ak-mb-prestart{
+    animation:none;
+    opacity:1;
+    perspective:none;
+  }
+  .ak-mb-prestart__inner{
+    animation:none;
+    opacity:1;
+    transform:none !important;
+    transform-style:flat;
+  }
+  .ak-mb-prestart__serial,
+  .ak-mb-prestart__hero,
+  .ak-mb-prestart__plate,
+  .ak-mb-prestart__ctas,
+  .ak-mb-prestart__disclaimer{
+    animation:none !important;
+    animation-delay:0s !important;
+    opacity:1 !important;
+    transform:none !important;
+  }
+  .ak-mb-prestart__serial-dot{
+    animation:none;
+    opacity:0.85;
+  }
+  .ak-mb-prestart.is-dismissing{
+    transition:none;
+    opacity:0;
+  }
+  .ak-mb-prestart__cta{
+    transition:none;
+  }
+  .ak-mb-prestart__cta--primary:hover,
+  .ak-mb-prestart__cta--primary:active,
+  .ak-mb-prestart__cta--secondary:hover,
+  .ak-mb-prestart__cta--secondary:active{
+    transform:none;
+  }
+}
+/* ============================================================
+   END AK-MB-PRESTART
+   ============================================================ */
+{%- endstyle -%}
+
+<script>
+(function(){
+  /* ==========================================================
+     AK MB PRE-START ORCHESTRATOR
+     Shopify-side only. Does not edit the iframe or the embed.
+     ========================================================== */
+
+  /* Release gate timing — mirror sections/ak-mb-release.liquid.
+     Pre-release: ak-mb-release owns the screen via #akMbLock,
+     and this pre-start does NOT render. Post-release: pre-start
+     owns the screen until START is clicked.
+     2026-04-09T07:00:00Z = Thu Apr 9 2026, 12:00 AM America/Los_Angeles */
+  var TARGET_UTC = Date.UTC(2026, 3, 9, 7, 0, 0);
+  if (Date.now() < TARGET_UTC) return;
+
+  function init(){
+    var embed  = document.getElementById('ak-mysterybox-embed');
+    var frame  = embed ? embed.querySelector('.ak-mb-frame') : null;
+    var iframe = document.getElementById('akMbIframe');
+    if (!embed || !frame || !iframe) return;
+
+    /* Single-init guard — do not double-mount */
+    if (embed.dataset.akMbPrestartInit === '1') return;
+    embed.dataset.akMbPrestartInit = '1';
+
+    /* Build overlay DOM in one innerHTML pass (single reflow) */
+    var overlay = document.createElement('div');
+    overlay.className = 'ak-mb-prestart';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-labelledby', 'akMbPrestartTitle');
+    overlay.innerHTML = [
+      '<div class="ak-mb-prestart__vignette" aria-hidden="true"></div>',
+      '<div class="ak-mb-prestart__grain" aria-hidden="true"></div>',
+      '<div class="ak-mb-prestart__scanline" aria-hidden="true"></div>',
+      '<div class="ak-mb-prestart__inner">',
+        '<div class="ak-mb-prestart__serial">',
+          '<span class="ak-mb-prestart__serial-dot" aria-hidden="true"></span>',
+          '<span>OP &middot; CANDYFACTS</span>',
+          '<span class="ak-mb-prestart__serial-sep">//</span>',
+          '<span>DROP 001</span>',
+          '<span class="ak-mb-prestart__serial-sep">//</span>',
+          '<span>STATUS: LIVE</span>',
+        '</div>',
+        '<div class="ak-mb-prestart__hero">',
+          '<div class="ak-mb-prestart__kicker">&mdash; AMERIKID &mdash;</div>',
+          '<h2 class="ak-mb-prestart__title" id="akMbPrestartTitle">MYSTERY BOX</h2>',
+          '<div class="ak-mb-prestart__subtitle">BRIEFING // LIVE</div>',
+        '</div>',
+        '<div class="ak-mb-prestart__plate">',
+          '<div class="ak-mb-prestart__plate-label">BRIEFING</div>',
+          '<div class="ak-mb-prestart__plate-body">',
+            '<div class="ak-mb-prestart__brief-line">ENTER THE BOX. REAL DROPS. LIVE RESULT.</div>',
+            '<div class="ak-mb-prestart__brief-line">PRESS START TO ENTER THE VAULT.</div>',
+            '<div class="ak-mb-prestart__brief-line">OPTIONAL: COMBO PACK UNLOCKS 2 SPINS.</div>',
+          '</div>',
+        '</div>',
+        '<div class="ak-mb-prestart__plate ak-mb-prestart__plate--data">',
+          '<div class="ak-mb-prestart__plate-label">COMBO PACK // OPTIONAL</div>',
+          '<div class="ak-mb-prestart__plate-body">',
+            '<div class="ak-mb-prestart__data-row">',
+              '<span class="ak-mb-prestart__data-key">ITEM</span>',
+              '<span class="ak-mb-prestart__data-val">CANDYFACTS MYSTERY COMBO</span>',
+            '</div>',
+            /* TODO: confirm price with business — currently hardcoded $20 */
+            '<div class="ak-mb-prestart__data-row">',
+              '<span class="ak-mb-prestart__data-key">PRICE</span>',
+              '<span class="ak-mb-prestart__data-val">$20</span>',
+            '</div>',
+            '<div class="ak-mb-prestart__data-row">',
+              '<span class="ak-mb-prestart__data-key">SPINS</span>',
+              '<span class="ak-mb-prestart__data-val">2</span>',
+            '</div>',
+            '<div class="ak-mb-prestart__data-row">',
+              '<span class="ak-mb-prestart__data-key">STATUS</span>',
+              '<span class="ak-mb-prestart__data-val ak-mb-prestart__data-val--ok">AVAILABLE</span>',
+            '</div>',
+          '</div>',
+        '</div>',
+        '<div class="ak-mb-prestart__ctas">',
+          '<button type="button" class="ak-mb-prestart__cta ak-mb-prestart__cta--primary" id="akMbPrestartStart" aria-label="Start — enter the Mystery Box experience">',
+            '<span class="ak-mb-prestart__cta-label">START</span>',
+            '<span class="ak-mb-prestart__cta-sub">ENTER VAULT</span>',
+          '</button>',
+          '<a href="/products/candyfacts-mystery-box-combo" class="ak-mb-prestart__cta ak-mb-prestart__cta--secondary" id="akMbPrestartBuy" aria-label="Buy Combo — purchase the CandyFACTS Mystery Box Combo">',
+            '<span class="ak-mb-prestart__cta-label">BUY COMBO</span>',
+            '<span class="ak-mb-prestart__cta-sub">UNLOCK 2 SPINS</span>',
+          '</a>',
+        '</div>',
+        /* TODO: confirm disclaimer copy with business */
+        '<div class="ak-mb-prestart__disclaimer">',
+          'COMBO PACK: 2 SPINS &middot; NON-REFUNDABLE &middot; FREE ENTRY ALWAYS AVAILABLE &middot; DETAILS ON COMBO PAGE',
+        '</div>',
+      '</div>'
+    ].join('');
+
+    /* Mount as sibling of iframe and lock, inside .ak-mb-frame */
+    frame.appendChild(overlay);
+
+    /* Block iframe interaction while pre-start is active */
+    iframe.style.pointerEvents = 'none';
+
+    /* Wire START click → dismiss + restore iframe interaction */
+    var startBtn = overlay.querySelector('#akMbPrestartStart');
+
+    function dismiss(){
+      if (overlay.classList.contains('is-dismissing')) return;
+      overlay.classList.add('is-dismissing');
+      window.setTimeout(function(){
+        if (overlay && overlay.parentNode){
+          overlay.parentNode.removeChild(overlay);
+        }
+        iframe.style.pointerEvents = 'auto';
+      }, 420);
+    }
+
+    if (startBtn){
+      startBtn.addEventListener('click', dismiss);
+      /* Keyboard focus to Start for accessibility */
+      try {
+        startBtn.focus({ preventScroll: true });
+      } catch(e){
+        try { startBtn.focus(); } catch(e2){}
+      }
+    }
+  }
+
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "AK MB Pre-Start Screen",
+  "tag": "section",
+  "class": "ak-mb-prestart-section",
+  "settings": []
+}
+{% endschema %}
