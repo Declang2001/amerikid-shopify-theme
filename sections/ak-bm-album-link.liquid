@@ -1,0 +1,129 @@
+{% comment %}
+  ak-bm-album-link.liquid
+  Linked album-cover MP4 module for Bad Music page.
+  Renders a looping muted video that links to the dedicated 2025 album page.
+  Visibility-gated playback via IntersectionObserver.
+  Reduced-motion safe: video paused, static frame shown.
+{% endcomment %}
+
+{%- style -%}
+/* ===== AK-BM-ALBUM-LINK ===== */
+.ak-bm-album-link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px 56px;
+  background: transparent;
+  isolation: isolate;
+}
+
+.ak-bm-album-link__anchor {
+  display: block;
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 6px;
+  overflow: hidden;
+  text-decoration: none;
+  color: #fff;
+  transition: transform .28s cubic-bezier(.25,.46,.45,.94), box-shadow .28s ease;
+  box-shadow: 0 4px 24px rgba(0,0,0,.6), 0 0 0 1px rgba(255,51,255,.12);
+}
+
+.ak-bm-album-link__anchor:hover,
+.ak-bm-album-link__anchor:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(0,0,0,.7), 0 0 16px rgba(255,51,255,.2), 0 0 0 1px rgba(255,51,255,.25);
+  outline: none;
+}
+
+.ak-bm-album-link__video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background: #0a0a0a;
+}
+
+.ak-bm-album-link__label {
+  display: block;
+  padding: 14px 16px;
+  background: rgba(10,6,18,.85);
+  border-top: 1px solid rgba(255,51,255,.15);
+  font-family: Impact, 'Arial Narrow', Haettenschweiler, sans-serif;
+  font-size: clamp(14px, 3vw, 18px);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(255,255,255,.88);
+}
+
+/* Reduced motion: keep frame visible, stop playback */
+@media (prefers-reduced-motion: reduce) {
+  .ak-bm-album-link__anchor:hover,
+  .ak-bm-album-link__anchor:focus-visible {
+    transform: none;
+  }
+}
+
+/* Mobile tighten */
+@media (max-width: 540px) {
+  .ak-bm-album-link {
+    padding: 32px 16px 40px;
+  }
+  .ak-bm-album-link__anchor {
+    max-width: 320px;
+  }
+}
+{%- endstyle -%}
+
+<section class="ak-bm-album-link" aria-label="2025 Album">
+  <a href="/pages/badmusic-2025" class="ak-bm-album-link__anchor">
+    <video
+      class="ak-bm-album-link__video"
+      src="https://cdn.shopify.com/videos/c/o/v/20c113f89b284acbb173345229f4f5c5.mp4"
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      aria-hidden="true"
+    ></video>
+    <span class="ak-bm-album-link__label">2025 (The Album) &mdash; Listen Now</span>
+  </a>
+</section>
+
+<script>
+(function(){
+  var sec = document.querySelector('.ak-bm-album-link');
+  if (!sec) return;
+  var vid = sec.querySelector('.ak-bm-album-link__video');
+  if (!vid) return;
+
+  /* Reduced-motion: never autoplay */
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) return;
+
+  /* IO: play when 25% visible, pause when offscreen */
+  var io = new IntersectionObserver(function(entries) {
+    var entry = entries[0];
+    if (entry.isIntersecting) {
+      vid.play().catch(function(){});
+    } else {
+      vid.pause();
+    }
+  }, { threshold: 0.25 });
+
+  io.observe(sec);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "AK Album Link",
+  "tag": "div",
+  "class": "ak-bm-album-link-wrapper"
+}
+{% endschema %}
