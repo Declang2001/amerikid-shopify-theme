@@ -1,0 +1,123 @@
+<a class="ak-landing" href="/collections/master-collection" aria-label="Enter AmeriKid">
+  <video id="akLandingVideo" class="ak-landing__media ak-landing__video" autoplay muted loop playsinline
+    webkit-playsinline preload="auto">
+    <source src="https://cdn.shopify.com/videos/c/o/v/20c113f89b284acbb173345229f4f5c5.mp4" type="video/mp4" />
+  </video>
+
+  <img
+    class="ak-landing__media ak-landing__img"
+    src="https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_ec94c533-64a8-47ea-8520-f75e0a3397db.jpg?v=1751343507"
+    alt="AmeriKid landing"
+    loading="eager"
+    style="display:none"
+  />
+</a>
+
+{%- style -%}
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .ak-landing {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100svh;
+    height: 100dvh;
+    height: 100vh;
+    display: block;
+    overflow: hidden;
+    background: #000;
+    z-index: 1;
+    /* keep below floating button */
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .ak-landing__media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    /* media never steals click */
+  }
+
+  /* Hide video until it's actually playing (prevents "flash") */
+  .ak-landing__video {
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+
+  .ak-video-ready .ak-landing__video {
+    opacity: 1;
+  }
+
+  /* Desktop default */
+  .ak-landing__img {
+    display: none !important;
+  }
+
+  /* If video fails on desktop, show image instead */
+  .ak-video-failed .ak-landing__video {
+    display: none !important;
+  }
+
+  .ak-video-failed .ak-landing__img {
+    display: block !important;
+  }
+
+  /* Mobile: image ON, video OFF */
+  @media (max-width: 767px) {
+    .ak-landing__video {
+      display: none !important;
+    }
+
+    .ak-landing__img {
+      display: block !important;
+      opacity: 1 !important;
+    }
+  }
+{%- endstyle -%}
+
+<script>
+  (function () {
+    const root = document.documentElement;
+    const v = document.getElementById("akLandingVideo");
+    if (!v) return;
+
+    const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+    if (!isDesktop) return; // on mobile we're intentionally showing the image
+
+    const fail = () => root.classList.add("ak-video-failed");
+    const ready = () => root.classList.add("ak-video-ready");
+
+    v.muted = true;
+    v.playsInline = true;
+
+    v.addEventListener("error", fail, { once: true });
+    v.addEventListener("playing", ready, { once: true });
+    v.addEventListener("canplay", ready, { once: true });
+
+    // Force autoplay
+    const tryPlay = () => {
+      const p = v.play();
+      if (p && typeof p.catch === "function") p.catch(fail);
+    };
+
+    if (v.readyState >= 2) tryPlay();
+    else v.addEventListener("loadeddata", tryPlay, { once: true });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "AK Landing Splash",
+  "tag": "div",
+  "class": "ak-landing-wrapper"
+}
+{% endschema %}

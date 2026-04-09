@@ -9,8 +9,8 @@
  */
 {
   "sections": {
-    "pagefly-home": {
-      "type": "pagefly-home",
+    "ak-landing": {
+      "type": "ak-landing",
       "settings": {}
     },
     "custom_liquid_xPURQD": {
@@ -25,7 +25,7 @@
     }
   },
   "order": [
-    "pagefly-home",
+    "ak-landing",
     "custom_liquid_xPURQD"
   ]
 }

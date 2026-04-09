@@ -3,7 +3,7 @@
 Use this checklist to verify the storefront after any approved change is implemented.
 
 ## Core Pages
-- [ ] **Homepage:** Verify load speed, layout, and that PageFly elements render correctly.
+- [ ] **Homepage:** Verify fullscreen MP4 video plays automatically on desktop (black background → video fades in). Verify static fallback image displays on mobile (≤767px, video hidden). Verify clicking anywhere on the splash navigates to `/collections/master-collection`. Verify bouncing kid logo appears, bounces, squashes on wall hits, pauses on hover (desktop). Verify logo click navigates to `/collections/master-collection`. Verify logo renders above the splash (z-index layering). Verify no PageFly CSS/JS loading in Network tab (no `pagefly-animation.css`, no `cdn.pagefly.io` requests). Verify no layout shift or flash on load. No new console errors.
 - [ ] **Collection Pages:** Check grid layout, image loading, and that the Impact font is still applied where expected.
 - [ ] **Product Pages:** Check `main-product` layout. Ensure the background starfield canvas (`ak-product-field`) renders and animates. Verify Add to Cart functionality. **Count canvases: should not increase.**
 - [ ] **Archive Page:** Verify cards read as cassette cases — visible dark shell housing around cover art, subtle plastic sheen, hinge line on left edge, spine-style tabs on trailing cards. Verify stack composition preserved (5 trailing strips visible). Verify tap navigates, drag works, arrows work, keyboard works. Verify title labels readable over inset art. Verify mobile 375/320px (reduced padding, smaller tabs).
