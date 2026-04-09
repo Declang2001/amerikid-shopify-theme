@@ -1,105 +1,663 @@
 {% comment %}
   ak-bm-album-link.liquid
-  Linked album-cover MP4 module for Bad Music page.
-  Renders a looping muted video that links to the dedicated 2025 album page.
+  Two-cassette shelf module for Bad Music page.
+  Left: linked 2025 album with looping MP4 cover art.
+  Right: coming-soon teaser cassette (unlinked).
   Visibility-gated playback via IntersectionObserver.
-  Reduced-motion safe: video paused, static frame shown.
+  Reduced-motion safe.
+
+  Each cassette is built as a layered physical object:
+    .ak-cas            — perspective container
+      .ak-cas__body    — 3D transform target (link or div)
+        .ak-cas__edge-top/right/bottom — visible case wall thickness
+        .ak-cas__case  — interior back wall of the case
+          .ak-cas__art — J-card / cover art area (video or placeholder)
+          .ak-cas__cassette — inner cassette body
+            .ak-cas__label-strip — cassette label with ruled lines
+            .ak-cas__window — tape window (recessed well)
+              .ak-cas__reel ×2 — supply/take-up reels
+              .ak-cas__tape — oxide strip between reels
+            .ak-cas__guide ×2 — guide posts flanking window
+            screws via ::before/::after
+        .ak-cas__lid   — transparent front case lid (specular overlay)
+      .ak-cas__spine   — spine label below
 {% endcomment %}
 
 {%- style -%}
-/* ===== AK-BM-ALBUM-LINK ===== */
-.ak-bm-album-link {
+/* ===== AK-BM CASSETTE SHELF ===== */
+
+/* — Section — */
+.ak-bm-shelf {
   position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  padding: 48px 24px 56px;
+  padding: 48px 20px 56px;
   background: transparent;
   isolation: isolate;
 }
 
-.ak-bm-album-link__anchor {
-  display: block;
+/* — Shelf grid — */
+.ak-bm-shelf__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+  width: 94vw;
+  max-width: 1060px;
+}
+
+/* ===== CASSETTE CONTAINER ===== */
+.ak-cas {
   position: relative;
-  width: 100%;
-  max-width: 420px;
-  border-radius: 6px;
-  overflow: hidden;
+  perspective: 800px;
+}
+
+/* ===== CASE BODY (3D target) ===== */
+.ak-cas__body {
+  position: relative;
+  display: block;
   text-decoration: none;
   color: #fff;
-  transition: transform .28s cubic-bezier(.25,.46,.45,.94), box-shadow .28s ease;
-  box-shadow: 0 4px 24px rgba(0,0,0,.6), 0 0 0 1px rgba(255,51,255,.12);
+  border-radius: 6px;
+  transform-style: preserve-3d;
+  /* Subtle resting tilt — always reads as 3D object */
+  transform: rotateX(-1.5deg) rotateY(1deg);
+  transition: transform .38s cubic-bezier(.22,.68,.36,1.02), box-shadow .38s ease;
+  /* Heavy multi-layer object shadow */
+  box-shadow:
+    0 1px 2px rgba(0,0,0,.5),
+    0 4px 8px rgba(0,0,0,.4),
+    0 10px 24px rgba(0,0,0,.35),
+    0 20px 50px rgba(0,0,0,.3),
+    0 40px 80px rgba(0,0,0,.2);
 }
 
-.ak-bm-album-link__anchor:hover,
-.ak-bm-album-link__anchor:focus-visible {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 32px rgba(0,0,0,.7), 0 0 16px rgba(255,51,255,.2), 0 0 0 1px rgba(255,51,255,.25);
-  outline: none;
+/* ===== VISIBLE CASE EDGES (wall thickness) ===== */
+/* Top edge — light catches top surface */
+.ak-cas__edge-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 7px;
+  border-radius: 6px 6px 0 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+    rgba(60,60,60,1) 0%,
+    rgba(35,35,35,1) 40%,
+    rgba(22,22,22,1) 100%
+  );
+  border-top: 1px solid rgba(255,255,255,.14);
+  border-left: 1px solid rgba(255,255,255,.06);
+  border-right: 1px solid rgba(255,255,255,.06);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
 }
 
-.ak-bm-album-link__video {
+/* Right edge — case wall visible on right */
+.ak-cas__edge-right {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 7px;
+  border-radius: 0 6px 6px 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(270deg,
+    rgba(40,40,40,1) 0%,
+    rgba(24,24,24,1) 50%,
+    rgba(16,16,16,1) 100%
+  );
+  border-right: 1px solid rgba(255,255,255,.08);
+  box-shadow: inset -1px 0 0 rgba(255,255,255,.04);
+}
+
+/* Bottom edge — case floor, slightly darker */
+.ak-cas__edge-bottom {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 7px;
+  border-radius: 0 0 6px 6px;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(0deg,
+    rgba(30,30,30,1) 0%,
+    rgba(18,18,18,1) 50%,
+    rgba(14,14,14,1) 100%
+  );
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  box-shadow: inset 0 -1px 0 rgba(255,255,255,.03);
+}
+
+/* ===== HINGE SPINE (left edge — case opens here) ===== */
+.ak-cas__body::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 8px;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 6px 0 0 6px;
+  background: linear-gradient(90deg,
+    rgba(50,50,50,1) 0%,
+    rgba(30,30,30,1) 30%,
+    rgba(20,20,20,1) 70%,
+    rgba(14,14,14,1) 100%
+  );
+  border-left: 1px solid rgba(255,255,255,.10);
+  /* Hinge groove */
+  box-shadow:
+    inset -1px 0 0 rgba(0,0,0,.6),
+    inset -2px 0 0 rgba(255,255,255,.03);
+}
+
+/* ===== CASE INTERIOR (back wall visible through lid) ===== */
+.ak-cas__case {
+  position: relative;
+  z-index: 1;
+  margin: 7px 7px 7px 8px;
+  border-radius: 3px;
+  background: linear-gradient(175deg, #141414 0%, #0c0c0c 40%, #0e0e0e 100%);
+  border: 1px solid rgba(255,255,255,.04);
+  overflow: hidden;
+}
+
+/* ===== J-CARD / ART WINDOW ===== */
+.ak-cas__art {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.4 / 1;
+  overflow: hidden;
+  background: #080808;
+  /* Art sits recessed behind plastic */
+  box-shadow:
+    inset 0 1px 4px rgba(0,0,0,.6),
+    inset 0 -1px 3px rgba(0,0,0,.3);
+}
+
+.ak-cas__art video,
+.ak-cas__art img {
   display: block;
   width: 100%;
-  height: auto;
-  aspect-ratio: 1 / 1;
+  height: 100%;
   object-fit: cover;
-  background: #0a0a0a;
+  object-position: center;
 }
 
-.ak-bm-album-link__label {
+/* ===== INNER CASSETTE BODY ===== */
+.ak-cas__cassette {
+  position: relative;
+  margin: 6px 8px 8px;
+  padding: 10px 14px 14px;
+  border-radius: 4px;
+  /* Inner cassette shell — different material from outer case */
+  background: linear-gradient(180deg, #131313 0%, #0d0d0d 35%, #0f0f0f 100%);
+  border: 1px solid rgba(255,255,255,.06);
+  box-shadow:
+    inset 0 1px 4px rgba(0,0,0,.5),
+    0 1px 0 rgba(255,255,255,.03),
+    0 -1px 0 rgba(0,0,0,.4);
+}
+
+/* — Label strip (above tape window) — */
+.ak-cas__label-strip {
   display: block;
-  padding: 14px 16px;
-  background: rgba(10,6,18,.85);
-  border-top: 1px solid rgba(255,51,255,.15);
+  text-align: center;
   font-family: Impact, 'Arial Narrow', Haettenschweiler, sans-serif;
-  font-size: clamp(14px, 3vw, 18px);
-  letter-spacing: 0.12em;
+  font-size: clamp(10px, 2vw, 13px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.5);
+  padding: 4px 8px 8px;
+  margin-bottom: 8px;
+  position: relative;
+  /* Ruled lines like real cassette label stock */
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 7px,
+    rgba(255,255,255,.025) 7px,
+    rgba(255,255,255,.025) 8px
+  );
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+/* — Tape window (deeply recessed viewport) — */
+.ak-cas__window {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 10px 10px;
+  border-radius: 4px;
+  /* Deep recessed well */
+  background: linear-gradient(180deg, #040404 0%, #080808 40%, #060606 100%);
+  border: 1px solid rgba(255,255,255,.05);
+  box-shadow:
+    inset 0 3px 6px rgba(0,0,0,.7),
+    inset 0 0 3px rgba(0,0,0,.5),
+    inset 0 -1px 2px rgba(0,0,0,.3),
+    0 1px 0 rgba(255,255,255,.03);
+}
+
+/* — Tape reels (large, detailed) — */
+.ak-cas__reel {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.10);
+  position: relative;
+  /* Reel face — rich concentric rings */
+  background:
+    radial-gradient(circle at center,
+      rgba(255,255,255,.10) 0%,
+      rgba(255,255,255,.05) 14%,
+      transparent 18%,
+      rgba(255,255,255,.04) 26%,
+      transparent 30%,
+      rgba(255,255,255,.03) 40%,
+      transparent 44%,
+      rgba(255,255,255,.025) 55%,
+      transparent 60%,
+      rgba(255,255,255,.03) 72%,
+      transparent 76%,
+      rgba(255,255,255,.04) 88%,
+      rgba(255,255,255,.07) 100%
+    );
+  box-shadow:
+    inset 0 0 6px rgba(0,0,0,.6),
+    inset 0 1px 2px rgba(0,0,0,.4),
+    0 0 5px rgba(0,0,0,.4),
+    0 1px 0 rgba(255,255,255,.03);
+}
+
+/* Reel hub — center hole */
+.ak-cas__reel::before {
+  content: "";
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 12px; height: 12px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,0,0,.7) 40%, rgba(0,0,0,.5) 100%);
+  border: 1.5px solid rgba(255,255,255,.12);
+  box-shadow:
+    inset 0 0 3px rgba(0,0,0,.6),
+    0 0 2px rgba(0,0,0,.3);
+}
+
+/* Reel spokes — three radial marks */
+.ak-cas__reel::after {
+  content: "";
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 1px; height: 14px;
+  transform: translate(-50%, -100%);
+  background: rgba(255,255,255,.06);
+  box-shadow:
+    8px 12px 0 rgba(255,255,255,.04),
+    -8px 12px 0 rgba(255,255,255,.04);
+}
+
+/* — Oxide tape strip (magnetic tape between reels) — */
+.ak-cas__tape {
+  flex: 1;
+  height: 8px;
+  margin: 0 5px;
+  border-radius: 1px;
+  position: relative;
+  /* Brown oxide tape */
+  background: linear-gradient(90deg,
+    rgba(85,52,30,.55) 0%,
+    rgba(95,58,35,.65) 15%,
+    rgba(90,55,32,.6) 40%,
+    rgba(100,62,38,.7) 60%,
+    rgba(90,55,32,.6) 85%,
+    rgba(85,52,30,.55) 100%
+  );
+  box-shadow:
+    inset 0 1px 1px rgba(0,0,0,.5),
+    inset 0 -1px 1px rgba(0,0,0,.2),
+    0 1px 0 rgba(255,255,255,.02);
+}
+
+/* Tape sheen */
+.ak-cas__tape::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg,
+    transparent 15%,
+    rgba(255,255,255,.08) 40%,
+    rgba(255,255,255,.10) 50%,
+    rgba(255,255,255,.08) 60%,
+    transparent 85%
+  );
+}
+
+/* — Guide posts (flanking the tape window) — */
+.ak-cas__guide {
+  position: absolute;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,0,0,.5) 30%, rgba(20,20,20,.8) 100%);
+  border: 1.5px solid rgba(255,255,255,.08);
+  box-shadow:
+    inset 0 0 2px rgba(0,0,0,.6),
+    0 0 3px rgba(0,0,0,.3);
+  z-index: 1;
+}
+.ak-cas__guide--left {
+  bottom: 10px; left: 10px;
+}
+.ak-cas__guide--right {
+  bottom: 10px; right: 10px;
+}
+
+/* — Screw holes (all four corners of cassette body) — */
+.ak-cas__cassette::before,
+.ak-cas__cassette::after {
+  content: "";
+  position: absolute;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(0,0,0,.6) 30%,
+    rgba(20,20,20,.4) 100%
+  );
+  border: 1px solid rgba(255,255,255,.07);
+  box-shadow:
+    inset 0 0 2px rgba(0,0,0,.6),
+    0 0 1px rgba(0,0,0,.3);
+}
+/* Bottom left */
+.ak-cas__cassette::before { bottom: 7px; left: 10px; }
+/* Bottom right */
+.ak-cas__cassette::after { bottom: 7px; right: 10px; }
+
+/* Top screws via label-strip pseudo-elements */
+.ak-cas__label-strip::before,
+.ak-cas__label-strip::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,0,0,.5) 30%, rgba(20,20,20,.4) 100%);
+  border: 1px solid rgba(255,255,255,.06);
+  box-shadow: inset 0 0 1px rgba(0,0,0,.5);
+}
+.ak-cas__label-strip::before { left: 0; }
+.ak-cas__label-strip::after { right: 0; }
+
+/* ===== TRANSPARENT FRONT LID (clear plastic overlay) ===== */
+.ak-cas__lid {
+  position: absolute;
+  inset: 7px 7px 7px 8px;
+  z-index: 4;
+  pointer-events: none;
+  border-radius: 3px;
+  /* Clear plastic — mostly transparent with specular reflections */
+  background:
+    /* Main diagonal specular highlight */
+    linear-gradient(
+      128deg,
+      rgba(255,255,255,.09) 0%,
+      rgba(255,255,255,.04) 12%,
+      transparent 28%,
+      transparent 42%,
+      rgba(255,255,255,.015) 55%,
+      transparent 65%,
+      rgba(255,255,255,.02) 78%,
+      rgba(255,255,255,.06) 100%
+    ),
+    /* Secondary horizontal refraction line */
+    linear-gradient(
+      180deg,
+      transparent 35%,
+      rgba(255,255,255,.025) 38%,
+      rgba(255,255,255,.015) 40%,
+      transparent 43%,
+      transparent 100%
+    );
+  mix-blend-mode: screen;
+  /* Lid edge catch — thin highlight on top and right */
+  border-top: 1px solid rgba(255,255,255,.08);
+  border-right: 1px solid rgba(255,255,255,.04);
+}
+
+/* ===== SPINE LABEL (below case) ===== */
+.ak-cas__spine {
+  display: block;
+  padding: 8px 12px 4px;
+  font-family: Impact, 'Arial Narrow', Haettenschweiler, sans-serif;
+  font-size: clamp(9px, 1.6vw, 11px);
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   text-align: center;
-  color: rgba(255,255,255,.88);
+  color: rgba(255,51,255,.35);
 }
 
-/* Reduced motion: keep frame visible, stop playback */
+/* ===== 3D HOVER (desktop pointer only) ===== */
+@media (hover: hover) and (pointer: fine) {
+  .ak-cas--live .ak-cas__body:hover,
+  .ak-cas--live .ak-cas__body:focus-visible {
+    transform: rotateX(-3.5deg) rotateY(3.5deg) translateY(-6px);
+    box-shadow:
+      0 2px 4px rgba(0,0,0,.5),
+      0 8px 16px rgba(0,0,0,.4),
+      0 18px 36px rgba(0,0,0,.35),
+      0 32px 64px rgba(0,0,0,.3),
+      0 0 24px rgba(255,51,255,.10),
+      0 0 0 1px rgba(255,51,255,.14);
+    outline: none;
+  }
+
+  /* Coming-soon: gentler hover */
+  .ak-cas--soon .ak-cas__body:hover,
+  .ak-cas--soon .ak-cas__body:focus-visible {
+    transform: rotateX(-2.5deg) rotateY(2deg) translateY(-4px);
+    box-shadow:
+      0 2px 4px rgba(0,0,0,.5),
+      0 8px 16px rgba(0,0,0,.4),
+      0 18px 36px rgba(0,0,0,.35),
+      0 32px 64px rgba(0,0,0,.3),
+      0 0 12px rgba(255,255,255,.04),
+      0 0 0 1px rgba(255,255,255,.06);
+    outline: none;
+  }
+}
+
+/* ===== COMING SOON CASSETTE ===== */
+.ak-cas--soon .ak-cas__body {
+  cursor: default;
+}
+.ak-cas--soon .ak-cas__case {
+  opacity: .72;
+}
+
+/* Dark placeholder art face */
+.ak-cas--soon .ak-cas__art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(145deg, #0f0f0f 0%, #070707 40%, #0a0a0a 100%);
+  z-index: 1;
+}
+
+/* COMING SOON overlay text */
+.ak-cas--soon .ak-cas__art-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.ak-cas__art-overlay-text {
+  font-family: Impact, 'Arial Narrow', Haettenschweiler, sans-serif;
+  font-size: clamp(15px, 3.2vw, 22px);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.22);
+  text-shadow: 0 0 16px rgba(255,51,255,.12);
+}
+.ak-cas__art-overlay-sub {
+  font-family: Impact, 'Arial Narrow', Haettenschweiler, sans-serif;
+  font-size: clamp(8px, 1.4vw, 11px);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255,51,255,.18);
+}
+
+/* ===== REDUCED MOTION ===== */
 @media (prefers-reduced-motion: reduce) {
-  .ak-bm-album-link__anchor:hover,
-  .ak-bm-album-link__anchor:focus-visible {
+  .ak-cas__body {
+    transform-style: flat;
+    transform: none;
+  }
+  .ak-cas {
+    perspective: none;
+  }
+  .ak-cas__body:hover,
+  .ak-cas__body:focus-visible {
     transform: none;
   }
 }
 
-/* Mobile tighten */
-@media (max-width: 540px) {
-  .ak-bm-album-link {
-    padding: 32px 16px 40px;
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .ak-bm-shelf__row {
+    grid-template-columns: 1fr;
+    max-width: 440px;
+    gap: 36px;
   }
-  .ak-bm-album-link__anchor {
-    max-width: 320px;
+}
+
+@media (max-width: 540px) {
+  .ak-bm-shelf {
+    padding: 28px 12px 36px;
+  }
+  .ak-bm-shelf__row {
+    max-width: 100%;
+    gap: 28px;
+  }
+  .ak-cas__reel {
+    width: 38px; height: 38px;
+  }
+  .ak-cas__reel::before {
+    width: 10px; height: 10px;
+  }
+  .ak-cas__reel::after {
+    height: 11px;
+  }
+  .ak-cas__window {
+    padding: 8px 6px;
+  }
+  .ak-cas__cassette {
+    margin: 5px 6px 6px;
+    padding: 8px 10px 12px;
+  }
+  .ak-cas__edge-top,
+  .ak-cas__edge-bottom {
+    height: 5px;
+  }
+  .ak-cas__edge-right {
+    width: 5px;
+  }
+  .ak-cas__body::before {
+    width: 6px;
+  }
+  .ak-cas__case {
+    margin: 5px 5px 5px 6px;
+  }
+  .ak-cas__lid {
+    inset: 5px 5px 5px 6px;
   }
 }
 {%- endstyle -%}
 
-<section class="ak-bm-album-link" aria-label="2025 Album">
-  <a href="/pages/badmusic-2025" class="ak-bm-album-link__anchor">
-    <video
-      class="ak-bm-album-link__video"
-      src="https://cdn.shopify.com/videos/c/o/v/20c113f89b284acbb173345229f4f5c5.mp4"
-      muted
-      loop
-      playsinline
-      preload="metadata"
-      aria-hidden="true"
-    ></video>
-    <span class="ak-bm-album-link__label">2025 (The Album) &mdash; Listen Now</span>
-  </a>
+<section class="ak-bm-shelf" aria-label="Albums">
+  <div class="ak-bm-shelf__row">
+
+    <!-- ===== LEFT: 2025 ALBUM (live, linked) ===== -->
+    <div class="ak-cas ak-cas--live">
+      <a href="/pages/badmusic-2025" class="ak-cas__body">
+        <!-- Case wall thickness -->
+        <div class="ak-cas__edge-top"></div>
+        <div class="ak-cas__edge-right"></div>
+        <div class="ak-cas__edge-bottom"></div>
+        <!-- Case interior -->
+        <div class="ak-cas__case">
+          <div class="ak-cas__art">
+            <video
+              class="ak-cas__video"
+              src="https://cdn.shopify.com/videos/c/o/v/20c113f89b284acbb173345229f4f5c5.mp4"
+              muted
+              loop
+              playsinline
+              preload="metadata"
+              aria-hidden="true"
+            ></video>
+          </div>
+          <div class="ak-cas__cassette">
+            <span class="ak-cas__label-strip">2025 (The Album)</span>
+            <div class="ak-cas__window">
+              <div class="ak-cas__reel"></div>
+              <div class="ak-cas__tape"></div>
+              <div class="ak-cas__reel"></div>
+            </div>
+            <div class="ak-cas__guide ak-cas__guide--left"></div>
+            <div class="ak-cas__guide ak-cas__guide--right"></div>
+          </div>
+        </div>
+        <!-- Transparent front lid -->
+        <div class="ak-cas__lid"></div>
+      </a>
+      <span class="ak-cas__spine">Listen Now</span>
+    </div>
+
+    <!-- ===== RIGHT: COMING SOON (unlinked, hoverable) ===== -->
+    <div class="ak-cas ak-cas--soon">
+      <div class="ak-cas__body" tabindex="0" role="presentation">
+        <!-- Case wall thickness -->
+        <div class="ak-cas__edge-top"></div>
+        <div class="ak-cas__edge-right"></div>
+        <div class="ak-cas__edge-bottom"></div>
+        <!-- Case interior -->
+        <div class="ak-cas__case">
+          <div class="ak-cas__art">
+            <div class="ak-cas__art-overlay">
+              <span class="ak-cas__art-overlay-text">Coming Soon</span>
+              <span class="ak-cas__art-overlay-sub">New Album</span>
+            </div>
+          </div>
+          <div class="ak-cas__cassette">
+            <span class="ak-cas__label-strip">? ? ?</span>
+            <div class="ak-cas__window">
+              <div class="ak-cas__reel"></div>
+              <div class="ak-cas__tape"></div>
+              <div class="ak-cas__reel"></div>
+            </div>
+            <div class="ak-cas__guide ak-cas__guide--left"></div>
+            <div class="ak-cas__guide ak-cas__guide--right"></div>
+          </div>
+        </div>
+        <!-- Transparent front lid -->
+        <div class="ak-cas__lid"></div>
+      </div>
+      <span class="ak-cas__spine">&nbsp;</span>
+    </div>
+
+  </div>
 </section>
 
 <script>
 (function(){
-  var sec = document.querySelector('.ak-bm-album-link');
+  var sec = document.querySelector('.ak-bm-shelf');
   if (!sec) return;
-  var vid = sec.querySelector('.ak-bm-album-link__video');
+  var vid = sec.querySelector('.ak-cas--live .ak-cas__video');
   if (!vid) return;
 
   /* Reduced-motion: never autoplay */
