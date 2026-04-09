@@ -37,7 +37,7 @@
 
   DISMISSAL FLOW
     1. User clicks START
-    2. Overlay gets .is-dismissing class (420ms opacity fade)
+    2. Overlay gets .is-dismissing class (200ms opacity fade)
     3. Overlay removed from DOM
     4. iframe.style.pointerEvents restored to 'auto'
     5. User sees the existing iframe tap-to-sound screen and
@@ -88,15 +88,13 @@
   opacity:0;
   animation:akMbPrestartIn 600ms ease-out forwards;
   -webkit-font-smoothing:antialiased;
-  perspective:1200px;
-  transform-style:preserve-3d;
 }
 .ak-mb-prestart *{
   box-sizing:border-box;
 }
 .ak-mb-prestart.is-dismissing{
   opacity:0;
-  transition:opacity 420ms ease-out;
+  transition:opacity 200ms ease-out;
   pointer-events:none;
 }
 
@@ -135,9 +133,6 @@
   display:flex;
   flex-direction:column;
   gap:16px;
-  transform:rotateX(0.6deg) rotateY(-0.15deg);
-  transform-style:preserve-3d;
-  transform-origin:50% 50%;
 }
 
 /* ----- Staggered entrance per child ----- */
@@ -149,7 +144,6 @@
   opacity:0;
   transform:translateY(8px);
   animation:akMbPrestartChildRise 560ms ease-out forwards;
-  will-change:transform,opacity;
 }
 .ak-mb-prestart__serial{animation-delay:200ms;}
 .ak-mb-prestart__hero{animation-delay:280ms;}
@@ -366,7 +360,7 @@
   cursor:pointer;
   border-radius:1px;
   overflow:hidden;
-  transition:background 160ms ease-out,border-color 160ms ease-out,color 160ms ease-out,transform 160ms ease-out,box-shadow 200ms ease-out;
+  transition:border-color 160ms ease-out,color 160ms ease-out,transform 140ms ease-out,box-shadow 180ms ease-out;
   -webkit-appearance:none;
   appearance:none;
   -webkit-tap-highlight-color:transparent;
@@ -436,30 +430,27 @@
 /* Hover (desktop only) */
 @media (hover:hover) and (pointer:fine){
   .ak-mb-prestart__cta--primary:hover{
-    background:linear-gradient(180deg,#1a1815 0%,#0c0b09 100%);
-    border-top-color:rgba(198,138,46,0.78);
-    transform:translateY(-1px);
+    border-top-color:rgba(198,138,46,0.92);
+    color:#faf7ec;
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.088),
-      inset 0 2px 0 rgba(255,255,255,0.032),
+      inset 0 1px 0 rgba(255,255,255,0.1),
+      inset 0 2px 0 rgba(255,255,255,0.04),
       inset 0 -1px 0 rgba(0,0,0,0.82),
       inset 0 -2px 0 rgba(0,0,0,0.35),
-      0 3px 0 rgba(0,0,0,0.92),
-      0 8px 18px -4px rgba(0,0,0,0.72),
-      0 0 0 1px rgba(198,138,46,0.24),
-      0 0 24px -4px rgba(198,138,46,0.32);
+      0 2px 0 rgba(0,0,0,0.9),
+      0 6px 14px -4px rgba(0,0,0,0.65),
+      0 0 0 1px rgba(198,138,46,0.38),
+      0 0 28px -4px rgba(198,138,46,0.42);
   }
   .ak-mb-prestart__cta--secondary:hover{
-    border-color:#2a2620;
-    border-top-color:rgba(198,138,46,0.42);
-    color:rgba(244,241,233,0.94);
-    transform:translateY(-1px);
+    border-top-color:rgba(198,138,46,0.58);
+    color:rgba(248,245,236,0.98);
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.03),
+      inset 0 1px 0 rgba(255,255,255,0.042),
       inset 0 -1px 0 rgba(0,0,0,0.55),
-      0 3px 0 rgba(0,0,0,0.82),
-      0 6px 14px -4px rgba(0,0,0,0.62),
-      0 0 0 1px rgba(198,138,46,0.12);
+      0 2px 0 rgba(0,0,0,0.72),
+      0 5px 12px -4px rgba(0,0,0,0.55),
+      0 0 0 1px rgba(198,138,46,0.2);
   }
 }
 
@@ -805,7 +796,7 @@
           overlay.parentNode.removeChild(overlay);
         }
         iframe.style.pointerEvents = 'auto';
-      }, 420);
+      }, 200);
     }
 
     if (startBtn){
