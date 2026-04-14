@@ -78,7 +78,7 @@
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:28px 32px;
+  padding:20px 28px;
   box-sizing:border-box;
   background:linear-gradient(180deg,#080706 0%,#040403 100%);
   color:#e8e4db;
@@ -129,10 +129,10 @@
   position:relative;
   z-index:3;
   width:100%;
-  max-width:560px;
+  max-width:680px;
   display:flex;
   flex-direction:column;
-  gap:16px;
+  gap:22px;
 }
 
 /* ----- Staggered entrance per child ----- */
@@ -159,10 +159,10 @@
   align-items:center;
   justify-content:center;
   flex-wrap:wrap;
-  gap:10px;
-  padding:7px 12px 6px;
+  gap:12px;
+  padding:8px 18px 7px;
   font-family:ui-monospace,Menlo,Consolas,monospace;
-  font-size:9px;
+  font-size:10px;
   letter-spacing:0.24em;
   color:rgba(232,228,219,0.48);
   text-transform:uppercase;
@@ -199,12 +199,12 @@
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:6px;
-  padding:10px 0 6px;
+  gap:8px;
+  padding:14px 0 8px;
 }
 .ak-mb-prestart__kicker{
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  font-size:10px;
+  font-size:11px;
   letter-spacing:0.34em;
   color:rgba(232,228,219,0.42);
   text-transform:uppercase;
@@ -212,7 +212,7 @@
 .ak-mb-prestart__title{
   margin:0;
   font-family:Impact,Haettenschweiler,'Arial Narrow Bold',sans-serif;
-  font-size:58px;
+  font-size:72px;
   line-height:0.92;
   letter-spacing:0.12em;
   color:#f4f1e9;
@@ -225,11 +225,11 @@
 .ak-mb-prestart__subtitle{
   display:inline-block;
   margin-top:2px;
-  padding:4px 12px 3px;
+  padding:5px 16px 4px;
   border-top:1px solid rgba(255,51,255,0.48);
   border-bottom:1px solid rgba(255,51,255,0.16);
   font-family:ui-monospace,Menlo,Consolas,monospace;
-  font-size:10px;
+  font-size:11px;
   letter-spacing:0.28em;
   color:#ff33ff;
   text-transform:uppercase;
@@ -238,7 +238,7 @@
 /* ----- Plates (engraved panels: outer drop + inner bevel recess) ----- */
 .ak-mb-prestart__plate{
   position:relative;
-  padding:14px 16px 12px;
+  padding:18px 22px 14px;
   background:linear-gradient(180deg,#0a0908 0%,#050403 100%);
   border:1px solid #1a1815;
   border-top-color:rgba(255,51,255,0.18);
@@ -268,8 +268,8 @@
 .ak-mb-prestart__plate-label{
   position:absolute;
   top:-7px;
-  left:14px;
-  padding:0 7px;
+  left:18px;
+  padding:0 8px;
   background:#060504;
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   font-size:9px;
@@ -292,7 +292,7 @@
   position:relative;
   padding-left:18px;
   font-family:ui-monospace,Menlo,Consolas,monospace;
-  font-size:11.5px;
+  font-size:12.5px;
   line-height:1.55;
   color:rgba(232,228,219,0.82);
   letter-spacing:0.035em;
@@ -340,8 +340,8 @@
 
 /* ----- CTA row ----- */
 .ak-mb-prestart__ctas{
-  display:grid;
-  grid-template-columns:1.35fr 1fr;
+  display:flex;
+  justify-content:center;
   gap:12px;
   margin-top:6px;
 }
@@ -352,8 +352,9 @@
   align-items:center;
   justify-content:center;
   gap:4px;
-  min-height:60px;
-  padding:12px 18px;
+  min-height:66px;
+  min-width:220px;
+  padding:14px 24px;
   font-family:Impact,Haettenschweiler,'Arial Narrow Bold',sans-serif;
   text-transform:uppercase;
   text-decoration:none;
@@ -412,7 +413,7 @@
 .ak-mb-prestart__cta-label{
   position:relative;
   z-index:1;
-  font-size:20px;
+  font-size:22px;
   letter-spacing:0.12em;
   line-height:1;
 }
@@ -420,7 +421,7 @@
   position:relative;
   z-index:1;
   font-family:ui-monospace,Menlo,Consolas,monospace;
-  font-size:9px;
+  font-size:10px;
   letter-spacing:0.22em;
   opacity:0.6;
   line-height:1;
@@ -495,9 +496,9 @@
 .ak-mb-prestart__disclaimer{
   position:relative;
   margin-top:4px;
-  padding:7px 14px 6px;
+  padding:8px 18px 7px;
   font-family:ui-monospace,Menlo,Consolas,monospace;
-  font-size:8.5px;
+  font-size:9px;
   letter-spacing:0.2em;
   color:rgba(232,228,219,0.38);
   text-transform:uppercase;
@@ -533,11 +534,11 @@
 /* ----- Responsive: tablet ----- */
 @media (max-width:640px){
   .ak-mb-prestart{
-    padding:20px 18px;
+    padding:18px 16px;
     perspective:none;
   }
   .ak-mb-prestart__inner{
-    gap:13px;
+    gap:16px;
     transform:none;
     transform-style:flat;
   }
@@ -559,7 +560,7 @@
       0 0 0 1px rgba(255,51,255,0.04);
   }
   .ak-mb-prestart__title{
-    font-size:42px;
+    font-size:48px;
     letter-spacing:0.1em;
   }
   .ak-mb-prestart__hero{
@@ -567,7 +568,6 @@
     gap:5px;
   }
   .ak-mb-prestart__ctas{
-    grid-template-columns:1fr;
     gap:10px;
   }
   .ak-mb-prestart__cta{
@@ -698,6 +698,12 @@
   var TARGET_UTC = Date.UTC(2026, 3, 9, 7, 0, 0);
   if (Date.now() < TARGET_UTC) return;
 
+  var isPurchased = (function(){
+    try {
+      return new URLSearchParams(window.location.search).has('customer_id');
+    } catch(e){ return false; }
+  })();
+
   function init(){
     var embed  = document.getElementById('ak-mysterybox-embed');
     var frame  = embed ? embed.querySelector('.ak-mb-frame') : null;
@@ -728,51 +734,34 @@
         '<div class="ak-mb-prestart__hero">',
           '<div class="ak-mb-prestart__kicker">&mdash; AMERIKID &mdash;</div>',
           '<h2 class="ak-mb-prestart__title" id="akMbPrestartTitle">MYSTERY BOX</h2>',
-          '<div class="ak-mb-prestart__subtitle">ENTER // PREVIEW</div>',
+          '<div class="ak-mb-prestart__subtitle">' + (isPurchased ? 'ENTER // ACCESS' : 'ENTER // PREVIEW') + '</div>',
         '</div>',
         '<div class="ak-mb-prestart__plate">',
-          '<div class="ak-mb-prestart__plate-label">HOW IT WORKS</div>',
+          '<div class="ak-mb-prestart__plate-label">' + (isPurchased ? 'YOUR ACCESS' : 'HOW IT WORKS') + '</div>',
           '<div class="ak-mb-prestart__plate-body">',
-            '<div class="ak-mb-prestart__brief-line">BUY THE COMBO PACK TO UNLOCK 2 REAL SPINS.</div>',
-            '<div class="ak-mb-prestart__brief-line">PURCHASED SPINS ARE CLAIMED THROUGH THE EMAIL ACCESS LINK.</div>',
-            '<div class="ak-mb-prestart__brief-line">PRESS PREVIEW FOR 1 DEMO SPIN.</div>',
+            isPurchased
+              ? '<div class="ak-mb-prestart__brief-line">2 PURCHASED SPINS ARE READY.</div>' +
+                '<div class="ak-mb-prestart__brief-line">PRESS ACCESS SPINS TO ENTER THE CRATE.</div>'
+              : '<div class="ak-mb-prestart__brief-line">1 FREE SPIN TO PREVIEW THE CRATE.</div>' +
+                '<div class="ak-mb-prestart__brief-line">BUY THE COMBO PACK AFTER PREVIEW TO UNLOCK 2 REAL SPINS.</div>',
           '</div>',
         '</div>',
-        '<div class="ak-mb-prestart__plate ak-mb-prestart__plate--data">',
-          '<div class="ak-mb-prestart__plate-label">COMBO PACK</div>',
-          '<div class="ak-mb-prestart__plate-body">',
-            '<div class="ak-mb-prestart__data-row">',
-              '<span class="ak-mb-prestart__data-key">ITEM</span>',
-              '<span class="ak-mb-prestart__data-val">CANDYFACTS MYSTERY COMBO</span>',
-            '</div>',
-            /* TODO: confirm price with business — currently hardcoded $50 */
-            '<div class="ak-mb-prestart__data-row">',
-              '<span class="ak-mb-prestart__data-key">PRICE</span>',
-              '<span class="ak-mb-prestart__data-val">$50</span>',
-            '</div>',
-            '<div class="ak-mb-prestart__data-row">',
-              '<span class="ak-mb-prestart__data-key">SPINS</span>',
-              '<span class="ak-mb-prestart__data-val">2</span>',
-            '</div>',
-            '<div class="ak-mb-prestart__data-row">',
-              '<span class="ak-mb-prestart__data-key">STATUS</span>',
-              '<span class="ak-mb-prestart__data-val ak-mb-prestart__data-val--ok">AVAILABLE</span>',
-            '</div>',
-          '</div>',
-        '</div>',
+        '',
         '<div class="ak-mb-prestart__ctas">',
-          '<a href="/products/candyfacts-mystery-box-combo" class="ak-mb-prestart__cta ak-mb-prestart__cta--primary" id="akMbPrestartBuy" aria-label="Buy Combo — purchase the CandyFACTS Mystery Box Combo">',
-            '<span class="ak-mb-prestart__cta-label">BUY COMBO</span>',
-            '<span class="ak-mb-prestart__cta-sub">2 REAL SPINS</span>',
-          '</a>',
-          '<button type="button" class="ak-mb-prestart__cta ak-mb-prestart__cta--secondary" id="akMbPrestartStart" aria-label="Preview — try a free demo spin">',
-            '<span class="ak-mb-prestart__cta-label">PREVIEW</span>',
-            '<span class="ak-mb-prestart__cta-sub">1 DEMO SPIN</span>',
-          '</button>',
+          isPurchased
+            ? '<button type="button" class="ak-mb-prestart__cta ak-mb-prestart__cta--primary" id="akMbPrestartStart" aria-label="Access Spins — enter the crate with your purchased spins">' +
+                '<span class="ak-mb-prestart__cta-label">ACCESS SPINS</span>' +
+                '<span class="ak-mb-prestart__cta-sub">PURCHASED ACCESS</span>' +
+              '</button>'
+            : '<button type="button" class="ak-mb-prestart__cta ak-mb-prestart__cta--primary" id="akMbPrestartStart" aria-label="Spin — start a free preview spin">' +
+                '<span class="ak-mb-prestart__cta-label">SPIN</span>' +
+                '<span class="ak-mb-prestart__cta-sub">FREE PREVIEW</span>' +
+              '</button>',
         '</div>',
-        /* TODO: confirm disclaimer copy with business */
         '<div class="ak-mb-prestart__disclaimer">',
-          'COMBO PACK &middot; 2 SPINS &middot; NON-REFUNDABLE &middot; CLAIMS VIA EMAIL LINK',
+          isPurchased
+            ? 'PURCHASED ACCESS &middot; 2 SPINS &middot; NON-REFUNDABLE'
+            : 'FREE PREVIEW &middot; 1 SPIN &middot; NO PURCHASE REQUIRED',
         '</div>',
       '</div>'
     ].join('');
