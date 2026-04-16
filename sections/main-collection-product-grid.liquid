@@ -500,8 +500,8 @@
     var area = w * h;
     var s = densityScale();
 
-    /* was: clamp((area / 1600) * s, 520, 1800) */
-    var count = Math.round(clamp((area / 1600) * s, 200, 800));
+    /* was: clamp((area / 1600) * s, 520, 1800) → 200, 800 (2026-04-05, Phase 1) → 200, 600 (2026-04-16, desktop floater ceiling reduction) */
+    var count = Math.round(clamp((area / 1600) * s, 200, 600));
     floaters = new Array(count);
 
     for(var i = 0; i < count; i++){
