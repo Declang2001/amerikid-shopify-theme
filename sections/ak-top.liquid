@@ -552,7 +552,7 @@ if(!cv || prm) return;
 (function(){
   var canvas = cv;
   var ctx = canvas.getContext('2d', { alpha:true });
-  var w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var w = 0, h = 0, dpr = 1;
   var dust = [], floaters = [], shooters = [];
   var nextShooterAt = 0, lastFrameTime = 0;
   var animationId = null, seededOnce = false, resizeRaf = 0;
@@ -571,7 +571,7 @@ if(!cv || prm) return;
     var rect = root.getBoundingClientRect();
     w = Math.max(1, Math.floor(rect.width));
     h = Math.max(1, Math.floor(rect.height));
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    dpr = 1;
     canvas.width = Math.floor(w * dpr);
     canvas.height = Math.floor(h * dpr);
     canvas.style.width = w + 'px';
