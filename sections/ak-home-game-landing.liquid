@@ -1,0 +1,308 @@
+{% comment %}
+  ak-home-game-landing.liquid
+  Prototype: video-game-menu homepage landing screen.
+  Local prototype only — not yet deployed.
+
+  - Fullscreen looping muted MP4 background (object-fit: cover).
+  - Dark cinematic overlay for legibility.
+  - "AMERIKID" chunky game-menu title in brand purple (#ff33ff).
+  - Vertical navigation menu with real AmeriKid links.
+  - No canvas. No particles. No rAF. CSS-only motion.
+  - prefers-reduced-motion: suppresses hover/focus transitions.
+{% endcomment %}
+
+{%- liquid
+  assign accent           = section.settings.accent_color    | default: '#ff33ff'
+  assign overlay_pct      = section.settings.overlay_opacity | default: 60
+  assign overlay_decimal  = overlay_pct                      | divided_by: 100.0
+  assign title_text       = section.settings.title           | default: 'AMERIKID'
+  assign video_url        = section.settings.video_url       | default: 'https://cdn.shopify.com/videos/c/o/v/2a87abc6f0fc49d8a7e7a98a70c61d45.mp4'
+-%}
+
+<section
+  class="ak-gl"
+  aria-label="AmeriKid"
+  style="--ak-accent: {{ accent }}; --ak-overlay: {{ overlay_decimal }};"
+>
+  <video
+    class="ak-gl__video"
+    autoplay
+    muted
+    loop
+    playsinline
+    webkit-playsinline
+    preload="auto"
+    aria-hidden="true"
+    tabindex="-1"
+    disablepictureinpicture
+  >
+    <source src="{{ video_url }}" type="video/mp4">
+  </video>
+
+  <div class="ak-gl__overlay" aria-hidden="true"></div>
+
+  <div class="ak-gl__stage">
+    <h1 class="ak-gl__title">{{ title_text }}</h1>
+
+    <nav class="ak-gl__menu" aria-label="Primary">
+      <ul class="ak-gl__list">
+        {%- for i in (1..7) -%}
+          {%- assign label_key = 'link_' | append: i | append: '_label' -%}
+          {%- assign url_key   = 'link_' | append: i | append: '_url'   -%}
+          {%- assign label = section.settings[label_key] -%}
+          {%- assign url   = section.settings[url_key]   -%}
+          {%- if label != blank and url != blank -%}
+            <li class="ak-gl__item">
+              <a class="ak-gl__link" href="{{ url }}">
+                <span class="ak-gl__cursor" aria-hidden="true">&#9656;</span>
+                <span class="ak-gl__label">{{ label }}</span>
+              </a>
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    </nav>
+  </div>
+</section>
+
+{%- style -%}
+  /* Page chrome: lock background to black so any chrome bleed reads correctly */
+  html, body { margin: 0; padding: 0; background: #000; }
+
+  .ak-gl {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100svh;
+    height: 100dvh;
+    height: 100vh;
+    overflow: hidden;
+    background: #000;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    color: #fff;
+    z-index: 1;
+  }
+
+  .ak-gl__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    z-index: 0;
+    /* Fade off if it never loads — overlay alone reads correctly */
+    background: #000;
+  }
+
+  .ak-gl__overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background:
+      radial-gradient(120% 90% at 30% 55%,
+        rgba(0,0,0,0) 0%,
+        rgba(0,0,0,0.45) 65%,
+        rgba(0,0,0,0.88) 100%),
+      linear-gradient(180deg,
+        rgba(0,0,0, calc(var(--ak-overlay) * 0.55)) 0%,
+        rgba(0,0,0, calc(var(--ak-overlay) * 0.9))  100%);
+  }
+
+  .ak-gl__stage {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    width: 100%;
+    max-width: 960px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(28px, 6vw, 96px);
+    box-sizing: border-box;
+    pointer-events: none; /* let only links capture clicks */
+  }
+
+  /* Title */
+  .ak-gl__title {
+    font-family: inherit;
+    margin: 0 0 clamp(16px, 2.6vw, 36px) 0;
+    color: var(--ak-accent);
+    font-size: clamp(56px, 11vw, 168px);
+    line-height: 0.92;
+    letter-spacing: 0.012em;
+    text-transform: uppercase;
+    font-weight: 400; /* Impact is already heavy */
+    text-shadow:
+      0 0 18px rgba(255, 51, 255, 0.55),
+      0 0 42px rgba(255, 51, 255, 0.30),
+      0 2px 0  rgba(0,   0,   0,   0.55);
+    user-select: none;
+    pointer-events: auto;
+  }
+
+  /* Menu */
+  .ak-gl__menu { pointer-events: auto; }
+  .ak-gl__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2px, 0.5vw, 8px);
+  }
+  .ak-gl__item { margin: 0; padding: 0; }
+
+  .ak-gl__link {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 6px 10px 6px 0;
+    color: #f3f3f3;
+    text-decoration: none;
+    font-family: inherit;
+    font-size: clamp(22px, 3.4vw, 44px);
+    line-height: 1.1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition:
+      color 180ms ease,
+      text-shadow 180ms ease;
+    outline: none;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.55);
+  }
+
+  .ak-gl__cursor {
+    display: inline-block;
+    width: 0.9em;
+    color: var(--ak-accent);
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: opacity 180ms ease, transform 180ms ease;
+  }
+
+  .ak-gl__label {
+    display: inline-block;
+    transition: transform 180ms ease;
+  }
+
+  /* Hover + focus — single source of truth */
+  .ak-gl__link:hover,
+  .ak-gl__link:focus-visible {
+    color: var(--ak-accent);
+    text-shadow:
+      0 0 14px rgba(255, 51, 255, 0.55),
+      0 0 28px rgba(255, 51, 255, 0.28),
+      0 2px 0 rgba(0,0,0,0.55);
+  }
+  .ak-gl__link:hover .ak-gl__cursor,
+  .ak-gl__link:focus-visible .ak-gl__cursor {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .ak-gl__link:hover .ak-gl__label,
+  .ak-gl__link:focus-visible .ak-gl__label {
+    transform: translateX(6px);
+  }
+
+  /* Keyboard focus ring */
+  .ak-gl__link:focus-visible {
+    outline: 2px solid var(--ak-accent);
+    outline-offset: 6px;
+    border-radius: 2px;
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    .ak-gl__stage {
+      padding: 24px 22px;
+      justify-content: flex-start;
+      padding-top: clamp(56px, 12vh, 110px);
+    }
+    .ak-gl__title {
+      margin-bottom: 18px;
+      text-shadow:
+        0 0 12px rgba(255, 51, 255, 0.55),
+        0 0 28px rgba(255, 51, 255, 0.28),
+        0 2px 0 rgba(0,0,0,0.55);
+    }
+    .ak-gl__list { gap: 4px; }
+  }
+
+  /* Reduced motion: suppress hover/focus transitions */
+  @media (prefers-reduced-motion: reduce) {
+    .ak-gl__link,
+    .ak-gl__cursor,
+    .ak-gl__label {
+      transition: none;
+    }
+  }
+{%- endstyle -%}
+
+{% schema %}
+{
+  "name": "AK Home Game Landing",
+  "tag": "div",
+  "class": "ak-home-game-landing-wrapper",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "text",
+      "id": "video_url",
+      "label": "Background video URL (.mp4)",
+      "default": "https://cdn.shopify.com/videos/c/o/v/2a87abc6f0fc49d8a7e7a98a70c61d45.mp4"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Dark overlay intensity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Title"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title text",
+      "default": "AMERIKID"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#ff33ff"
+    },
+    {
+      "type": "header",
+      "content": "Menu items (label + URL pairs)"
+    },
+    { "type": "text", "id": "link_1_label", "label": "Item 1 label", "default": "PRODUCTS" },
+    { "type": "text", "id": "link_1_url",   "label": "Item 1 URL",   "default": "/collections/master-collection" },
+    { "type": "text", "id": "link_2_label", "label": "Item 2 label", "default": "CANDYFACTS" },
+    { "type": "text", "id": "link_2_url",   "label": "Item 2 URL",   "default": "/pages/mystery-box" },
+    { "type": "text", "id": "link_3_label", "label": "Item 3 label", "default": "ARCHIVE" },
+    { "type": "text", "id": "link_3_url",   "label": "Item 3 URL",   "default": "/collections/" },
+    { "type": "text", "id": "link_4_label", "label": "Item 4 label", "default": "LIFE/STYLE" },
+    { "type": "text", "id": "link_4_url",   "label": "Item 4 URL",   "default": "/pages/the-collective" },
+    { "type": "text", "id": "link_5_label", "label": "Item 5 label", "default": "NARRATIVE" },
+    { "type": "text", "id": "link_5_url",   "label": "Item 5 URL",   "default": "/pages/narrative" },
+    { "type": "text", "id": "link_6_label", "label": "Item 6 label", "default": "BAD MUSIC" },
+    { "type": "text", "id": "link_6_url",   "label": "Item 6 URL",   "default": "/pages/2025" },
+    { "type": "text", "id": "link_7_label", "label": "Item 7 label", "default": "CLUBHOUSE" },
+    { "type": "text", "id": "link_7_url",   "label": "Item 7 URL",   "default": "/pages/club-hub" }
+  ],
+  "presets": [
+    { "name": "AK Home Game Landing" }
+  ]
+}
+{% endschema %}
