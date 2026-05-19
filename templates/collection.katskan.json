@@ -206,7 +206,8 @@
     },
     "ak-collection-bg": {
       "type": "ak-collection-bg",
-      "settings": {}
+      "settings": {},
+      "disabled": true
     }
   },
   "order": [
