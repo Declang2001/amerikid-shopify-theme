@@ -12,6 +12,9 @@ This theme is based on Shopify Dawn but contains heavy custom aesthetic override
 3. Consolidate duplicated navigation code currently hardcoded across multiple JSON templates.
 4. Future Phase: Mystery Crate integration work.
 
+## Particle Removal Strategy (2026-05-18)
+The current particle-removal program is **pilot-first**, not site-wide. After a prior 21-template batch attempt (`ak-collection-bg` disabled across the full set) produced white-background regressions, a read-only DevTools postmortem identified that `sections/ak-collection-bg.liquid` was carrying critical black-background CSS in addition to drawing particles — see [[known-fragile-areas]] for details. The current approach lifts that 3-rule CSS package into `layout/theme.liquid` as a permanent global safety net, then disables `ak-collection-bg` one template at a time with a development-theme observation window between batches. The 2026-05-18 pilot covers a single low-traffic collection (`templates/collection.weed.json`). The remaining 17 collection templates + default `collection.json` + Life/Style `page.json` + Bad Music `page.badmusic.json` + `page.badmusic-2025.json` are explicitly NOT bundled in the pilot; they wait for clean dev-theme observation and Bad Music local-preview verification before any further rollout. Mystery Crate is protected from this lane.
+
 ## Locked / Non-Negotiable
 - The visual identity, animations, and "feel" of the website must not change.
 - Mystery Crate logic is critical and must not be broken during cleanup.
