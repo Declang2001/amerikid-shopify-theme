@@ -960,6 +960,7 @@
   <!-- BEGIN: Ambient Particle System -->
   <script id="ak-product-particles-{{ section.id }}">
   (function(){
+    return; /* AmeriKid: ak-product-field ambient particle background disabled for product pages; product form, media gallery, variants, quantity, add-to-cart, payment buttons, price, pickup, accordions, sticky, hover, layout all unaffected */
     var sectionId = '{{ section.id }}';
     var wrap = document.getElementById('MainProduct-' + sectionId);
     var canvas = document.getElementById('ak-product-field-' + sectionId);
