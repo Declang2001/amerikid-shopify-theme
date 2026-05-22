@@ -135,6 +135,13 @@
 - Do not edit or attempt to clean up `templates/page.mystery-box.json` beyond the ak-footer and ak-mb-release additions already made.
 - Do not reorder JavaScript tags in `theme.liquid` without live browser testing.
 
+## Cart Page (2026-05-22)
+- **Route/structure:** `/cart` → `templates/cart.json` → `main-cart-items` + `main-cart-footer`. Two ambient particle canvases: `ak-cart-field` (`#ak-cart-canvas-{section.id}` in `sections/main-cart-items.liquid`) and `ak-cart-footer-field` (`#ak-cart-footer-canvas-{section.id}` in `sections/main-cart-footer.liquid`).
+- **Particle removal (2026-05-22):** both canvases are **disabled** via an early `return;` inserted as the first statement inside their dedicated labeled standalone IIFEs (`<!-- AMBIENT PARTICLES + SHOOTING STARS (ADDED, STANDALONE) -->` in items; `<!-- ...scoped to footer canvas -->` in footer). Both `<canvas>` elements stay in the DOM but are inert (default 300×150, 0 drawn pixels).
+- **Fragile note — cart functionality is separate Dawn code and must stay untouched:** line items, quantity controls, remove buttons, cart form, subtotal/totals, checkout button, dynamic/additional checkout buttons, cart notes, discounts, cart-errors, empty-cart state, and AJAX cart updates are Dawn Liquid + Dawn's external cart JS — NOT in the particle IIFEs. The early `return;`s only affect the particle IIFEs. Verified on dev in both empty and item-present states (test item added then cleared) with full cart UI intact.
+- **Cart drawer / notification have NO canvas:** `snippets/cart-drawer.liquid` and `snippets/cart-notification.liquid` contain zero canvas refs and were not touched.
+- **Revert:** remove the `return;` line at the top of the particle IIFE in `sections/main-cart-items.liquid` and/or `sections/main-cart-footer.liquid`.
+
 ## Clubhouse Page (2026-05-22)
 - **Route/structure:** `/pages/club-hub` → `templates/page.club-hub.json` → section `custom_liquid_4tbt7q` (`{% render 'club-hub' %}`) → `snippets/club-hub.liquid` (~3012 lines, all content/CSS/JS inline). Canvas `ak-clubhub-field` / `#ak-clubhub-field`.
 - **Particle removal (2026-05-22):** `ak-clubhub-field` is **disabled** via an early `return;` inserted as the first statement inside its dedicated labeled standalone IIFE (`<!-- Ambient particles + shooting stars system -->`, the last of three `<script>` blocks in the snippet). The IIFE is canvas-only; the `<canvas id="ak-clubhub-field">` element stays in the DOM but is inert (default 300×150, 0 drawn pixels).
