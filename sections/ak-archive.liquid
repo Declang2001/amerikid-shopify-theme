@@ -726,7 +726,7 @@
   var cv=document.getElementById('AkArchiveCanvas');
   var prm=false;
   try{prm=window.matchMedia('(prefers-reduced-motion:reduce)').matches;}catch(ex){}
-  if(!cv||prm) return;
+  if(!cv||prm||true) return; /* AmeriKid: ak-archive-canvas ambient particle background disabled for /collections; archive deck drag/tap/arrows/keyboard/layout already initialized above and unaffected (reuses the proven reduced-motion no-particle path) */
 
   (function(){
     var ctx=cv.getContext('2d',{alpha:true});
