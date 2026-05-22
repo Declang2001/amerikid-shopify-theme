@@ -547,7 +547,7 @@ if(!prm){
    - Floater glow: preserved for accents
    - Shooting stars: full system preserved
 ========================================================= */
-if(!cv || prm) return;
+if(!cv || prm || true) return; /* AmeriKid: ak-top-canvas site-wide header particle background disabled; header/nav/menu/drawer/cart/count/labels/glint/cart-bob initialize above and are unaffected (reuses the proven reduced-motion no-particle path) */
 
 (function(){
   var canvas = cv;
