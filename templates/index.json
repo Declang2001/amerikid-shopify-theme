@@ -9,29 +9,6 @@
  */
 {
   "sections": {
-    "ak-home-game-landing": {
-      "type": "ak-home-game-landing",
-      "settings": {
-        "video_url": "https://cdn.shopify.com/videos/c/o/v/2a87abc6f0fc49d8a7e7a98a70c61d45.mp4",
-        "overlay_opacity": 60,
-        "title": "AMERIKID",
-        "accent_color": "#ff33ff",
-        "link_1_label": "PRODUCTS",
-        "link_1_url": "/collections/master-collection",
-        "link_2_label": "CANDYFACTS",
-        "link_2_url": "/pages/mystery-box",
-        "link_3_label": "ARCHIVE",
-        "link_3_url": "/collections/",
-        "link_4_label": "LIFE/STYLE",
-        "link_4_url": "/pages/the-collective",
-        "link_5_label": "NARRATIVE",
-        "link_5_url": "/pages/narrative",
-        "link_6_label": "BAD MUSIC",
-        "link_6_url": "/pages/2025",
-        "link_7_label": "CLUBHOUSE",
-        "link_7_url": "/pages/club-hub"
-      }
-    },
     "ak-collection-bg": {
       "type": "ak-collection-bg",
       "settings": {},
@@ -39,13 +16,11 @@
     },
     "ak-landing": {
       "type": "ak-landing",
-      "settings": {},
-      "disabled": true
+      "settings": {}
     },
     "custom_liquid_xPURQD": {
       "type": "custom-liquid",
       "name": "floating button",
-      "disabled": true,
       "settings": {
         "custom_liquid": "<style>\n  /* Floating image button */\n  #floating-enter-btn {\n    position: fixed;\n    top: 150px;\n    left: 50px;\n    z-index: 999999;\n\n    background: transparent;\n    border: none;\n    cursor: pointer;\n\n    animation: fadeInScale 0.8s ease-out forwards;\n    opacity: 0;\n    padding: 0;\n\n    touch-action: manipulation;\n    -webkit-tap-highlight-color: transparent;\n  }\n\n  #floating-enter-btn img {\n    max-width: 220px;\n    height: auto;\n    display: block;\n\n    filter: drop-shadow(0 0 8px rgba(255,255,255,0.9)) drop-shadow(0 0 18px rgba(200,120,255,0.35));\n    transform-origin: center;\n    will-change: transform, filter;\n\n    /* Glow pulse + subtle scale breathing */\n    animation: akGlow 3s ease-in-out infinite, akBreath 4s ease-in-out infinite;\n\n    /* rotation variable used during impact */\n    --ak-rot: 0deg;\n  }\n\n  /* Desktop hover brighten */\n  @media (hover:hover) and (pointer:fine) {\n    #floating-enter-btn:hover img {\n      filter: drop-shadow(0 0 14px rgba(255,255,255,1)) drop-shadow(0 0 28px rgba(200,120,255,0.55));\n    }\n  }\n\n  @keyframes fadeInScale {\n    0% { transform: scale(0.6); opacity: 0; }\n    100% { transform: scale(1); opacity: 1; }\n  }\n\n  @keyframes akGlow {\n    0%, 100% { filter: drop-shadow(0 0 8px rgba(255,255,255,0.9)) drop-shadow(0 0 18px rgba(200,120,255,0.35)); }\n    50% { filter: drop-shadow(0 0 14px rgba(255,255,255,0.95)) drop-shadow(0 0 26px rgba(200,120,255,0.5)); }\n  }\n\n  @keyframes akBreath {\n    0%, 100% { transform: scale(1); }\n    50% { transform: scale(1.02); }\n  }\n\n  /* Squash/stretch + subtle tilt (uses --ak-rot set by JS) */\n  @keyframes akSquishX {\n    0%   { transform: scaleX(1.28) scaleY(0.76) rotate(var(--ak-rot)); }\n    55%  { transform: scaleX(0.98) scaleY(1.02) rotate(calc(var(--ak-rot) * -0.35)); }\n    100% { transform: scaleX(1) scaleY(1) rotate(0deg); }\n  }\n  @keyframes akSquishY {\n    0%   { transform: scaleX(0.76) scaleY(1.28) rotate(var(--ak-rot)); }\n    55%  { transform: scaleX(1.02) scaleY(0.98) rotate(calc(var(--ak-rot) * -0.35)); }\n    100% { transform: scaleX(1) scaleY(1) rotate(0deg); }\n  }\n  @keyframes akSquishXY {\n    0%   { transform: scaleX(1.22) scaleY(0.80) rotate(var(--ak-rot)); }\n    55%  { transform: scaleX(0.98) scaleY(1.02) rotate(calc(var(--ak-rot) * -0.35)); }\n    100% { transform: scaleX(1) scaleY(1) rotate(0deg); }\n  }\n\n  /* IMPORTANT: match specificity of #floating-enter-btn img so these win */\n  #floating-enter-btn img.ak-squish-x {\n    animation: akGlow 3s ease-in-out infinite, akBreath 4s ease-in-out infinite, akSquishX 240ms ease-out 1;\n  }\n  #floating-enter-btn img.ak-squish-y {\n    animation: akGlow 3s ease-in-out infinite, akBreath 4s ease-in-out infinite, akSquishY 240ms ease-out 1;\n  }\n  #floating-enter-btn img.ak-squish-xy {\n    animation: akGlow 3s ease-in-out infinite, akBreath 4s ease-in-out infinite, akSquishXY 260ms ease-out 1;\n  }\n\n  @media (max-width: 768px) {\n    #floating-enter-btn img { max-width: 160px; }\n  }\n</style>\n\n<button id=\"floating-enter-btn\" type=\"button\" aria-label=\"Enter AmeriKid\">\n  <img\n    src=\"https://cdn.shopify.com/s/files/1/0930/3267/7656/files/KID_SCRIBBLE_OUTLINE.png?v=1746502793\"\n    alt=\"Enter\"\n  />\n</button>\n\n<script>\n  (function () {\n    if (window.__AK_FLOATING_ENTER_INIT__) return;\n    window.__AK_FLOATING_ENTER_INIT__ = true;\n\n    function init() {\n      const btn = document.getElementById(\"floating-enter-btn\");\n      if (!btn) return;\n\n      const img = btn.querySelector(\"img\");\n\n      // Pause on hover (desktop only)\n      const canHover =\n        window.matchMedia &&\n        window.matchMedia(\"(hover:hover) and (pointer:fine)\").matches;\n\n      let paused = false;\n      if (canHover) {\n        btn.addEventListener(\"pointerenter\", () => { paused = true; });\n        btn.addEventListener(\"pointerleave\", () => { paused = false; });\n      }\n\n      function clamp(val, min, max) {\n        return Math.max(min, Math.min(max, val));\n      }\n\n      function setTilt(deg) {\n        if (!img) return;\n        img.style.setProperty(\"--ak-rot\", deg);\n      }\n\n      function squish(className) {\n        if (!img) return;\n        img.classList.remove(\"ak-squish-x\", \"ak-squish-y\", \"ak-squish-xy\");\n        void img.offsetWidth; // retrigger reliably\n        img.classList.add(className);\n      }\n\n      // Starting position\n      let x = 50;\n      let y = 150;\n\n      // Speed (px per second) — 132 matches the old 2.2 px/frame at 60fps\n      var SPEED = 132;\n\n      // Direction (unit vector) — slight angle variation from 45°\n      var angle = (Math.PI / 4) + (Math.random() - 0.5) * (Math.PI / 6);\n      let dx = Math.cos(angle) * (Math.random() < 0.5 ? 1 : -1);\n      let dy = Math.sin(angle) * (Math.random() < 0.5 ? 1 : -1);\n\n      var lastTime = 0;\n\n      function moveButton(now) {\n        if (paused) {\n          lastTime = now;\n          requestAnimationFrame(moveButton);\n          return;\n        }\n\n        // Delta time in seconds — cap to 100ms to prevent jumps after tab-switch\n        var dt = lastTime ? (now - lastTime) / 1000 : 1 / 60;\n        if (dt > 0.1) dt = 1 / 60;\n        lastTime = now;\n\n        const maxX = window.innerWidth - btn.offsetWidth;\n        const maxY = window.innerHeight - btn.offsetHeight;\n\n        x += dx * SPEED * dt;\n        y += dy * SPEED * dt;\n\n        let hitX = false;\n        let hitY = false;\n\n        if (x <= 0 || x >= maxX) { dx *= -1; hitX = true; }\n        if (y <= 0 || y >= maxY) { dy *= -1; hitY = true; }\n\n        x = clamp(x, 0, maxX);\n        y = clamp(y, 0, maxY);\n\n        btn.style.left = x + \"px\";\n        btn.style.top = y + \"px\";\n\n        // Squash/stretch + impact tilt\n        if (hitX && hitY) {\n          // corner: slightly stronger tilt\n          const sign = (dx > 0 ? 1 : -1);\n          setTilt((4 * sign) + \"deg\");\n          squish(\"ak-squish-xy\");\n        } else if (hitX) {\n          // left/right wall: tilt with travel direction\n          setTilt((dx > 0 ? 3 : -3) + \"deg\");\n          squish(\"ak-squish-x\");\n        } else if (hitY) {\n          // top/bottom wall: opposite tilt so it feels like a “bounce”\n          setTilt((dy > 0 ? -3 : 3) + \"deg\");\n          squish(\"ak-squish-y\");\n        }\n\n        requestAnimationFrame(moveButton);\n      }\n\n      requestAnimationFrame(moveButton);\n\n      // Click destination\n      btn.addEventListener(\"click\", function (e) {\n        e.preventDefault();\n        e.stopPropagation();\n        if (window.__akPortalExit) { window.__akPortalExit(); }\n        else { window.location.href = \"/pages/mystery-box\"; }\n      });\n\n      // Keep button on-screen when resizing\n      window.addEventListener(\"resize\", function () {\n        const maxX = window.innerWidth - btn.offsetWidth;\n        const maxY = window.innerHeight - btn.offsetHeight;\n        x = clamp(x, 0, maxX);\n        y = clamp(y, 0, maxY);\n      });\n    }\n\n    if (document.readyState === \"loading\") {\n      document.addEventListener(\"DOMContentLoaded\", init);\n    } else {\n      init();\n    }\n  })();\n</script>",
         "color_scheme": "",
@@ -55,7 +30,6 @@
     }
   },
   "order": [
-    "ak-home-game-landing",
     "ak-collection-bg",
     "ak-landing",
     "custom_liquid_xPURQD"
