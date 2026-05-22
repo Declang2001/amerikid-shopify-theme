@@ -135,6 +135,13 @@
 - Do not edit or attempt to clean up `templates/page.mystery-box.json` beyond the ak-footer and ak-mb-release additions already made.
 - Do not reorder JavaScript tags in `theme.liquid` without live browser testing.
 
+## Clubhouse Page (2026-05-22)
+- **Route/structure:** `/pages/club-hub` → `templates/page.club-hub.json` → section `custom_liquid_4tbt7q` (`{% render 'club-hub' %}`) → `snippets/club-hub.liquid` (~3012 lines, all content/CSS/JS inline). Canvas `ak-clubhub-field` / `#ak-clubhub-field`.
+- **Particle removal (2026-05-22):** `ak-clubhub-field` is **disabled** via an early `return;` inserted as the first statement inside its dedicated labeled standalone IIFE (`<!-- Ambient particles + shooting stars system -->`, the last of three `<script>` blocks in the snippet). The IIFE is canvas-only; the `<canvas id="ak-clubhub-field">` element stays in the DOM but is inert (default 300×150, 0 drawn pixels).
+- **Fragile note — keep the content/form scripts separate and untouched:** the Clubhouse drops form + captcha logic (`dropsForm`, `dropsBtn`, `findToken`, auto-submit, `hCaptcha`), links, buttons, inputs, and content blocks live in PRIOR `<script>` blocks that close before the particle script. The early `return;` only affects the particle IIFE. Do NOT fold these into one script or early-return higher up. The drops form/captcha render conditionally by customer/drops state (not shown in the logged-out view).
+- **Sync note:** this is a large snippet — `shopify theme dev` auto-sync to the dev theme can lag a few seconds after a save (the dev preview may briefly show the old drawing canvas before catching up). Verify on the local working-tree preview (`127.0.0.1:9292`) for the authoritative render.
+- **Revert:** remove the `return;` line at the top of the particle IIFE in `snippets/club-hub.liquid`.
+
 ## Identified Runtime Glitches (2026-03-19)
 - **Mystery Box 404:** `crate.glb` fails to load from `amerikid-mystery-crate.vercel.app`.
 - **Duplicate Elements:** Console error `the name "video-player" has already been used` suggests script duplication.
