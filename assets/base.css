@@ -2931,6 +2931,88 @@ details-disclosure > details {
   word-break: break-word;
 }
 
+/* AmeriKid comic NEW badge — triggered by product tag `new` (case-insensitive).
+   LOUD red pop-comic burst sticker. 16-spike clip-path silhouette with deep
+   valleys, oversized white "NEW" with thick black stroke, layered black drop-
+   shadow for sticker depth, subtle cream inner glow, playful tilt.
+   Pure CSS, no JS, no images, no animation. */
+.card-wrapper .badge--new.ak-badge-new {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 6.6rem;
+  height: 6.6rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background-color: #e3192c;
+  background-image:
+    radial-gradient(
+      circle at 50% 42%,
+      rgba(255, 244, 168, 0.22) 0%,
+      rgba(255, 244, 168, 0) 55%
+    );
+  color: #fff8e1;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-weight: 800;
+  font-size: 2.3rem;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow:
+    2px 0 0 #111,
+    -2px 0 0 #111,
+    0 2px 0 #111,
+    0 -2px 0 #111,
+    2px 2px 0 #111,
+    -2px 2px 0 #111,
+    2px -2px 0 #111,
+    -2px -2px 0 #111,
+    0 3px 0 rgba(0, 0, 0, 0.5);
+  transform: rotate(-12deg);
+  transform-origin: center;
+  filter:
+    drop-shadow(0 0 0 #111)
+    drop-shadow(3px 3px 0 #111)
+    drop-shadow(0 5px 6px rgba(0, 0, 0, 0.45));
+  clip-path: polygon(
+    50% 0%,    56% 20%,  69% 4%,   67% 24%,
+    85% 15%,   76% 33%,  96% 31%,  80% 44%,
+    100% 50%,  80% 56%,  96% 69%,  76% 67%,
+    85% 85%,   67% 76%,  69% 96%,  56% 80%,
+    50% 100%,  44% 80%,  31% 96%,  33% 76%,
+    15% 85%,   24% 67%,   4% 69%,  20% 56%,
+    0% 50%,    20% 44%,   4% 31%,  24% 33%,
+    15% 15%,   33% 24%,  31% 4%,   44% 20%
+  );
+  pointer-events: none;
+  z-index: 22;
+}
+
+@media screen and (max-width: 480px) {
+  .card-wrapper .badge--new.ak-badge-new {
+    width: 4.6rem;
+    height: 4.6rem;
+    font-size: 1.55rem;
+    text-shadow:
+      1.5px 0 0 #111,
+      -1.5px 0 0 #111,
+      0 1.5px 0 #111,
+      0 -1.5px 0 #111,
+      1.5px 1.5px 0 #111,
+      -1.5px 1.5px 0 #111,
+      1.5px -1.5px 0 #111,
+      -1.5px -1.5px 0 #111;
+    filter:
+      drop-shadow(0 0 0 #111)
+      drop-shadow(2px 2px 0 #111)
+      drop-shadow(0 3px 4px rgba(0, 0, 0, 0.4));
+  }
+}
+
 .gradient {
   background: rgb(var(--color-background));
   background: var(--gradient-background);

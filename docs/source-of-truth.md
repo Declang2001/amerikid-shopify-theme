@@ -107,6 +107,9 @@ shopify theme push --theme 184615043352 --path . --store iacxyv-w5.myshopify.com
 shopify theme push --theme 185910067480 --nodelete --store iacxyv-w5.myshopify.com
 ```
 
+## Product Card Badges
+- **NEW badge source of truth (2026-05-28):** Shopify product tag `new` (case-insensitive) drives the comic-style NEW badge on every product card across the theme. The previous hardcoded handle allow-list (`candyfacts-mystery-box-combo`, `candyfacts-zombie-slayer-trucker-hat`, `candyfacts-label-t-shirt`) and its `grid__item--new` magenta-glow `::after` system in `sections/main-collection-product-grid.liquid` have been removed. Tagging products `new` in Shopify Admin is now the only mechanism. Sold-out remains highest priority; NEW second; on-sale third. Lives in `snippets/card-product.liquid` (Liquid + class) + `assets/base.css` (red comic-burst clip-path styling).
+
 ## AI Workflow Expectations
 1. Read `AGENTS.md` and this file.
 2. Read `docs/known-fragile-areas.md` and `docs/theme-architecture.md` if touching layout or specific pages.

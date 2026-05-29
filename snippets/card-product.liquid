@@ -53,6 +53,12 @@
     if ratio == 0 or ratio == null
       assign ratio = 1
     endif
+
+    assign ak_card_tags_lower = card_product.tags | join: '|' | downcase | split: '|'
+    assign ak_card_is_new_tag = false
+    if ak_card_tags_lower contains 'new'
+      assign ak_card_is_new_tag = true
+    endif
   -%}
 
   <div
@@ -153,6 +159,13 @@
                 class="badge badge--bottom-left color-{{ settings.sold_out_badge_color_scheme }}"
               >
                 {{- 'products.product.sold_out' | t -}}
+              </span>
+            {%- elsif ak_card_is_new_tag and card_product.available -%}
+              <span
+                id="NoMediaStandardBadge-{{ section_id }}-{{ card_product.id }}"
+                class="badge badge--bottom-left badge--new ak-badge-new"
+              >
+                NEW
               </span>
             {%- elsif card_product.compare_at_price > card_product.price and card_product.available -%}
               <span
@@ -576,6 +589,13 @@
               class="badge badge--bottom-left color-{{ settings.sold_out_badge_color_scheme }}"
             >
               {{- 'products.product.sold_out' | t -}}
+            </span>
+          {%- elsif ak_card_is_new_tag and card_product.available -%}
+            <span
+              id="Badge-{{ section_id }}-{{ card_product.id }}"
+              class="badge badge--bottom-left badge--new ak-badge-new"
+            >
+              NEW
             </span>
           {%- elsif card_product.compare_at_price > card_product.price and card_product.available -%}
             <span

@@ -192,40 +192,6 @@
     background: transparent !important;
   }
 
-  /* ---------- NEW marker (master collection, handle-list driven) ---------- */
-  .section-{{ section.id }}-padding .grid__item--new .card-wrapper::after {
-    content: "NEW";
-    position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
-
-    font-family: Impact, sans-serif;
-    font-size: 2.5rem;
-    line-height: 1;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-
-    color: #f2c6ff;
-    text-shadow:
-      0 0 3px rgba(255, 51, 255, 0.80),
-      0 0 7px rgba(255, 51, 255, 0.40);
-
-    background: transparent;
-    border: 0;
-    padding: 0;
-
-    pointer-events: none;
-    z-index: 10;
-  }
-
-  @media screen and (max-width: 749px) {
-    .section-{{ section.id }}-padding .grid__item--new .card-wrapper::after {
-      top: 1rem;
-      right: 1rem;
-      font-size: 1.8rem;
-      letter-spacing: 0.035em;
-    }
-  }
 {%- endstyle -%}
 
 <div class="section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}">
@@ -345,18 +311,13 @@
                 "
               >
                 {% assign skip_card_product_styles = false %}
-                {%- assign ak_new_handles = 'candyfacts-mystery-box-combo,candyfacts-zombie-slayer-trucker-hat,candyfacts-label-t-shirt' | split: ',' -%}
                 {%- for product in collection.products -%}
                   {% assign lazy_load = false %}
                   {%- if forloop.index > 2 -%}
                     {% assign lazy_load = true %}
                   {%- endif -%}
-                  {%- assign ak_is_new = false -%}
-                  {%- if ak_new_handles contains product.handle -%}
-                    {%- assign ak_is_new = true -%}
-                  {%- endif -%}
                   <li
-                    class="grid__item{% if ak_is_new %} grid__item--new{% endif %}"
+                    class="grid__item"
                   >
                     {% render 'card-product',
                       card_product: product,
