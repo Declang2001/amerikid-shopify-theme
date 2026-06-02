@@ -9,6 +9,8 @@ This theme is based on Shopify Dawn but contains heavy custom aesthetic override
 ## Navigation Label (2026-06-02)
 The site-wide nav/menu tile that links to the club-hub page is labeled **MONIKER** (visible copy in `sections/ak-top.liquid` — desktop `.ak-top-label` tile + mobile drawer link). This is a visible label only: the underlying route/handle remains `/pages/club-hub` and the active-state logic (`request.path == '/pages/club-hub'`) is unchanged. Renamed from "CLUBHOUSE" → "MONIKER".
 
+The **CandyFacts desktop nav icon is intentionally enlarged** (2026-06-02) in `sections/ak-top.liquid` (`.ak-top-candy-img` `transform: scale(1.52)`, `.ak-top-candy` padding `clamp(4px,0.8vw,8px)`). Visual-only: the route remains `/pages/mystery-box`, the active-state logic and BAD icon are unchanged, and the mobile drawer is unchanged (still the shared 120 px `.ak-top-mobile-image img` rule).
+
 ## Current Known Priorities
 1. Establish cross-AI continuity and reliable documentation (Complete).
 2. Reduce lag and unnecessary fat (bloat, large global assets, duplicated scripts) without altering visual output.
