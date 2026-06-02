@@ -13,6 +13,8 @@ The **CandyFacts desktop nav icon is intentionally enlarged** (2026-06-02) in `s
 
 The **footer back-to-top control is a larger text-only button** (2026-06-02) reading exactly `CLICK HERE TO GET TOP`, in `sections/ak-footer.liquid` (`.ak-btt-text` desktop `1.6rem` / mobile `1.2rem`, `.ak-btt` padding `8px 14px`). CSS-only enlargement: `id="AkBackToTop"`, `aria-label="Back to top"`, the scroll-to-top JS, `:focus-visible` outline, hover `#ff33ff`, and reduced-motion behavior are unchanged.
 
+The current **NEW product-card badge** visual is the **larger 3D red comic-burst sticker** (2026-06-02) in `assets/base.css` (`.card-wrapper .badge--new.ak-badge-new`: desktop shape `9.6rem` / text `3rem` so the red outgrows the word, mobile `6.6rem` / `2rem`; 3D depth from CSS-only highlight + dark-red-underside gradients, thicker text stroke, deeper black comic drop-shadow). Still controlled by the Shopify product tag `new` (case-insensitive); the old hardcoded magenta `grid__item--new` system remains removed and the sold-out → NEW → sale priority is unchanged.
+
 ## Current Known Priorities
 1. Establish cross-AI continuity and reliable documentation (Complete).
 2. Reduce lag and unnecessary fat (bloat, large global assets, duplicated scripts) without altering visual output.
