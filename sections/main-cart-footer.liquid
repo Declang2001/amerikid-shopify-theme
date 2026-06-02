@@ -78,7 +78,7 @@
 
   /* subtle micro “HUD” scanline overlay (same vibe as item cards) */
   #main-cart-footer .cart__footer:before{
-    content:””;
+    content:"";
     position:absolute;
     inset:0;
     pointer-events:none;
@@ -103,7 +103,7 @@
   #main-cart-footer .cart__blocks,
   #main-cart-footer .js-contents{
     width:100%;
-    max-width:720px;
+    max-width:600px;
     margin:0 auto;
     display:flex;
     flex-direction:column;
@@ -201,7 +201,7 @@
   /* CTA AREA */
   #main-cart-footer .cart__ctas{
     width:100%;
-    max-width:420px;
+    max-width:100%;
     margin-top:.25rem;
     display:flex;
     flex-direction:column;
@@ -212,6 +212,7 @@
   /* Checkout button -> PURPLE neon CTA (safe: just styling) */
   #main-cart-footer .cart__checkout-button{
     width:100%;
+    max-width:100%;
     border-radius:16px;
     border:2px solid #ff33ff;
     background:#000;
@@ -245,7 +246,7 @@
   }
   #main-cart-footer .cart__dynamic-checkout-buttons>div{
     width:100%!important;
-    max-width:420px;
+    max-width:100%;
   }
 
   @media (prefers-reduced-motion: reduce){

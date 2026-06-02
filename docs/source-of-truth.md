@@ -15,6 +15,8 @@ The **footer back-to-top control is a larger text-only button** (2026-06-02) rea
 
 The current **NEW product-card badge** visual is the **larger 3D red comic-burst sticker** (2026-06-02) in `assets/base.css` (`.card-wrapper .badge--new.ak-badge-new`: desktop shape `9.6rem` / text `3rem` so the red outgrows the word, mobile `6.6rem` / `2rem`; 3D depth from CSS-only highlight + dark-red-underside gradients, thicker text stroke, deeper black comic drop-shadow). Still controlled by the Shopify product tag `new` (case-insensitive); the old hardcoded magenta `grid__item--new` system remains removed and the sold-out → NEW → sale priority is unchanged.
 
+The **cart** (`/cart`) is a custom AmeriKid layout where the **item card** (`sections/main-cart-items.liquid`) and the **checkout summary panel** (`sections/main-cart-footer.liquid`) are styled as **one unified black-neon system** (2026-06-02): shared rounded panel + HUD scanline, the green QTY pill balanced with the checkout button, and the magenta checkout button filling a 600px inner column as the primary CTA with Shop Pay/PayPal/GPay centered beneath. All CSS-only — cart/checkout logic, cart AJAX, `name="updates[]"`, and the Shopify-rendered dynamic checkout button internals are untouched.
+
 ## Current Known Priorities
 1. Establish cross-AI continuity and reliable documentation (Complete).
 2. Reduce lag and unnecessary fat (bloat, large global assets, duplicated scripts) without altering visual output.
