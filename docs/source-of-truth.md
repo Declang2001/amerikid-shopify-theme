@@ -6,6 +6,9 @@ This repository holds the unpublished working copy of the live Amerikid Shopify 
 ## High-Level Theme Description
 This theme is based on Shopify Dawn but contains heavy custom aesthetic overrides, most notably a global "Impact" font style, neon elements, and custom interactive "starfield" canvas animations. It also shows traces of multiple page builder apps coexisting.
 
+## Navigation Label (2026-06-02)
+The site-wide nav/menu tile that links to the club-hub page is labeled **MONIKER** (visible copy in `sections/ak-top.liquid` — desktop `.ak-top-label` tile + mobile drawer link). This is a visible label only: the underlying route/handle remains `/pages/club-hub` and the active-state logic (`request.path == '/pages/club-hub'`) is unchanged. Renamed from "CLUBHOUSE" → "MONIKER".
+
 ## Current Known Priorities
 1. Establish cross-AI continuity and reliable documentation (Complete).
 2. Reduce lag and unnecessary fat (bloat, large global assets, duplicated scripts) without altering visual output.
