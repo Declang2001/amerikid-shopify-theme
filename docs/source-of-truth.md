@@ -19,6 +19,14 @@ The current **NEW product-card badge** visual is the **larger 3D red comic-burst
 
 The **cart** (`/cart`) is a custom AmeriKid layout where the **item card** (`sections/main-cart-items.liquid`) and the **checkout summary panel** (`sections/main-cart-footer.liquid`) are styled as **one unified black-neon system** (2026-06-02): shared rounded panel + HUD scanline, the green QTY pill balanced with the checkout button, and the magenta checkout button filling a 600px inner column as the primary CTA with Shop Pay/PayPal/GPay centered beneath. All CSS-only — cart/checkout logic, cart AJAX, `name="updates[]"`, and the Shopify-rendered dynamic checkout button internals are untouched.
 
+## Active Experiment — Club Hub Notebook Paper (2026-06-07)
+There is an in-progress, **unpublished, non-live** visual experiment that reskins the Club Hub page (`/pages/club-hub`) as a notebook / legal-pad paper look (ink-on-paper text over pale ruled yellow).
+- **Branch:** `experiment/notebook-paper-background`
+- **Baseline tag (pre-experiment known-good):** `baseline-before-notebook-bg`
+- **Experiment theme:** `186464731416` — **"Notebook Paper Experiment - DO NOT PUBLISH"**
+- **Checkpoint commit:** `2a54e79` ("experiment: add club hub notebook proof")
+- **Scope:** current proof is **Club Hub only and NOT live**. CSS-only, additive, scoped to `.ak-clubhub-page` inside `snippets/club-hub.liquid` (no DOM/JS/canvas; `sections/ak-top.liquid` and `sections/ak-footer.liquid` source files NOT edited). Live theme `184615043352` and normal dev theme `185910067480` are untouched. Any site-wide expansion of this look needs separate explicit approval (it inverts the locked black-neon identity).
+
 ## Current Known Priorities
 1. Establish cross-AI continuity and reliable documentation (Complete).
 2. Reduce lag and unnecessary fat (bloat, large global assets, duplicated scripts) without altering visual output.
