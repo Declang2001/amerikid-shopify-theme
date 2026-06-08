@@ -594,6 +594,106 @@ padding-right: 0 !important;
 
   }
 
+/* ============================================================
+   PHASE 1 — NOTEBOOK PAPER BACKDROP (Club Hub page only)
+   CSS-only, scoped to .ak-clubhub-page. No DOM, no JS, no canvas.
+   Paints pale legal-pad paper on <body> and clears the page-scoped
+   black backdrops so it shows behind the existing dark panels.
+   Text colors unchanged. Header/footer stay black (Phase 1).
+   Revert: delete this block.
+   ============================================================ */
+.ak-clubhub-page{ --ak-paper-top-gap: clamp(150px, 17vw, 220px); } /* blank title/header band before ruled lines (2.3: bigger) */
+.ak-clubhub-page body{
+  background-color:#f5dd4f !important;                 /* pale legal-pad yellow */
+  background-image:
+    linear-gradient(90deg,
+      transparent 56px,
+      rgba(218,40,50,.74) 56px,
+      rgba(218,40,50,.74) 58px,
+      transparent 58px),                                /* 1: left red/pink margin line (top, full height) */
+    linear-gradient(180deg,
+      #f5dd4f 0,
+      #f5dd4f var(--ak-paper-top-gap),
+      transparent var(--ak-paper-top-gap)),             /* 2: blank yellow title band masks lines in the top gap */
+    repeating-linear-gradient(180deg,
+      transparent 0 31px,
+      rgba(44,120,180,.60) 31px 32px) !important;       /* 3: blue/green ruled lines */
+  background-repeat:no-repeat, no-repeat, repeat !important;
+  background-position:0 0, 0 0, 0 var(--ak-paper-top-gap) !important; /* ruled lines start at the gap */
+  background-attachment:scroll, scroll, scroll !important; /* 2.2: glued to content — scrolls with the page */
+}
+/* Clear the page-scoped opaque blacks so the body paper shows through */
+.ak-clubhub-page #MainContent{ background:transparent !important; }
+.ak-clubhub-page .ak-clubhub{ background:transparent !important; }
+
+/* ============================================================
+   PHASE 2 — INK ON PAPER (Club Hub page only)
+   CSS-only, scoped to .ak-clubhub-page. No DOM, no JS, no canvas.
+   Header/nav sits on the paper with black-ink labels (purple
+   #ff33ff hover/active preserved); member-card text reads as dark
+   ink on a light paper card; magenta/purple accents kept.
+   Does NOT edit ak-top.liquid / ak-footer.liquid, footer, or any
+   form/captcha/upload behavior. Form inputs deferred (Phase 2b).
+   Revert: delete this block.
+   ============================================================ */
+
+/* --- Part 1: header/nav on paper (Club Hub only) --- */
+.ak-clubhub-page .ak-top-wrap{ background:transparent !important; }
+.ak-clubhub-page .ak-top-wrap::after{ background:none !important; }
+.ak-clubhub-page .ak-top-label{ color:#15120b !important; }       /* ink at rest */
+.ak-clubhub-page .ak-top-bad{ color:#15120b !important; }         /* BAD mask uses currentColor */
+.ak-clubhub-page .ak-top-mobile-trigger{ color:#15120b !important; text-shadow:none !important; } /* MENU ink, flat */
+.ak-clubhub-page .ak-top-label::before,
+.ak-clubhub-page .ak-top-label::after{ opacity:0 !important; }    /* damp white glint sheen */
+.ak-clubhub-page .ak-top-tile:hover .ak-top-label,
+.ak-clubhub-page .ak-top-tile.is-active .ak-top-label,
+.ak-clubhub-page .ak-top-bad:hover,
+.ak-clubhub-page .ak-top-bad.is-active,
+.ak-clubhub-page .ak-top-mobile-trigger:hover{ color:#ff33ff !important; } /* preserve purple hover/active */
+/* cart button: black ink at rest, magenta glow on hover/focus (Club Hub only; img is a light PNG → filter) */
+.ak-clubhub-page .ak-top-cart-img{ filter:brightness(0) !important; }
+.ak-clubhub-page .ak-top-cart-link:hover .ak-top-cart-img,
+.ak-clubhub-page .ak-top-cart-link:focus-visible .ak-top-cart-img{
+  filter:brightness(0) drop-shadow(0 0 6px #ff33ff) drop-shadow(0 0 12px rgba(255,51,255,.5)) !important;
+}
+
+/* --- Part 2: member-card ink on paper (Club Hub only) --- */
+.ak-clubhub-page .ak-id-card{
+  background:linear-gradient(180deg, rgba(255,236,100,.92), rgba(245,221,79,.88)) !important;
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;                                 /* magenta border/glow kept from base */
+}
+.ak-clubhub-page .ak-id-title,
+.ak-clubhub-page .ak-id-sub,
+.ak-clubhub-page .ak-label,
+.ak-clubhub-page .ak-value,
+.ak-clubhub-page .ak-id-hint,
+.ak-clubhub-page .ak-id-photo-mark,
+.ak-clubhub-page .ak-id-photo-note,
+.ak-clubhub-page .ak-mini-label,
+.ak-clubhub-page .ak-mini-value,
+.ak-clubhub-page .ak-id-section-title{ color:#15120b !important; } /* dark ink, specific selectors only */
+.ak-clubhub-page .ak-id-fields{ background:rgba(0,0,0,.05) !important; }     /* light inset so ink reads */
+.ak-clubhub-page .ak-id-photo-frame{ background:rgba(0,0,0,.06) !important; }
+.ak-clubhub-page .ak-id-btn{ background:#15120b !important; }      /* solid dark btn; white label + magenta accent kept */
+.ak-clubhub-page .ak-id-btn:hover{ background:#241f14 !important; } /* preserve hover lighten */
+
+/* --- Part 3 (Phase 2.2): footer on paper (Club Hub only; no ak-footer.liquid edit) --- */
+.ak-clubhub-page .ak-footer{ background:transparent !important; }                  /* paper shows behind footer */
+.ak-clubhub-page .ak-btt{ color:#15120b !important; }                             /* back-to-top ink at rest (.ak-btt-text inherits) */
+.ak-clubhub-page .ak-footer-copy{ color:rgba(21,18,11,.5) !important; }           /* muted ink copyright */
+.ak-clubhub-page .ak-btt:hover .ak-btt-text,
+.ak-clubhub-page .ak-btt:focus-visible .ak-btt-text{ color:#ff33ff !important; }  /* preserve purple hover/focus */
+/* Phase 2.4: nudge back-to-top text down so it sits inside a ruled line (Club Hub only; copyright follows) */
+.ak-clubhub-page .ak-btt{ margin-top:12px; }
+@media(max-width:680px){ .ak-clubhub-page .ak-btt{ margin-top:8px; } }
+
+/* --- Phase 2.3: tighten logo→nav spacing + remove dark-theme divider/glow lines (Club Hub only) --- */
+.ak-clubhub-page .ak-top-divider{ display:none !important; }                          /* remove top logo→nav glow line */
+.ak-clubhub-page .ak-footer-rule{ background:none !important; }                       /* remove footer glow line (keep spacing) */
+.ak-clubhub-page .ak-top-nav-panel{ padding-top:clamp(2px,0.6vw,8px) !important; }    /* pull nav rows up (was 20–30px) */
+.ak-clubhub-page .ak-top-nav-area{ margin-top:clamp(-22px,-2.2vw,-8px) !important; }  /* pull nav block toward the kid logo */
+
 .ak-clubhub{
 
 background:#000;
