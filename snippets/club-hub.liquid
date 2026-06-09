@@ -25,6 +25,18 @@
 
 </script>
 
+{%- comment -%} Phase 3.15 — decorative notebook doodle layer (Club Hub only); behind content, page-anchored, pointer-events:none, no JS/canvas {%- endcomment -%}
+<div class="ak-clubhub-doodles" aria-hidden="true">
+  <span class="ak-clubhub-doodle ak-clubhub-doodle--dice"></span>
+  <span class="ak-clubhub-doodle ak-clubhub-doodle--money"></span>
+  <span class="ak-clubhub-doodle ak-clubhub-doodle--hashtag"></span>
+  <span class="ak-clubhub-doodle ak-clubhub-doodle--star"></span>
+  <span class="ak-clubhub-doodle ak-clubhub-doodle--kid"></span>
+  <span class="ak-clubhub-doodle ak-clubhub-doodle--eyes"></span>
+  <span class="ak-clubhub-doodle ak-clubhub-doodle--dollar"></span>
+  <span class="ak-clubhub-doodle ak-clubhub-doodle--cross"></span>
+</div>
+
 <div class="ak-clubhub" role="region" aria-label="Club AmeriKid Hub">
 
 <!-- ADDED: Ambient particles + shooting stars background -->
@@ -602,7 +614,10 @@ padding-right: 0 !important;
    Text colors unchanged. Header/footer stay black (Phase 1).
    Revert: delete this block.
    ============================================================ */
-.ak-clubhub-page{ --ak-paper-top-gap: clamp(150px, 17vw, 220px); } /* blank title/header band before ruled lines (2.3: bigger) */
+.ak-clubhub-page{
+  --ak-paper-top-gap: clamp(150px, 17vw, 220px);    /* blank title/header band before ruled lines (2.3: bigger) */
+  --ak-paper-bottom-gap: clamp(130px, 12vw, 190px); /* 3.16: blank bottom margin band — ruled lines fade out here so the page doesn't end mid-line; the footer CTA sits on this clean paper */
+}
 .ak-clubhub-page body{
   --ak-paper-side-gap: clamp(82px, 7vw, 128px);         /* 3.11: shared inset for BOTH vertical rules (left red + right blue) so they sit evenly from each page edge */
   background-color:#f5dd4f !important;                 /* pale legal-pad yellow */
@@ -621,16 +636,106 @@ padding-right: 0 !important;
       #f5dd4f 0,
       #f5dd4f var(--ak-paper-top-gap),
       transparent var(--ak-paper-top-gap)),             /* 2: blank yellow title band masks lines in the top gap */
+    linear-gradient(180deg,
+      transparent calc(100% - var(--ak-paper-bottom-gap)),
+      #f5dd4f calc(100% - var(--ak-paper-bottom-gap) + 36px)),  /* 3.16: blank yellow BOTTOM margin band — ruled lines fade out into a clean footer paper area (no half-line at the page bottom). Sits ABOVE the ruled lines but BELOW the red/blue vertical rules, so the side rules still run full height like a real legal pad. */
     repeating-linear-gradient(180deg,
       transparent 0 31px,
       rgba(44,120,180,.60) 31px 32px) !important;       /* 3: blue/green ruled lines */
-  background-repeat:no-repeat, no-repeat, no-repeat, repeat !important;
-  background-position:0 0, 0 0, 0 0, 0 var(--ak-paper-top-gap) !important; /* ruled lines start at the gap */
-  background-attachment:scroll, scroll, scroll, scroll !important; /* 2.2: glued to content — scrolls with the page */
+  background-repeat:no-repeat, no-repeat, no-repeat, no-repeat, repeat !important;
+  background-position:0 0, 0 0, 0 0, 0 0, 0 var(--ak-paper-top-gap) !important; /* ruled lines start at the top gap */
+  background-attachment:scroll, scroll, scroll, scroll, scroll !important; /* 2.2: glued to content — scrolls with the page */
 }
 /* Clear the page-scoped opaque blacks so the body paper shows through */
 .ak-clubhub-page #MainContent{ background:transparent !important; }
 .ak-clubhub-page .ak-clubhub{ background:transparent !important; }
+
+/* ============================================================
+   PHASE 3.15 — DECORATIVE DOODLE LAYER V4 (Club Hub page only)
+   CSS-only + a tiny decorative DOM wrapper (8 aria-hidden <span>s,
+   inserted just before .ak-clubhub in this snippet). Replaces the V3
+   body::before multi-background layer so EACH doodle can be rotated
+   individually (CSS background layers cannot be rotated per-layer).
+   Composition: intentional loose diagonal rhythm — a few in the open
+   header paper ABOVE the nav (never on nav/logo/cart), the rest spread
+   down the lower open paper + footer-adjacent area (never on the card,
+   the CLICK-HERE CTA, or the copyright). Full opacity; mix-blend-mode:
+   multiply soaks the black ink into the yellow paper; page-anchored
+   (absolute inside the page-anchored #MainContent, so it scrolls WITH
+   the paper, not viewport-fixed); behind content (wrapper z-index:0;
+   #MainContent z-index:1 + .ak-footer z-index:1 keep real content on top;
+   ak-top owns z-index:999); pointer-events:none; hidden on mobile.
+   Declan's transparent black-ink PNGs (1447x1385). Each item is placed +
+   rotated individually below.
+   Revert: delete this CSS block, the <div class="ak-clubhub-doodles">
+   markup before .ak-clubhub, and the two z-index:1 content-lift rules. */
+.ak-clubhub-page body{ position:relative; }                    /* page-anchor backstop */
+.ak-clubhub-page #MainContent{ position:relative; z-index:1; } /* doodle-wrapper anchor + keeps content above the doodles */
+.ak-clubhub-page .ak-footer{ position:relative; z-index:1; }   /* footer paints above the doodle layer */
+
+.ak-clubhub-page .ak-clubhub-doodles{
+  position:absolute; inset:0;
+  z-index:0;
+  pointer-events:none;
+  mix-blend-mode:multiply;          /* transparent black ink soaks into the paper */
+}
+.ak-clubhub-page .ak-clubhub-doodle{
+  position:absolute;
+  display:block;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:contain;
+  aspect-ratio:1447 / 1385;
+  opacity:1;
+  pointer-events:none;
+  transform-origin:center center;
+}
+/* individual placement + rotation — loose diagonal rhythm, not a grid */
+.ak-clubhub-page .ak-clubhub-doodle--dice{    /* hero — upper-left open paper, above the nav */
+  left:clamp(112px, 8vw, 165px); top:36px; width:clamp(210px, 14vw, 230px);
+  transform:rotate(-8deg);
+  background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-dice.png?v=1780967556");
+}
+.ak-clubhub-page .ak-clubhub-doodle--money{   /* upper-right open paper, above the nav, left of the cart.
+                                                  Phase 3.16: this slot INTENTIONALLY uses the DOLLAR asset
+                                                  (money/diamond replaced per Declan) — Club Hub reuses the
+                                                  dollar doodle twice on purpose; class name kept to minimise churn. */
+  right:clamp(125px, 9vw, 190px); top:54px; width:clamp(175px, 13vw, 250px);
+  transform:rotate(9deg);
+  background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-dollar.png?v=1780967556");
+}
+.ak-clubhub-page .ak-clubhub-doodle--hashtag{ /* near the KID logo zone, above the nav (not on the logo) */
+  left:clamp(410px, 32vw, 560px); top:98px; width:clamp(135px, 10vw, 190px);
+  transform:rotate(-5deg);
+  background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-hashtag.png?v=1780967556");
+}
+.ak-clubhub-page .ak-clubhub-doodle--kid{     /* lower-left open paper, below the member card */
+  left:clamp(150px, 10vw, 220px); top:990px; width:clamp(210px, 15vw, 290px);
+  transform:rotate(-10deg);
+  background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-kid.png?v=1780967556");
+}
+.ak-clubhub-page .ak-clubhub-doodle--eyes{    /* lower centre-right, peeking into the open paper */
+  right:clamp(380px, 28vw, 540px); top:1055px; width:clamp(155px, 11vw, 230px);
+  transform:rotate(7deg);
+  background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-eyes.png?v=1780967556");
+}
+.ak-clubhub-page .ak-clubhub-doodle--dollar{  /* lower-middle, offset from KID/eyes */
+  left:clamp(600px, 46vw, 760px); top:1140px; width:clamp(150px, 11vw, 220px);
+  transform:rotate(4deg);
+  background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-dollar.png?v=1780967556");
+}
+.ak-clubhub-page .ak-clubhub-doodle--star{    /* smaller rhythm mark, lower-right / footer side */
+  right:clamp(120px, 9vw, 200px); top:1230px; width:clamp(165px, 12vw, 235px);
+  transform:rotate(-13deg);
+  background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-star.png?v=1780967556");
+}
+.ak-clubhub-page .ak-clubhub-doodle--cross{   /* footer-adjacent, left of the CTA (not on it) */
+  left:clamp(330px, 24vw, 460px); top:1305px; width:clamp(145px, 10vw, 210px);
+  transform:rotate(11deg);
+  background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-cross.png?v=1780967556");
+}
+/* hide the doodle layer on mobile so it never crowds the narrow content column */
+@media (max-width:768px){ .ak-clubhub-page .ak-clubhub-doodles{ display:none !important; } }
 
 /* ============================================================
    PHASE 2 — INK ON PAPER (Club Hub page only)
@@ -694,9 +799,17 @@ padding-right: 0 !important;
 .ak-clubhub-page .ak-footer-copy{ color:rgba(21,18,11,.5) !important; }           /* muted ink copyright */
 .ak-clubhub-page .ak-btt:hover .ak-btt-text,
 .ak-clubhub-page .ak-btt:focus-visible .ak-btt-text{ color:#ff33ff !important; }  /* preserve purple hover/focus */
-/* Phase 2.4: nudge back-to-top text down so it sits inside a ruled line (Club Hub only; copyright follows) */
+/* Phase 3.16: small breathing space above the back-to-top text so the CTA sits cleanly
+   inside the blank bottom paper band (--ak-paper-bottom-gap). The ruled lines now fade out
+   above the footer, so the CTA + copyright land on clean yellow instead of crossing a
+   ruled line. CTA text / id="AkBackToTop" / aria-label / scroll behaviour / hover-focus
+   are all UNCHANGED (ak-footer.liquid is not edited; this is Club-Hub-scoped CSS only). */
 .ak-clubhub-page .ak-btt{ margin-top:12px; }
 @media(max-width:680px){ .ak-clubhub-page .ak-btt{ margin-top:8px; } }
+/* FUTURE ARCHITECTURE NOTE (not implemented here): when the notebook look expands site-wide,
+   doodles should be driven by a PER-PAGE doodle map (page-specific / pseudo-random sets),
+   NOT this one fixed Club-Hub composition repeated identically on every page. This pass stays
+   Club-Hub-only — no site-wide expansion, no randomization, no shared/reusable layer yet. */
 
 /* --- Phase 2.3: tighten logo→nav spacing + remove dark-theme divider/glow lines (Club Hub only) --- */
 .ak-clubhub-page .ak-top-divider{ display:none !important; }                          /* remove top logo→nav glow line */
