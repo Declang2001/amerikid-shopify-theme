@@ -1,0 +1,270 @@
+{%- comment -%}
+  ============================================================
+  snippets/ak-notebook-products.liquid
+  PHASE 5.0 — PRODUCTS NOTEBOOK-PAPER BACKDROP PROOF
+  (experiment theme 186464731416 only — DO NOT PUBLISH)
+
+  Paper-only proof for /collections/master-collection (the PRODUCTS
+  nav route). NO doodles in this pass (deferred until the paper is
+  visually approved, per the 2026-06-09 read-only analysis).
+
+  - Rendered from ONE repurposed disabled spare custom_liquid slot in
+    templates/collection.json (custom_liquid_Jdbfj4) behind a LIQUID
+    HANDLE GUARD: {% raw %}{% if collection.handle == 'master-collection' %}{% endraw %}.
+    The guard is the primary scope — collection.json is SHARED by
+    /collections/all, /collections/candyfacts and
+    /collections/free-vitaly-longsleeve, and those routes must never
+    receive this styling (they don't even render this snippet).
+  - Adds .ak-products-page to <html> via a tiny script hook (safe to
+    be unconditional here because the Liquid guard already scoped it).
+  - Paints the accepted legal-pad paper (yellow + red/blue vertical
+    rules + blue horizontal ruled lines + blank top/bottom bands) on
+    <body>, scoped to .ak-products-page — same values as the accepted
+    Club Hub and Life/Style papers (shared --ak-paper-side-gap).
+  - Ports the accepted mask-PNG nav + ink header/cart/footer treatment
+    (Club Hub Phase 3.9 → Life/Style D/E blocks) re-scoped to
+    .ak-products-page; PRODUCTS (.is-active) reads purple + magenta
+    glow at rest, other wordmarks ink at rest / purple on hover-focus.
+  - Recolors the product-card titles to dark ink (#15120b) with the
+    official AmeriKid purple (#ff33ff) on hover/focus. Title sizing,
+    grid/card layout, product links, photos, NEW badges, sold-out
+    banners, and all Dawn collection behavior are untouched
+    (sections/main-collection-product-grid.liquid and
+    snippets/card-product.liquid are NOT edited).
+
+  Revert: in templates/collection.json set custom_liquid_Jdbfj4 back
+  to "disabled": true (or git checkout templates/collection.json),
+  and delete this snippet file.
+  ============================================================
+{%- endcomment -%}
+
+<script>
+  /* Page hook — this snippet only renders on collection.handle ==
+     'master-collection' (Liquid guard in templates/collection.json),
+     so the class can be added unconditionally. */
+  (function(){ document.documentElement.classList.add('ak-products-page'); })();
+</script>
+
+<style>
+  /* ============================================================
+     PHASE 5.0 — PRODUCTS NOTEBOOK PAPER BACKDROP
+     CSS-only, scoped entirely to .ak-products-page. Reuses the
+     accepted Club Hub / Life/Style paper values; does not touch
+     the grid section, cards, badges, or any markup.
+     ============================================================ */
+  .ak-products-page{
+    --ak-paper-top-gap: clamp(150px, 17vw, 220px);    /* blank top band behind the KID logo */
+    --ak-paper-bottom-gap: clamp(130px, 12vw, 190px); /* blank bottom band — ruled lines fade out so the page doesn't end mid-line */
+  }
+  .ak-products-page body{
+    --ak-paper-side-gap: clamp(82px, 7vw, 128px);     /* shared inset for both vertical rules (red left + blue right) */
+    background-color:#f5dd4f !important;              /* pale legal-pad yellow (beats the global html,body{background:#000} via higher specificity) */
+    background-image:
+      linear-gradient(90deg,
+        transparent calc(100% - var(--ak-paper-side-gap)),
+        rgba(44,120,180,.60) calc(100% - var(--ak-paper-side-gap)),
+        rgba(44,120,180,.60) calc(100% - var(--ak-paper-side-gap) + 2px),
+        transparent calc(100% - var(--ak-paper-side-gap) + 2px)),   /* blue RIGHT margin rule (2px, full height, scrolls with paper) */
+      linear-gradient(90deg,
+        transparent var(--ak-paper-side-gap),
+        rgba(218,40,50,.74) var(--ak-paper-side-gap),
+        rgba(218,40,50,.74) calc(var(--ak-paper-side-gap) + 2px),
+        transparent calc(var(--ak-paper-side-gap) + 2px)),          /* red LEFT margin rule */
+      linear-gradient(180deg,
+        #f5dd4f 0,
+        #f5dd4f var(--ak-paper-top-gap),
+        transparent var(--ak-paper-top-gap)),                       /* blank yellow TOP band masks ruled lines in the top gap */
+      linear-gradient(180deg,
+        transparent calc(100% - var(--ak-paper-bottom-gap)),
+        #f5dd4f calc(100% - var(--ak-paper-bottom-gap) + 36px)),     /* blank yellow BOTTOM band — ruled lines fade out into clean paper (no half-line at page bottom). Above the ruled lines, below the side rules. */
+      repeating-linear-gradient(180deg,
+        transparent 0 31px,
+        rgba(44,120,180,.60) 31px 32px) !important;                 /* blue horizontal ruled lines */
+    background-repeat:no-repeat, no-repeat, no-repeat, no-repeat, repeat !important;
+    background-position:0 0, 0 0, 0 0, 0 0, 0 var(--ak-paper-top-gap) !important; /* ruled lines start at the top gap */
+    background-attachment:scroll, scroll, scroll, scroll, scroll !important;      /* glued to content — scrolls with the page */
+  }
+  /* Let the body paper show through the page chrome. The grid section's own
+     background:#000 !important is already beaten at runtime by the global
+     #MainContent .gradient transparency net in layout/theme.liquid
+     (DevTools-verified: the section wrapper computes rgba(0,0,0,0)) —
+     these are page-scoped backstops only. */
+  .ak-products-page #MainContent{ background:transparent !important; }
+  .ak-products-page #MainContent .gradient{ background:transparent !important; background-image:none !important; }
+
+  /* ============================================================
+     PRODUCT CARD TITLES → INK ON PAPER (CSS-only)
+     Titles are currently white Impact 3rem uppercase (set by the grid
+     section, which is NOT edited) — invisible on yellow. Recolor only;
+     sizing/layout/links/badges untouched. Hover/focus = AmeriKid
+     purple #ff33ff (matches the nav wordmark behavior on paper).
+     ============================================================ */
+  .ak-products-page .card-wrapper .card__heading,
+  .ak-products-page .card-wrapper .card__heading a,
+  .ak-products-page .card-wrapper .card__information .full-unstyled-link{
+    color:#15120b !important;
+  }
+  .ak-products-page .card-wrapper .card__heading a:hover,
+  .ak-products-page .card-wrapper .card__heading a:focus-visible,
+  .ak-products-page .card-wrapper:hover .card__information .full-unstyled-link{
+    color:#ff33ff !important;
+  }
+  /* Dawn paints a focus/loading veil + skeletons in scheme colors on AJAX
+     section loads; keep any such veil from flashing a dark plate on paper. */
+  .ak-products-page .loading-overlay__spinner .path{ stroke:#15120b; }
+
+  /* ============================================================
+     PRODUCT CUTOUT SHADOW v3 — open the real remaining clipping ancestor.
+     v1 clipped because the filter lived on .media (overflow:hidden).
+     v2 moved the filter to the img and opened .media, but Dawn's
+     .card__media (component-card.css:77, .card .card__inner .card__media
+     { overflow:hidden }) remained at the EXACT same 480x480 box and kept
+     clipping the shadow identically — runtime ancestor audit confirmed it
+     is the ONLY clipper between the img and <main>. Open both wrappers,
+     page-scoped only (do NOT edit shared component-card.css; its
+     overflow:hidden serves border-radius/hover-zoom, neither active here:
+     radius 0, no zoom rule). The shadow stays on the transparent product
+     img (canvas alpha-verified PNGs) so it follows the true silhouette.
+     Pixel-diff verified: tray side shadows +8/+10, raglan bottom +27.
+     Known asset limits (NOT CSS): the FreeVitaly hem and the combo's
+     right side are cropped at the source-PNG edge, so their shadows end
+     in a soft straight band — fixable only by re-exported PNGs.
+     Ink-tinted double shadow = soft lift + tight contact shadow. The
+     badge branch (.card__content .card__badge — NEW / sold-out) is a
+     sibling of .media and is untouched. Revert: delete this block. */
+  .ak-products-page .card__media,
+  .ak-products-page .card__media .media{
+    overflow:visible !important;
+  }
+  .ak-products-page .card__media img{
+    filter: drop-shadow(0 14px 14px rgba(21,18,11,.24)) drop-shadow(0 3px 2px rgba(21,18,11,.18));
+  }
+
+  /* ============================================================
+     HEADER / NAV / CART — FULL notebook parity, ported from the
+     accepted .ak-lifestyle-page treatment (itself ported from the
+     accepted Club Hub Phase 3.9 mask-PNG nav) and re-scoped to
+     .ak-products-page. ak-top.liquid is NOT edited; routes/order,
+     MENU drawer JS, and cart behaviour are unchanged. The five
+     wordmarks render as a MASK on each tile's ::before (ink #15120b
+     at rest -> #ff33ff on hover/focus/press); .is-active (PRODUCTS
+     on this route) stays purple + magenta glow at rest; the
+     clickable <a> stays untransformed (Safari-stable); real label
+     text is kept in the DOM (color:transparent) for screen readers;
+     BAD/CANDY tilt+scale live on the inner graphic.
+     ============================================================ */
+  /* header on paper + ink for the non-mask bits (MENU trigger, BAD currentColor) */
+  .ak-products-page .ak-top-wrap{ background:transparent !important; }
+  .ak-products-page .ak-top-wrap::after{ background:none !important; }
+  .ak-products-page .ak-top-label{ color:#15120b !important; }
+  .ak-products-page .ak-top-bad{ color:#15120b !important; }
+  .ak-products-page .ak-top-mobile-trigger{ color:#15120b !important; text-shadow:none !important; }
+  .ak-products-page .ak-top-label::before,
+  .ak-products-page .ak-top-label::after{ opacity:0 !important; }
+  .ak-products-page .ak-top-tile:hover .ak-top-label,
+  .ak-products-page .ak-top-tile.is-active .ak-top-label,
+  .ak-products-page .ak-top-bad:hover,
+  .ak-products-page .ak-top-bad.is-active,
+  .ak-products-page .ak-top-mobile-trigger:hover{ color:#ff33ff !important; }
+  /* cart: black ink at rest, magenta glow on hover/focus; small right nudge so the blue right rule isn't crowded */
+  .ak-products-page .ak-top-cart-container{ transform:translateX(clamp(4px, .6vw, 10px)) !important; }
+  .ak-products-page .ak-top-cart-img{ filter:brightness(0) !important; }
+  .ak-products-page .ak-top-cart-link:hover .ak-top-cart-img,
+  .ak-products-page .ak-top-cart-link:focus-visible .ak-top-cart-img{
+    filter:brightness(0) drop-shadow(0 0 6px #ff33ff) drop-shadow(0 0 12px rgba(255,51,255,.5)) !important;
+  }
+  /* tighten logo->nav spacing + remove the dark-theme glow divider */
+  .ak-products-page .ak-top-divider{ display:none !important; }
+  .ak-products-page .ak-top-nav-panel{ padding-top:clamp(2px,0.6vw,8px) !important; }
+  .ak-products-page .ak-top-nav-area{ margin-top:clamp(-22px,-2.2vw,-8px) !important; }
+  /* per-tile mask + size + tilt (same PNGs / sizes / tilts as the accepted Club Hub / Life/Style nav) */
+  .ak-products-page .ak-top-life{    --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/lifestyle_button.png?v=1780886497"); --ak-nav-png-size:clamp(260px, 21vw, 400px);   --ak-nav-tilt:-2.2deg; }
+  .ak-products-page .ak-top-products{--ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/products_button.png?v=1780886497");  --ak-nav-png-size:clamp(280px, 23vw, 430px);   --ak-nav-tilt:1.4deg; }
+  .ak-products-page .ak-top-archive{ --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/archive_button.png?v=1780885375");   --ak-nav-png-size:clamp(270px, 22vw, 420px);   --ak-nav-tilt:-1.1deg; }
+  .ak-products-page .ak-top-narrative{--ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/narrative_button.png?v=1780885375"); --ak-nav-png-size:clamp(265px, 21.5vw, 410px); --ak-nav-tilt:1.8deg; }
+  .ak-products-page .ak-top-contact{ --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/moniker_button.png?v=1780885375");   --ak-nav-png-size:clamp(220px, 18vw, 340px);   --ak-nav-tilt:-1.6deg; }
+  .ak-products-page .ak-top-bad{ --ak-nav-tilt:-2.5deg; }
+  .ak-products-page .ak-top-candy{ --ak-nav-tilt:1.2deg; }
+  /* clickable tiles (all 7): no transform / bg-png / recolor-filter; transform excluded from transitions */
+  .ak-products-page .ak-top-life,
+  .ak-products-page .ak-top-products,
+  .ak-products-page .ak-top-archive,
+  .ak-products-page .ak-top-narrative,
+  .ak-products-page .ak-top-contact,
+  .ak-products-page .ak-top-bad,
+  .ak-products-page .ak-top-candy{
+    transform:none !important; -webkit-transform:none !important;
+    background-image:none !important; filter:none !important;
+    transition-property:filter, color, opacity, background-color !important;
+    will-change:auto !important;
+  }
+  /* the five wordmark masks live on ::before (holds the static tilt; overrides base .ak-top-tile::before{display:none}) */
+  .ak-products-page .ak-top-life::before,
+  .ak-products-page .ak-top-products::before,
+  .ak-products-page .ak-top-archive::before,
+  .ak-products-page .ak-top-narrative::before,
+  .ak-products-page .ak-top-contact::before{
+    content:"" !important; display:block !important; position:absolute !important;
+    left:50% !important; top:50% !important;
+    width:var(--ak-nav-png-size) !important; height:var(--ak-nav-png-size) !important;
+    transform:translate(-50%, -50%) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    -webkit-transform:translate(-50%, -50%) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    transform-origin:center center !important;
+    backface-visibility:hidden !important; -webkit-backface-visibility:hidden !important;
+    pointer-events:none !important;
+    background-color:#15120b !important;
+    -webkit-mask:var(--ak-nav-mask) center / contain no-repeat !important;
+    mask:var(--ak-nav-mask) center / contain no-repeat !important;
+    transition:background-color .12s ease, opacity .12s ease !important;
+    z-index:1 !important;
+  }
+  /* hover / keyboard-focus / press -> the WHOLE wordmark turns purple (.is-active EXCLUDED — it has its own rule) */
+  .ak-products-page .ak-top-life:hover::before, .ak-products-page .ak-top-life:focus-visible::before, .ak-products-page .ak-top-life:active::before,
+  .ak-products-page .ak-top-products:hover::before, .ak-products-page .ak-top-products:focus-visible::before, .ak-products-page .ak-top-products:active::before,
+  .ak-products-page .ak-top-archive:hover::before, .ak-products-page .ak-top-archive:focus-visible::before, .ak-products-page .ak-top-archive:active::before,
+  .ak-products-page .ak-top-narrative:hover::before, .ak-products-page .ak-top-narrative:focus-visible::before, .ak-products-page .ak-top-narrative:active::before,
+  .ak-products-page .ak-top-contact:hover::before, .ak-products-page .ak-top-contact:focus-visible::before, .ak-products-page .ak-top-contact:active::before{
+    background-color:#ff33ff !important;
+  }
+  /* ACTIVE / CURRENT-PAGE CUE — PRODUCTS on this route: purple wordmark +
+     magenta halo glow at rest (same accepted cue as Club Hub Phase 3.17 /
+     Life/Style Phase 4.3 Option B). filter:drop-shadow tracks the masked
+     wordmark silhouette and is paint-only -> NO layout shift; applies ONLY
+     to .is-active, never to non-active tiles (which stay ink at rest). */
+  .ak-products-page .ak-top-tile.is-active::before{
+    background-color:#ff33ff !important;
+    filter:
+      drop-shadow(0 0 4px #ff33ff)
+      drop-shadow(0 0 12px rgba(255,51,255,.75))
+      drop-shadow(0 0 24px rgba(255,51,255,.5)) !important;
+  }
+  /* keep the five labels in the DOM for screen readers, but visually hidden in ALL states */
+  .ak-products-page .ak-top-life .ak-top-label, .ak-products-page .ak-top-life:hover .ak-top-label, .ak-products-page .ak-top-life:focus-visible .ak-top-label, .ak-products-page .ak-top-life:active .ak-top-label, .ak-products-page .ak-top-life.is-active .ak-top-label,
+  .ak-products-page .ak-top-products .ak-top-label, .ak-products-page .ak-top-products:hover .ak-top-label, .ak-products-page .ak-top-products:focus-visible .ak-top-label, .ak-products-page .ak-top-products:active .ak-top-label, .ak-products-page .ak-top-products.is-active .ak-top-label,
+  .ak-products-page .ak-top-archive .ak-top-label, .ak-products-page .ak-top-archive:hover .ak-top-label, .ak-products-page .ak-top-archive:focus-visible .ak-top-label, .ak-products-page .ak-top-archive:active .ak-top-label, .ak-products-page .ak-top-archive.is-active .ak-top-label,
+  .ak-products-page .ak-top-narrative .ak-top-label, .ak-products-page .ak-top-narrative:hover .ak-top-label, .ak-products-page .ak-top-narrative:focus-visible .ak-top-label, .ak-products-page .ak-top-narrative:active .ak-top-label, .ak-products-page .ak-top-narrative.is-active .ak-top-label,
+  .ak-products-page .ak-top-contact .ak-top-label, .ak-products-page .ak-top-contact:hover .ak-top-label, .ak-products-page .ak-top-contact:focus-visible .ak-top-label, .ak-products-page .ak-top-contact:active .ak-top-label, .ak-products-page .ak-top-contact.is-active .ak-top-label{
+    color:transparent !important; text-shadow:none !important;
+  }
+  /* BAD / CANDY: tilt+scale on the inner graphic, anchor stays transform-stable (sizes BAD 1.18, CANDY 1.75) */
+  .ak-products-page .ak-top-bad-mask{
+    transform:scale(1.18) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    -webkit-transform:scale(1.18) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+  }
+  .ak-products-page .ak-top-candy-img{
+    transform:scale(1.75) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    -webkit-transform:scale(1.75) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+  }
+
+  /* ============================================================
+     FOOTER INTEGRATION — paper shows behind the footer, ink
+     back-to-top. CTA text / id / aria-label / scroll behaviour are
+     untouched (CSS only). ak-footer.liquid is NOT edited.
+     ============================================================ */
+  .ak-products-page .ak-footer{ background:transparent !important; }
+  .ak-products-page .ak-btt{ color:#15120b !important; }                     /* .ak-btt-text inherits */
+  .ak-products-page .ak-footer-copy{ color:rgba(21,18,11,.5) !important; }
+  .ak-products-page .ak-btt:hover .ak-btt-text,
+  .ak-products-page .ak-btt:focus-visible .ak-btt-text{ color:#ff33ff !important; } /* preserve purple hover/focus */
+  .ak-products-page .ak-footer-rule{ background:none !important; }           /* remove footer glow line (keep spacing) */
+</style>
