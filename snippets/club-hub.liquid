@@ -694,6 +694,136 @@ padding-right: 0 !important;
 .ak-clubhub-page .ak-top-nav-panel{ padding-top:clamp(2px,0.6vw,8px) !important; }    /* pull nav rows up (was 20–30px) */
 .ak-clubhub-page .ak-top-nav-area{ margin-top:clamp(-22px,-2.2vw,-8px) !important; }  /* pull nav block toward the kid logo */
 
+/* ============================================================
+   PHASE 3.9 — MASK-BASED PNG NAV (Club Hub page only) — Safari jolt fix
+   CSS-only, scoped to .ak-clubhub-page. No DOM, no JS, no canvas, no asset.
+   Replaces the 3.2/3.3 background-image-on-the-anchor + 3.7/3.8 filter-recolor
+   + 3.4/3.8 anchor-tilt system with a MASK system:
+   - The clickable <a> tile is NOT transformed (transform:none) and transform is
+     excluded from its transitions, so Safari/WebKit has no transformed+filtered
+     clickable element to snap/re-rasterize on hover.
+   - The visible wordmark lives on the anchor ::before as a MASK (the PNG is the
+     mask, filled with background-color). The ::before holds the static tilt.
+   - Hover/focus/press flips ::before background-color #15120b -> #ff33ff (the
+     WHOLE word turns purple) — NO heavy filter chain, NO drop-shadow on the
+     anchor. .is-active EXCLUDED so the current page stays ink at rest.
+   - Real label text stays in the DOM (color:transparent) for screen readers
+     (label-hide rule below, unchanged).
+   - BAD/CANDY: anchor untransformed; tilt moved onto the inner graphic (below).
+   Sizes = the approved 3.2/3.3 values; tilts = the approved 3.4 values.
+   No ::after glow this pass (kept minimal for Safari stability; can add later).
+   Does NOT edit ak-top.liquid. Revert: delete this block + the BAD/CANDY rules below.
+   ============================================================ */
+/* per-tile mask + size + tilt variables (sizes/tilts = current approved values) */
+.ak-clubhub-page .ak-top-life{    --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/lifestyle_button.png?v=1780886497"); --ak-nav-png-size:clamp(260px, 21vw, 400px);   --ak-nav-tilt:-2.2deg; }
+.ak-clubhub-page .ak-top-products{--ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/products_button.png?v=1780886497");  --ak-nav-png-size:clamp(280px, 23vw, 430px);   --ak-nav-tilt:1.4deg; }
+.ak-clubhub-page .ak-top-archive{ --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/archive_button.png?v=1780885375");   --ak-nav-png-size:clamp(270px, 22vw, 420px);   --ak-nav-tilt:-1.1deg; }
+.ak-clubhub-page .ak-top-narrative{--ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/narrative_button.png?v=1780885375"); --ak-nav-png-size:clamp(265px, 21.5vw, 410px); --ak-nav-tilt:1.8deg; }
+.ak-clubhub-page .ak-top-contact{ --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/moniker_button.png?v=1780885375");   --ak-nav-png-size:clamp(220px, 18vw, 340px);   --ak-nav-tilt:-1.6deg; }
+.ak-clubhub-page .ak-top-bad{ --ak-nav-tilt:-2.5deg; }
+.ak-clubhub-page .ak-top-candy{ --ak-nav-tilt:1.2deg; }
+/* clickable tile (all 7): NO transform, no background PNG, no recolor filter; transform excluded from transitions */
+.ak-clubhub-page .ak-top-life,
+.ak-clubhub-page .ak-top-products,
+.ak-clubhub-page .ak-top-archive,
+.ak-clubhub-page .ak-top-narrative,
+.ak-clubhub-page .ak-top-contact,
+.ak-clubhub-page .ak-top-bad,
+.ak-clubhub-page .ak-top-candy{
+  transform:none !important;
+  -webkit-transform:none !important;
+  background-image:none !important;
+  filter:none !important;
+  transition-property:filter, color, opacity, background-color !important;
+  will-change:auto !important;
+}
+/* the five wordmark masks live on ::before — this holds the static tilt
+   (overrides the base .ak-top-tile::before{display:none}) */
+.ak-clubhub-page .ak-top-life::before,
+.ak-clubhub-page .ak-top-products::before,
+.ak-clubhub-page .ak-top-archive::before,
+.ak-clubhub-page .ak-top-narrative::before,
+.ak-clubhub-page .ak-top-contact::before{
+  content:"" !important;
+  display:block !important;
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:var(--ak-nav-png-size) !important;
+  height:var(--ak-nav-png-size) !important;
+  transform:translate(-50%, -50%) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+  -webkit-transform:translate(-50%, -50%) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+  transform-origin:center center !important;
+  backface-visibility:hidden !important;
+  -webkit-backface-visibility:hidden !important;
+  pointer-events:none !important;
+  background-color:#15120b !important;             /* dark ink at rest */
+  -webkit-mask:var(--ak-nav-mask) center / contain no-repeat !important;
+  mask:var(--ak-nav-mask) center / contain no-repeat !important;
+  transition:background-color .12s ease, opacity .12s ease !important;
+  z-index:1 !important;
+}
+/* hover / keyboard-focus / press -> the WHOLE wordmark turns purple (.is-active EXCLUDED) */
+.ak-clubhub-page .ak-top-life:hover::before,
+.ak-clubhub-page .ak-top-life:focus-visible::before,
+.ak-clubhub-page .ak-top-life:active::before,
+.ak-clubhub-page .ak-top-products:hover::before,
+.ak-clubhub-page .ak-top-products:focus-visible::before,
+.ak-clubhub-page .ak-top-products:active::before,
+.ak-clubhub-page .ak-top-archive:hover::before,
+.ak-clubhub-page .ak-top-archive:focus-visible::before,
+.ak-clubhub-page .ak-top-archive:active::before,
+.ak-clubhub-page .ak-top-narrative:hover::before,
+.ak-clubhub-page .ak-top-narrative:focus-visible::before,
+.ak-clubhub-page .ak-top-narrative:active::before,
+.ak-clubhub-page .ak-top-contact:hover::before,
+.ak-clubhub-page .ak-top-contact:focus-visible::before,
+.ak-clubhub-page .ak-top-contact:active::before{
+  background-color:#ff33ff !important;
+}
+/* hide the five labels in ALL states (rest+hover+focus+active+is-active) but keep them in the DOM for screen readers (out-specifies the Phase 2 magenta hover/active label rules) */
+.ak-clubhub-page .ak-top-life .ak-top-label,
+.ak-clubhub-page .ak-top-life:hover .ak-top-label,
+.ak-clubhub-page .ak-top-life:focus-visible .ak-top-label,
+.ak-clubhub-page .ak-top-life:active .ak-top-label,
+.ak-clubhub-page .ak-top-life.is-active .ak-top-label,
+.ak-clubhub-page .ak-top-products .ak-top-label,
+.ak-clubhub-page .ak-top-products:hover .ak-top-label,
+.ak-clubhub-page .ak-top-products:focus-visible .ak-top-label,
+.ak-clubhub-page .ak-top-products:active .ak-top-label,
+.ak-clubhub-page .ak-top-products.is-active .ak-top-label,
+.ak-clubhub-page .ak-top-archive .ak-top-label,
+.ak-clubhub-page .ak-top-archive:hover .ak-top-label,
+.ak-clubhub-page .ak-top-archive:focus-visible .ak-top-label,
+.ak-clubhub-page .ak-top-archive:active .ak-top-label,
+.ak-clubhub-page .ak-top-archive.is-active .ak-top-label,
+.ak-clubhub-page .ak-top-narrative .ak-top-label,
+.ak-clubhub-page .ak-top-narrative:hover .ak-top-label,
+.ak-clubhub-page .ak-top-narrative:focus-visible .ak-top-label,
+.ak-clubhub-page .ak-top-narrative:active .ak-top-label,
+.ak-clubhub-page .ak-top-narrative.is-active .ak-top-label,
+.ak-clubhub-page .ak-top-contact .ak-top-label,
+.ak-clubhub-page .ak-top-contact:hover .ak-top-label,
+.ak-clubhub-page .ak-top-contact:focus-visible .ak-top-label,
+.ak-clubhub-page .ak-top-contact:active .ak-top-label,
+.ak-clubhub-page .ak-top-contact.is-active .ak-top-label{
+  color:transparent !important;
+  text-shadow:none !important;
+}
+/* BAD / CANDY (Club Hub): anchor untransformed above; move the tilt onto the inner
+   graphic combined with the existing sticker scale, so the clickable tile stays
+   transform-stable for Safari. Sizes unchanged (BAD 1.18, CANDY 1.75). BAD recolors
+   via currentColor (Phase 2 .ak-top-bad hover #ff33ff); CANDY keeps its img drop-shadow glow.
+   --ak-nav-tilt is inherited from the .ak-top-bad / .ak-top-candy anchors (set above). */
+.ak-clubhub-page .ak-top-bad-mask{
+  transform:scale(1.18) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+  -webkit-transform:scale(1.18) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+}
+.ak-clubhub-page .ak-top-candy-img{
+  transform:scale(1.75) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+  -webkit-transform:scale(1.75) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+}
+
 .ak-clubhub{
 
 background:#000;
