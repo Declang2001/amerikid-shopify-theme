@@ -78,12 +78,11 @@
     },
     "custom_liquid_izr6z3": {
       "type": "custom-liquid",
-      "disabled": true,
       "name": "t:sections.custom-liquid.presets.name",
       "settings": {
-        "custom_liquid": "<!-- sections/amerikid-fast-banner.liquid -->\n<style>\n  .fastbanner-container {\n    background-color: #000;\n    overflow: hidden;\n    position: relative;\n    height: auto;\n    display: flex;\n    align-items: center;\n    padding: 12px 0;       /* updated vertical padding */\n    margin: 0;\n    font-size: 6rem;       /* updated font size */\n    line-height: 1;\n  }\n\n  .fastbanner-track-wrapper {\n    display: flex;\n    width: 200%;\n    animation: fastbanner-scroll-rtl 25s linear infinite;\n  }\n\n  .fastbanner-track {\n    display: flex;\n    white-space: nowrap;\n  }\n\n  .fastbanner-word {\n    font-family: Impact, sans-serif;\n    font-size: inherit;\n    line-height: 1;\n    margin: 0;\n    padding: 0 6px;       /* horizontal spacing between words */\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    animation: none !important;\n    transform: none !important;\n  }\n\n  @keyframes fastbanner-scroll-rtl {\n    0% {\n      transform: translateX(0%);\n    }\n    100% {\n      transform: translateX(-50%);\n    }\n  }\n</style>\n\n<div class=\"fastbanner-container\">\n  <div class=\"fastbanner-track-wrapper\">\n    <div class=\"fastbanner-track\">\n      {% for i in (1..30) %}\n        <div class=\"fastbanner-word\">🍭‼️🇺🇸🛍️🗣️💯🔌💰💧📖🪬🥇🎱</div>\n      {% endfor %}\n    </div>\n    <div class=\"fastbanner-track\">\n      {% for i in (1..30) %}\n        <div class=\"fastbanner-word\">🍭‼️🇺🇸🛍️🗣️💯🔌💰💧📖🪬🥇🎱</div>\n      {% endfor %}\n    </div>\n  </div>\n</div>",
+        "custom_liquid": "{% render 'ak-notebook-lifestyle' %}",
         "color_scheme": "scheme-4",
-        "padding_top": 32,
+        "padding_top": 0,
         "padding_bottom": 0
       }
     },

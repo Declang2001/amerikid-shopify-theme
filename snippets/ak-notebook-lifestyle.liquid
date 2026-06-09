@@ -1,0 +1,469 @@
+{%- comment -%}
+  ============================================================
+  snippets/ak-notebook-lifestyle.liquid
+  PHASE 4.0 — LIFE/STYLE NOTEBOOK-PAPER BACKDROP PROOF
+  (experiment theme 186464731416 only — DO NOT PUBLISH)
+
+  Backdrop-only proof for /pages/the-collective (Life/Style).
+  - Adds a PAGE-SCOPED class (.ak-lifestyle-page) to <html>, but ONLY
+    when a Life/Style module root exists, so other pages that share the
+    default templates/page.json are never affected.
+  - Paints the accepted legal-pad paper (yellow + red/blue vertical
+    rules + horizontal ruled lines + top/bottom blank bands) on <body>,
+    scoped to .ak-lifestyle-page, behind the existing dark glass/video
+    modules (scrapbook backdrop).
+  - Adds a PAGE-SPECIFIC decorative doodle layer (its own map — NOT a
+    copy of the Club Hub composition), page-anchored, aria-hidden,
+    pointer-events:none, individually rotated, hidden on mobile.
+
+  This is NOT a module reskin. Adventures / Kid Radio / Channels
+  internals, their animations, YouTube players, and 3D tilt are left
+  exactly as-is. No edits to layout/theme.liquid, ak-top.liquid, or
+  ak-footer.liquid.
+
+  Rendered from ONE disabled spare custom_liquid slot in
+  templates/page.json (custom_liquid_izr6z3) via {% render %}.
+
+  Revert: in templates/page.json set custom_liquid_izr6z3 back to
+  "disabled": true (or git checkout templates/page.json), and delete
+  this snippet file.
+  ============================================================
+{%- endcomment -%}
+
+<script>
+  /* Guarded page hook: only mark Life/Style (never other pages that may
+     share the default page.json). This slot renders AFTER the module
+     sections, so the module elements are already in the DOM here. */
+  (function(){
+    if (
+      document.getElementById('akmod-adventures-yt') ||
+      document.getElementById('ak-kidradio-holo') ||
+      document.getElementById('ak-chan-holo')
+    ) {
+      document.documentElement.classList.add('ak-lifestyle-page');
+    }
+  })();
+</script>
+
+{%- comment -%} Page-specific doodle map (NOT the Club Hub map): different assets, placements, sizes, rotations. Decorative only. {%- endcomment -%}
+<div class="ak-lifestyle-doodles" aria-hidden="true">
+  {%- comment -%} PHASE 4.4 — header doodles (open paper above the nav; Club Hub doodle family, page-specific spots) {%- endcomment -%}
+  <span class="ak-lifestyle-doodle ak-lifestyle-doodle--hdr-left"></span>
+  <span class="ak-lifestyle-doodle ak-lifestyle-doodle--hdr-mid"></span>
+  <span class="ak-lifestyle-doodle ak-lifestyle-doodle--hdr-right"></span>
+  <span class="ak-lifestyle-doodle ak-lifestyle-doodle--star"></span>
+  <span class="ak-lifestyle-doodle ak-lifestyle-doodle--hashtag"></span>
+  <span class="ak-lifestyle-doodle ak-lifestyle-doodle--dice"></span>
+  <span class="ak-lifestyle-doodle ak-lifestyle-doodle--eyes"></span>
+  <span class="ak-lifestyle-doodle ak-lifestyle-doodle--cross"></span>
+  <span class="ak-lifestyle-doodle ak-lifestyle-doodle--kid"></span>
+  <span class="ak-lifestyle-doodle ak-lifestyle-doodle--dollar"></span>
+  <span class="ak-lifestyle-doodle ak-lifestyle-doodle--dollar-b"></span>
+  <span class="ak-lifestyle-doodle ak-lifestyle-doodle--chan-l"></span>
+  <span class="ak-lifestyle-doodle ak-lifestyle-doodle--chan-r"></span>
+</div>
+
+<style>
+  /* ============================================================
+     PHASE 4.0 — LIFE/STYLE NOTEBOOK PAPER BACKDROP
+     CSS-only, scoped entirely to .ak-lifestyle-page. Reuses the
+     accepted Club Hub paper values; does not touch module internals.
+     ============================================================ */
+  .ak-lifestyle-page{
+    --ak-paper-top-gap: clamp(150px, 17vw, 220px);    /* blank top band */
+    --ak-paper-bottom-gap: clamp(130px, 12vw, 190px); /* blank bottom band — ruled lines fade out so the page doesn't end mid-line */
+  }
+  .ak-lifestyle-page body{
+    --ak-paper-side-gap: clamp(82px, 7vw, 128px);     /* shared inset for both vertical rules (red left + blue right) */
+    background-color:#f5dd4f !important;              /* pale legal-pad yellow (beats the global html,body{background:#000} via higher specificity) */
+    background-image:
+      linear-gradient(90deg,
+        transparent calc(100% - var(--ak-paper-side-gap)),
+        rgba(44,120,180,.60) calc(100% - var(--ak-paper-side-gap)),
+        rgba(44,120,180,.60) calc(100% - var(--ak-paper-side-gap) + 2px),
+        transparent calc(100% - var(--ak-paper-side-gap) + 2px)),   /* blue RIGHT margin rule (2px, full height, scrolls with paper) */
+      linear-gradient(90deg,
+        transparent var(--ak-paper-side-gap),
+        rgba(218,40,50,.74) var(--ak-paper-side-gap),
+        rgba(218,40,50,.74) calc(var(--ak-paper-side-gap) + 2px),
+        transparent calc(var(--ak-paper-side-gap) + 2px)),          /* red LEFT margin rule */
+      linear-gradient(180deg,
+        #f5dd4f 0,
+        #f5dd4f var(--ak-paper-top-gap),
+        transparent var(--ak-paper-top-gap)),                       /* blank yellow TOP band masks ruled lines in the top gap */
+      linear-gradient(180deg,
+        transparent calc(100% - var(--ak-paper-bottom-gap)),
+        #f5dd4f calc(100% - var(--ak-paper-bottom-gap) + 36px)),     /* blank yellow BOTTOM band — ruled lines fade out into clean paper (no half-line at page bottom). Above the ruled lines, below the side rules. */
+      repeating-linear-gradient(180deg,
+        transparent 0 31px,
+        rgba(44,120,180,.60) 31px 32px) !important;                 /* blue horizontal ruled lines */
+    background-repeat:no-repeat, no-repeat, no-repeat, no-repeat, repeat !important;
+    background-position:0 0, 0 0, 0 0, 0 0, 0 var(--ak-paper-top-gap) !important; /* ruled lines start at the top gap */
+    background-attachment:scroll, scroll, scroll, scroll, scroll !important;      /* glued to content — scrolls with the page */
+  }
+  /* Make sure the page-scoped opaque backdrops clear so the paper shows behind the (transparent) module shells. Safe background-only adjustments — no behavior/structure change. */
+  .ak-lifestyle-page #MainContent{ background:transparent !important; position:relative; } /* position:relative = doodle-wrapper anchor (no z-index, so multiply still soaks into the body paper) */
+
+  /* ----- DECORATIVE DOODLE LAYER (page-specific, behind modules) ----- */
+  .ak-lifestyle-page .ak-lifestyle-doodles{
+    position:absolute; inset:0;
+    /* Phase 4.3 FIX: z-index was -1, which the module layer OCCLUDED entirely —
+       the doodles never actually showed. They live in the CLEAR side margins and
+       the Channels-title flank (DevTools-verified 0 overlap with any card / title
+       / control / nav / cart / footer), and are pointer-events:none, so layering
+       them ABOVE the module shells is safe: they paint only on empty paper and can
+       never block interaction or cover content. Kept below the header/cart (z-999). */
+    z-index:5;
+    pointer-events:none;
+    /* Blend set to NORMAL (was multiply). Declan's doodle PNGs are light thin-line
+       sketches; over the bright #f5dd4f paper, multiply washed them to a near-
+       invisible olive. Rendering the ink directly + the darken/contrast filter on
+       each doodle (below) keeps the hand-drawn strokes clearly readable. */
+    mix-blend-mode:normal;
+  }
+  .ak-lifestyle-page .ak-lifestyle-doodle{
+    position:absolute;
+    display:block;
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size:contain;
+    aspect-ratio:1447 / 1385;
+    opacity:1;
+    /* Phase 4.3: deepen the hand-drawn ink so it actually reads on the bright
+       paper. Declan's PNGs are light sketch-ink; multiply with #f5dd4f washed
+       them to a faint olive. brightness<1 + contrast darkens the ink BEFORE the
+       wrapper's multiply, so the doodles soak into the paper but stay clearly
+       visible. Tunable in one place; does not change size/placement. */
+    filter:brightness(0.55) contrast(1.4);
+    pointer-events:none;
+    transform-origin:center center;
+  }
+  /* Page-specific placement — Club-Hub-WEIGHT scribbles running down the OUTER
+     side-margin paper (outside the centered 1200px module column AND outside the
+     red/blue rules). Same visual language as Club Hub: big hand-drawn marks, full
+     opacity, multiply, each individually rotated — NOT Club Hub's exact map.
+     z-index:-1 keeps them behind every module/card/title/control so they can
+     never block interaction; in the outer margins (x < the card column) they sit
+     on clean paper, clear of cards/titles/wave bar/channel links/footer CTA.
+     Sizes scale up on wider screens toward the Club Hub range (~140-180px); the
+     >=1400px gate below is the width where the 1200px column leaves a clear
+     outer margin (see note). */
+  /* --- LEFT margin --- */
+  .ak-lifestyle-page .ak-lifestyle-doodle--star{
+    left:clamp(2px, 0.4vw, 8px); top:680px; width:clamp(88px, 6.2vw, 175px);
+    transform:rotate(-8deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-star.png?v=1780967556");
+  }
+  .ak-lifestyle-page .ak-lifestyle-doodle--cross{
+    left:clamp(2px, 0.4vw, 8px); top:1200px; width:clamp(80px, 5.6vw, 150px);
+    transform:rotate(11deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-cross.png?v=1780967556");
+  }
+  .ak-lifestyle-page .ak-lifestyle-doodle--dollar{
+    left:clamp(2px, 0.4vw, 8px); top:1720px; width:clamp(86px, 6vw, 165px);
+    transform:rotate(5deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-dollar.png?v=1780967556");
+  }
+  .ak-lifestyle-page .ak-lifestyle-doodle--eyes{
+    left:clamp(2px, 0.4vw, 8px); top:2210px; width:clamp(84px, 5.8vw, 158px);
+    transform:rotate(-9deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-eyes.png?v=1780967556");
+  }
+  /* --- RIGHT margin --- */
+  .ak-lifestyle-page .ak-lifestyle-doodle--hashtag{
+    right:clamp(2px, 0.4vw, 8px); top:820px; width:clamp(82px, 5.8vw, 158px);
+    transform:rotate(7deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-hashtag.png?v=1780967556");
+  }
+  .ak-lifestyle-page .ak-lifestyle-doodle--dice{
+    right:clamp(2px, 0.4vw, 8px); top:1360px; width:clamp(86px, 6vw, 168px);
+    transform:rotate(6deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-dice.png?v=1780967556");
+  }
+  .ak-lifestyle-page .ak-lifestyle-doodle--kid{
+    right:clamp(2px, 0.4vw, 8px); top:1880px; width:clamp(92px, 6.4vw, 180px);
+    transform:rotate(-6deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-kid.png?v=1780967556");
+  }
+  .ak-lifestyle-page .ak-lifestyle-doodle--dollar-b{ /* 2nd dollar — differentiated by side, size, rotation */
+    right:clamp(2px, 0.4vw, 8px); top:2330px; width:clamp(76px, 5.2vw, 140px);
+    transform:rotate(-11deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-dollar.png?v=1780967556");
+  }
+  /* --- FEATURE DOODLES (Phase 4.3): two LARGER marks in the open paper that
+     flanks the short, centered CHANNELS title — between the Kid Radio module and
+     the channel-link cards. DevTools-measured safe across 1280-1536 (the content
+     is width-capped at 1200px, so this band stays ~142px of clear paper). They
+     give real Club-Hub visual weight and show on more desktops than the margin
+     scribbles. kid/star reuse their margin assets but are differentiated by side,
+     size, and rotation. Still aria-hidden / pointer-events:none / multiply / z-index:-1. */
+  .ak-lifestyle-page .ak-lifestyle-doodle--chan-l{ /* left of CHANNELS */
+    left:clamp(130px, 13vw, 260px); top:2272px; width:clamp(116px, 9.6vw, 140px);
+    transform:rotate(5deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-kid.png?v=1780967556");
+  }
+  .ak-lifestyle-page .ak-lifestyle-doodle--chan-r{ /* right of CHANNELS */
+    right:clamp(130px, 13vw, 260px); top:2284px; width:clamp(112px, 9.2vw, 136px);
+    transform:rotate(-7deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-star.png?v=1780967556");
+  }
+  /* --- PHASE 4.4: HEADER DOODLES (Club Hub doodle language, page-specific spots) ---
+     Three doodles in the OPEN PAPER ABOVE the nav row, flanking the centered KID
+     logo and clearing the cart — mirroring Club Hub's header-doodle feel WITHOUT
+     copying its exact trio/placement (Club Hub uses dice/hashtag/dollar; here:
+     star left, eyes near-logo, dice right). They inherit the base .ak-lifestyle-
+     doodle treatment (z-index:5, opacity:1, brightness/contrast ink, pointer-
+     events:none, aria-hidden). DevTools-measured clear of KID logo / nav tiles /
+     BAD / CANDY / cart / active glow / first title / first module at 1280, 1440,
+     1536 (each doodle's bottom stays above the nav-row top ~254px; the right
+     doodle stays left of the cart). Gated to >=1280px (added to the 1279 hide
+     block below), so they show on real desktops and stay hidden on tablet/mobile. */
+  .ak-lifestyle-page .ak-lifestyle-doodle--hdr-left{   /* far-left open paper, above LIFE/STYLE */
+    left:clamp(28px, 7vw, 115px); top:clamp(20px, 3.2vw, 46px); width:clamp(125px, 11.5vw, 178px); /* width/top capped so the ROTATED bounding box clears the nav row (~t254) at 1280–2560 */
+    transform:rotate(-7deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-star.png?v=1780967556");
+  }
+  .ak-lifestyle-page .ak-lifestyle-doodle--hdr-mid{    /* left flank of the centered KID logo */
+    left:clamp(390px, 32vw, 520px); top:clamp(70px, 6vw, 92px); width:clamp(100px, 9vw, 138px); /* width/top capped so the rotated bbox clears the nav row + stays left of the centered KID logo */
+    transform:rotate(6deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-eyes.png?v=1780967556");
+  }
+  .ak-lifestyle-page .ak-lifestyle-doodle--hdr-right{  /* right of logo, above ARCHIVE, clears the cart */
+    right:clamp(96px, 8vw, 160px); top:clamp(34px, 3.6vw, 52px); width:clamp(130px, 11vw, 175px); /* width/top capped so the rotated bbox clears the nav row + stays left of the cart at 1280–2560 */
+    transform:rotate(8deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-dice.png?v=1780967556");
+  }
+  /* Gates. Margin scribbles need a clear OUTER margin -> show at >=1400px (below
+     that the 1200px column fills the width, leaving no safe margin). The two
+     CHANNELS feature doodles sit in the in-column open paper beside the short
+     title and are measured safe down to 1280px, so they appear on more desktops.
+     Both gates are > 768px, so every doodle is hidden on mobile. The paper
+     backdrop itself stays visible at every width. */
+  @media (max-width:1399px){
+    .ak-lifestyle-page .ak-lifestyle-doodle--star,
+    .ak-lifestyle-page .ak-lifestyle-doodle--cross,
+    .ak-lifestyle-page .ak-lifestyle-doodle--dollar,
+    .ak-lifestyle-page .ak-lifestyle-doodle--eyes,
+    .ak-lifestyle-page .ak-lifestyle-doodle--hashtag,
+    .ak-lifestyle-page .ak-lifestyle-doodle--dice,
+    .ak-lifestyle-page .ak-lifestyle-doodle--kid,
+    .ak-lifestyle-page .ak-lifestyle-doodle--dollar-b{ display:none !important; }
+  }
+  @media (max-width:1279px){
+    .ak-lifestyle-page .ak-lifestyle-doodle--chan-l,
+    .ak-lifestyle-page .ak-lifestyle-doodle--chan-r,
+    .ak-lifestyle-page .ak-lifestyle-doodle--hdr-mid,
+    .ak-lifestyle-page .ak-lifestyle-doodle--hdr-right{ display:none !important; }
+  }
+  /* PHASE 4.5 — hdr-left (star) stays visible on smaller laptops: DevTools-measured
+     clear of the KID logo / nav / cart in the top-left open paper down to 1024px,
+     so it is removed from the >=1280 gate above. hdr-mid/hdr-right STAY gated >=1280
+     (below that the centered logo and the fixed cart migrate into them). hdr-left is
+     hidden <=1023px so it never crowds tablet/mobile. */
+  @media (max-width:1023px){
+    .ak-lifestyle-page .ak-lifestyle-doodle--hdr-left{ display:none !important; }
+  }
+
+  /* ============================================================
+     PHASE 4.1 — LIFE/STYLE NOTEBOOK INTEGRATION (CSS-only, page-scoped)
+     Restyles the EXISTING Adventures / Kid Radio / Channels modules to
+     read on the notebook paper (ink titles, glass-over-paper cards,
+     Channels cleanup) and integrates the shared header + footer — all
+     via .ak-lifestyle-page-scoped overrides. NO module markup/JS change,
+     NO title-animation / YouTube / 3D-tilt change, NO edits to
+     ak-top.liquid / ak-footer.liquid / club-hub.liquid.
+     Revert: delete this PHASE 4.1 block.
+     ------------------------------------------------------------ */
+
+  /* A) SECTION TITLES → dark ink (animations/layout preserved) */
+  .ak-lifestyle-page #akmod-adventures-yt .ak-adv-title{ color:#15120b !important; }
+  .ak-lifestyle-page #ak-kidradio-holo .ak-kr-title{ color:#15120b !important; }
+  .ak-lifestyle-page #ak-chan-holo .ak-chan-title span{ color:#15120b !important; }
+
+  /* B) MEDIA / VIDEO CARDS → glass-over-paper (was near-transparent glass
+        that let the yellow paper through and read as harsh yellow slabs).
+        Warm frosted off-white + soft dark-ink hairline + soft shadow.
+        Keeps the existing backdrop blur; iframes/frames untouched. */
+  .ak-lifestyle-page #akmod-adventures-yt,
+  .ak-lifestyle-page #ak-kidradio-holo,
+  .ak-lifestyle-page #ak-chan-holo{ --ak-glass-bg: rgba(255,251,240,.58); }
+  .ak-lifestyle-page #akmod-adventures-yt .ak-holo-card,
+  .ak-lifestyle-page #ak-kidradio-holo .ak-holo-card,
+  .ak-lifestyle-page #ak-chan-holo .ak-holo-card{
+    background: rgba(255,251,240,.58) !important;        /* frosted warm paper-glass (post-it/glass hybrid) */
+    border:1px solid rgba(21,18,11,.20) !important;      /* soft black ink hairline */
+    box-shadow:0 6px 18px rgba(21,18,11,.12) !important; /* soft lift off the paper */
+  }
+  .ak-lifestyle-page #akmod-adventures-yt .ak-holo-card:hover,
+  .ak-lifestyle-page #akmod-adventures-yt .ak-holo-card:focus-visible,
+  .ak-lifestyle-page #ak-kidradio-holo .ak-holo-card:hover,
+  .ak-lifestyle-page #ak-kidradio-holo .ak-holo-card:focus-visible,
+  .ak-lifestyle-page #ak-chan-holo .ak-holo-card:hover,
+  .ak-lifestyle-page #ak-chan-holo .ak-holo-card:focus-visible{
+    border-color:rgba(21,18,11,.34) !important;          /* ink hairline darkens on hover (keeps the lift transform) */
+  }
+  /* Channels link-card text → ink so it stays legible on the lighter card
+     (Adventures/Kid Radio cards hold only the dark video frame — no text). */
+  .ak-lifestyle-page #ak-chan-holo .ak-holo-label{ color:#15120b !important; }
+  .ak-lifestyle-page #ak-chan-holo .ak-holo-meta{ color:rgba(21,18,11,.6) !important; }
+
+  /* C) CHANNELS CLEANUP — make the title a plain section header like the others.
+        Neutralize the glass card/border behind CHANNELS, tighten the wide
+        letter spacing, and hide "SELECT A CHANNEL TO ENTER." */
+  .ak-lifestyle-page #ak-chan-holo .ak-chan-banner{
+    background:transparent !important;
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+    border:none !important; box-shadow:none !important; border-radius:0 !important;
+    padding:28px 6px 10px !important;                    /* match the Adventures/Kid Radio banner rhythm */
+  }
+  .ak-lifestyle-page #ak-chan-holo .ak-chan-banner::before,
+  .ak-lifestyle-page #ak-chan-holo .ak-chan-banner::after{ display:none !important; } /* kill the glass scanline + specular */
+  .ak-lifestyle-page #ak-chan-holo .ak-chan-title{
+    letter-spacing:0.06em !important; gap:0.04em !important; /* was 12px + 0.18em gap — too spread for a section title */
+  }
+  .ak-lifestyle-page #ak-chan-holo .ak-chan-sub{ display:none !important; } /* remove "SELECT A CHANNEL TO ENTER." */
+  /* PHASE 4.6 — remove the faint full-width banner divider lines under all three
+     Life/Style section titles (Adventures / Kid Radio / Channels). border-bottom:none
+     !important beats BOTH the prior Phase 4.1 C ink divider AND the older page.json
+     dark-theme white border-bottom (rgba(255,255,255,.08)) on .ak-adv-banner / .ak-kr-banner.
+     Titles, animations, spacing, the short ::after accent underlines, and the Channels
+     cleanup are all unchanged. Revert: restore the 1px ink border-bottoms. */
+  .ak-lifestyle-page #ak-chan-holo .ak-chan-banner,
+  .ak-lifestyle-page #akmod-adventures-yt .ak-adv-banner,
+  .ak-lifestyle-page #ak-kidradio-holo .ak-kr-banner{ border-bottom:none !important; }
+
+  /* PHASE 4.7 — remove the small remaining accent-underline dash under the Adventures
+     (amber) and Kid Radio (magenta) titles. background:none neutralizes the page.json
+     ::after gradient while KEEPING its 60x2 box (margin:10px auto 0), so the title→card
+     spacing is unchanged (zero layout shift). Channels has no visible underline (its
+     ::after is opacity:0) so it is left alone. Title text/animation keyframes untouched.
+     Aligns with the future handwritten-PNG-title direction. Revert: delete this rule. */
+  .ak-lifestyle-page #akmod-adventures-yt .ak-adv-title::after,
+  .ak-lifestyle-page #ak-kidradio-holo .ak-kr-title::after{ background:none !important; }
+
+  /* D) HEADER / NAV — FULL Club Hub / Moniker notebook parity, ported from the
+        accepted .ak-clubhub-page treatment (Phase 3.9 mask-PNG nav) and re-scoped
+        to .ak-lifestyle-page. ak-top.liquid is NOT edited; routes/order, MENU
+        drawer JS, and cart behaviour are unchanged. The five wordmarks render as
+        a MASK on each tile's ::before (ink #15120b at rest -> #ff33ff on
+        hover/focus/press, .is-active EXCLUDED so the active LIFE/STYLE tile stays
+        ink at rest, matching Club Hub); the clickable <a> stays untransformed
+        (Safari-stable); real label text is kept in the DOM (color:transparent)
+        for screen readers; BAD/CANDY tilt+scale live on the inner graphic. */
+  /* header on paper + ink for the non-mask bits (MENU trigger, BAD currentColor) */
+  .ak-lifestyle-page .ak-top-wrap{ background:transparent !important; }
+  .ak-lifestyle-page .ak-top-wrap::after{ background:none !important; }
+  .ak-lifestyle-page .ak-top-label{ color:#15120b !important; }
+  .ak-lifestyle-page .ak-top-bad{ color:#15120b !important; }
+  .ak-lifestyle-page .ak-top-mobile-trigger{ color:#15120b !important; text-shadow:none !important; }
+  .ak-lifestyle-page .ak-top-label::before,
+  .ak-lifestyle-page .ak-top-label::after{ opacity:0 !important; }
+  .ak-lifestyle-page .ak-top-tile:hover .ak-top-label,
+  .ak-lifestyle-page .ak-top-tile.is-active .ak-top-label,
+  .ak-lifestyle-page .ak-top-bad:hover,
+  .ak-lifestyle-page .ak-top-bad.is-active,
+  .ak-lifestyle-page .ak-top-mobile-trigger:hover{ color:#ff33ff !important; }
+  /* cart: black ink at rest, magenta glow on hover/focus; small right nudge so the blue right rule isn't crowded */
+  .ak-lifestyle-page .ak-top-cart-container{ transform:translateX(clamp(4px, .6vw, 10px)) !important; }
+  .ak-lifestyle-page .ak-top-cart-img{ filter:brightness(0) !important; }
+  .ak-lifestyle-page .ak-top-cart-link:hover .ak-top-cart-img,
+  .ak-lifestyle-page .ak-top-cart-link:focus-visible .ak-top-cart-img{
+    filter:brightness(0) drop-shadow(0 0 6px #ff33ff) drop-shadow(0 0 12px rgba(255,51,255,.5)) !important;
+  }
+  /* tighten logo->nav spacing + remove the dark-theme glow divider */
+  .ak-lifestyle-page .ak-top-divider{ display:none !important; }
+  .ak-lifestyle-page .ak-top-nav-panel{ padding-top:clamp(2px,0.6vw,8px) !important; }
+  .ak-lifestyle-page .ak-top-nav-area{ margin-top:clamp(-22px,-2.2vw,-8px) !important; }
+  /* per-tile mask + size + tilt (same PNGs / sizes / tilts as the accepted Club Hub nav) */
+  .ak-lifestyle-page .ak-top-life{    --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/lifestyle_button.png?v=1780886497"); --ak-nav-png-size:clamp(260px, 21vw, 400px);   --ak-nav-tilt:-2.2deg; }
+  .ak-lifestyle-page .ak-top-products{--ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/products_button.png?v=1780886497");  --ak-nav-png-size:clamp(280px, 23vw, 430px);   --ak-nav-tilt:1.4deg; }
+  .ak-lifestyle-page .ak-top-archive{ --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/archive_button.png?v=1780885375");   --ak-nav-png-size:clamp(270px, 22vw, 420px);   --ak-nav-tilt:-1.1deg; }
+  .ak-lifestyle-page .ak-top-narrative{--ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/narrative_button.png?v=1780885375"); --ak-nav-png-size:clamp(265px, 21.5vw, 410px); --ak-nav-tilt:1.8deg; }
+  .ak-lifestyle-page .ak-top-contact{ --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/moniker_button.png?v=1780885375");   --ak-nav-png-size:clamp(220px, 18vw, 340px);   --ak-nav-tilt:-1.6deg; }
+  .ak-lifestyle-page .ak-top-bad{ --ak-nav-tilt:-2.5deg; }
+  .ak-lifestyle-page .ak-top-candy{ --ak-nav-tilt:1.2deg; }
+  /* clickable tiles (all 7): no transform / bg-png / recolor-filter; transform excluded from transitions */
+  .ak-lifestyle-page .ak-top-life,
+  .ak-lifestyle-page .ak-top-products,
+  .ak-lifestyle-page .ak-top-archive,
+  .ak-lifestyle-page .ak-top-narrative,
+  .ak-lifestyle-page .ak-top-contact,
+  .ak-lifestyle-page .ak-top-bad,
+  .ak-lifestyle-page .ak-top-candy{
+    transform:none !important; -webkit-transform:none !important;
+    background-image:none !important; filter:none !important;
+    transition-property:filter, color, opacity, background-color !important;
+    will-change:auto !important;
+  }
+  /* the five wordmark masks live on ::before (holds the static tilt; overrides base .ak-top-tile::before{display:none}) */
+  .ak-lifestyle-page .ak-top-life::before,
+  .ak-lifestyle-page .ak-top-products::before,
+  .ak-lifestyle-page .ak-top-archive::before,
+  .ak-lifestyle-page .ak-top-narrative::before,
+  .ak-lifestyle-page .ak-top-contact::before{
+    content:"" !important; display:block !important; position:absolute !important;
+    left:50% !important; top:50% !important;
+    width:var(--ak-nav-png-size) !important; height:var(--ak-nav-png-size) !important;
+    transform:translate(-50%, -50%) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    -webkit-transform:translate(-50%, -50%) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    transform-origin:center center !important;
+    backface-visibility:hidden !important; -webkit-backface-visibility:hidden !important;
+    pointer-events:none !important;
+    background-color:#15120b !important;
+    -webkit-mask:var(--ak-nav-mask) center / contain no-repeat !important;
+    mask:var(--ak-nav-mask) center / contain no-repeat !important;
+    transition:background-color .12s ease, opacity .12s ease !important;
+    z-index:1 !important;
+  }
+  /* hover / keyboard-focus / press -> the WHOLE wordmark turns purple (.is-active EXCLUDED) */
+  .ak-lifestyle-page .ak-top-life:hover::before, .ak-lifestyle-page .ak-top-life:focus-visible::before, .ak-lifestyle-page .ak-top-life:active::before,
+  .ak-lifestyle-page .ak-top-products:hover::before, .ak-lifestyle-page .ak-top-products:focus-visible::before, .ak-lifestyle-page .ak-top-products:active::before,
+  .ak-lifestyle-page .ak-top-archive:hover::before, .ak-lifestyle-page .ak-top-archive:focus-visible::before, .ak-lifestyle-page .ak-top-archive:active::before,
+  .ak-lifestyle-page .ak-top-narrative:hover::before, .ak-lifestyle-page .ak-top-narrative:focus-visible::before, .ak-lifestyle-page .ak-top-narrative:active::before,
+  .ak-lifestyle-page .ak-top-contact:hover::before, .ak-lifestyle-page .ak-top-contact:focus-visible::before, .ak-lifestyle-page .ak-top-contact:active::before{
+    background-color:#ff33ff !important;
+  }
+  /* PHASE 4.3 — ACTIVE / CURRENT-PAGE CUE (Option B): the active/current tile's
+     wordmark turns purple #ff33ff AND carries a magenta halo glow — matching the
+     old dark-theme active behaviour, reworked for paper. (Option A — ink wordmark
+     + halo only — was DevTools/screenshot-verified TOO SUBTLE: a magenta halo on a
+     black wordmark over bright yellow paper is imperceptible, and the active mark
+     read identical to the ink non-active marks. Making the wordmark itself purple
+     is clearly the current page.) filter:drop-shadow tracks the masked wordmark
+     silhouette and is paint-only -> NO layout shift; applies ONLY to .is-active,
+     never to non-active tiles. Hover/focus/press already flip wordmarks to #ff33ff
+     via the rule above, so the active item simply stays purple + glowing. */
+  .ak-lifestyle-page .ak-top-tile.is-active::before{
+    background-color:#ff33ff !important;            /* active current-page wordmark = purple */
+    filter:
+      drop-shadow(0 0 4px #ff33ff)
+      drop-shadow(0 0 12px rgba(255,51,255,.75))
+      drop-shadow(0 0 24px rgba(255,51,255,.5)) !important;  /* magenta active glow halo */
+  }
+  /* keep the five labels in the DOM for screen readers, but visually hidden in ALL states */
+  .ak-lifestyle-page .ak-top-life .ak-top-label, .ak-lifestyle-page .ak-top-life:hover .ak-top-label, .ak-lifestyle-page .ak-top-life:focus-visible .ak-top-label, .ak-lifestyle-page .ak-top-life:active .ak-top-label, .ak-lifestyle-page .ak-top-life.is-active .ak-top-label,
+  .ak-lifestyle-page .ak-top-products .ak-top-label, .ak-lifestyle-page .ak-top-products:hover .ak-top-label, .ak-lifestyle-page .ak-top-products:focus-visible .ak-top-label, .ak-lifestyle-page .ak-top-products:active .ak-top-label, .ak-lifestyle-page .ak-top-products.is-active .ak-top-label,
+  .ak-lifestyle-page .ak-top-archive .ak-top-label, .ak-lifestyle-page .ak-top-archive:hover .ak-top-label, .ak-lifestyle-page .ak-top-archive:focus-visible .ak-top-label, .ak-lifestyle-page .ak-top-archive:active .ak-top-label, .ak-lifestyle-page .ak-top-archive.is-active .ak-top-label,
+  .ak-lifestyle-page .ak-top-narrative .ak-top-label, .ak-lifestyle-page .ak-top-narrative:hover .ak-top-label, .ak-lifestyle-page .ak-top-narrative:focus-visible .ak-top-label, .ak-lifestyle-page .ak-top-narrative:active .ak-top-label, .ak-lifestyle-page .ak-top-narrative.is-active .ak-top-label,
+  .ak-lifestyle-page .ak-top-contact .ak-top-label, .ak-lifestyle-page .ak-top-contact:hover .ak-top-label, .ak-lifestyle-page .ak-top-contact:focus-visible .ak-top-label, .ak-lifestyle-page .ak-top-contact:active .ak-top-label, .ak-lifestyle-page .ak-top-contact.is-active .ak-top-label{
+    color:transparent !important; text-shadow:none !important;
+  }
+  /* BAD / CANDY: tilt+scale on the inner graphic, anchor stays transform-stable (sizes BAD 1.18, CANDY 1.75) */
+  .ak-lifestyle-page .ak-top-bad-mask{
+    transform:scale(1.18) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    -webkit-transform:scale(1.18) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+  }
+  .ak-lifestyle-page .ak-top-candy-img{
+    transform:scale(1.75) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    -webkit-transform:scale(1.75) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+  }
+
+  /* E) FOOTER INTEGRATION — paper shows behind the footer, ink back-to-top.
+        CTA text / id / aria-label / scroll behaviour are untouched (CSS only). */
+  .ak-lifestyle-page .ak-footer{ background:transparent !important; }
+  .ak-lifestyle-page .ak-btt{ color:#15120b !important; }                     /* .ak-btt-text inherits */
+  .ak-lifestyle-page .ak-footer-copy{ color:rgba(21,18,11,.5) !important; }
+  .ak-lifestyle-page .ak-btt:hover .ak-btt-text,
+  .ak-lifestyle-page .ak-btt:focus-visible .ak-btt-text{ color:#ff33ff !important; } /* preserve purple hover/focus */
+  .ak-lifestyle-page .ak-footer-rule{ background:none !important; }           /* remove footer glow line (keep spacing) */
+</style>

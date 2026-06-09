@@ -35,6 +35,8 @@
   <span class="ak-clubhub-doodle ak-clubhub-doodle--eyes"></span>
   <span class="ak-clubhub-doodle ak-clubhub-doodle--dollar"></span>
   <span class="ak-clubhub-doodle ak-clubhub-doodle--cross"></span>
+  <span class="ak-clubhub-doodle ak-clubhub-doodle--mgn-left"></span>
+  <span class="ak-clubhub-doodle ak-clubhub-doodle--mgn-right"></span>
 </div>
 
 <div class="ak-clubhub" role="region" aria-label="Club AmeriKid Hub">
@@ -734,6 +736,37 @@ padding-right: 0 !important;
   transform:rotate(11deg);
   background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-cross.png?v=1780967556");
 }
+/* Phase 3.18 — SIDE-MARGIN DOODLES: two small marks in the outer paper
+   strips (OUTSIDE the red/blue vertical rules), echoing the Life/Style
+   side-margin presence. Duplicate assets (eyes/cross already appear in
+   the lower open paper) are differentiated by placement, size, and
+   rotation per the duplicate-doodle rule; neither is a header-cluster
+   asset, so the top of the page does not read duplicated. Gated to
+   >=1200px: below that the outer strip (--ak-paper-side-gap, ~82px)
+   is too tight for the rotated bounding box to stay clear of the
+   vertical rules. Base treatment (multiply blend, pointer-events:none,
+   aspect-ratio, wrapper z-index:0, <=768px wrapper hide) is inherited.
+   Revert: delete this block + the two --mgn spans in the wrapper. */
+.ak-clubhub-page .ak-clubhub-doodle--mgn-left,
+.ak-clubhub-page .ak-clubhub-doodle--mgn-right{ display:none; }
+@media (min-width:1200px){
+  .ak-clubhub-page .ak-clubhub-doodle--mgn-left{   /* LEFT outer strip — beside the member card, left of the red rule */
+    display:block;
+    left:clamp(5px, 0.5vw, 9px); top:640px; width:clamp(64px, 5.8vw, 90px);
+    transform:rotate(-6deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-eyes.png?v=1780967556");
+  }
+  .ak-clubhub-page .ak-clubhub-doodle--mgn-right{  /* RIGHT outer strip — right of the blue rule, beside the lower
+                                                       member card. top:845px keeps it clear of the FIXED cart's
+                                                       viewport slot at every scroll position on a 900px-tall
+                                                       window (cart floats at viewport y~11-108; max scroll ~707,
+                                                       so the slot never reaches abs y 845). */
+    display:block;
+    right:clamp(5px, 0.5vw, 9px); top:845px; width:clamp(64px, 5.8vw, 90px);
+    transform:rotate(7deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-cross.png?v=1780967556");
+  }
+}
 /* hide the doodle layer on mobile so it never crowds the narrow content column */
 @media (max-width:768px){ .ak-clubhub-page .ak-clubhub-doodles{ display:none !important; } }
 
@@ -903,6 +936,24 @@ padding-right: 0 !important;
 .ak-clubhub-page .ak-top-contact:focus-visible::before,
 .ak-clubhub-page .ak-top-contact:active::before{
   background-color:#ff33ff !important;
+}
+/* PHASE 3.17 — ACTIVE / CURRENT-PAGE CUE (Club Hub page only). Ported from the
+   accepted Life/Style Phase 4.3 cue and re-scoped to .ak-clubhub-page: the
+   active/current tile's masked wordmark turns purple #ff33ff AND carries a magenta
+   halo glow AT REST, so the current page (MONIKER on /pages/club-hub) reads as
+   active — matching the Life/Style notebook behaviour. filter:drop-shadow tracks
+   the masked wordmark silhouette and is paint-only -> NO layout shift; applies ONLY
+   to .is-active, never to non-active tiles (which stay ink #15120b at rest).
+   Hover/focus/press already flip wordmarks to #ff33ff via the rule above, so the
+   active item simply stays purple + glowing. Labels stay in the DOM
+   (color:transparent, rule below) for screen readers. Does NOT edit ak-top.liquid.
+   Revert: delete this rule. */
+.ak-clubhub-page .ak-top-tile.is-active::before{
+  background-color:#ff33ff !important;
+  filter:
+    drop-shadow(0 0 4px #ff33ff)
+    drop-shadow(0 0 12px rgba(255,51,255,.75))
+    drop-shadow(0 0 24px rgba(255,51,255,.5)) !important;
 }
 /* hide the five labels in ALL states (rest+hover+focus+active+is-active) but keep them in the DOM for screen readers (out-specifies the Phase 2 magenta hover/active label rules) */
 .ak-clubhub-page .ak-top-life .ak-top-label,
