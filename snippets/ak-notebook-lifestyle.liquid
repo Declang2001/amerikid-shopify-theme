@@ -466,4 +466,61 @@
   .ak-lifestyle-page .ak-btt:hover .ak-btt-text,
   .ak-lifestyle-page .ak-btt:focus-visible .ak-btt-text{ color:#ff33ff !important; } /* preserve purple hover/focus */
   .ak-lifestyle-page .ak-footer-rule{ background:none !important; }           /* remove footer glow line (keep spacing) */
+
+  /* ============================================================
+     PHASE 4.8 — HANDWRITTEN PNG SECTION TITLES (notebook scope only)
+     Replaces the VISIBLE text of the three Life/Style section titles
+     with Declan's handwritten wordmark PNGs (CDN), via the same
+     keep-text-in-DOM pattern as the nav wordmarks: the real heading
+     text stays for screen readers but is collapsed (font-size:0) ONLY
+     inside .ak-lifestyle-page; the PNG paints on ::before. NO markup
+     change — templates/page.json untouched; the dark-theme text
+     titles remain fully intact outside the notebook scope.
+     Animations: akAdvFlicker / akKrSignal live ON the title elements,
+     so the opacity loops transfer to the PNGs automatically (intended
+     final ambience preserved). Channels' per-letter akChanTuneIn spans
+     collapse invisibly (zero-size); the Channels PNG ships STATIC
+     first per the approved analysis — an entrance echo is a possible
+     later tune. Channels also needs letter-spacing:0 + gap:0 here:
+     its px-based letter-spacing (clamp 6-12px x 8 spans) would leave
+     ~48-96px of phantom width even at font-size:0.
+     Sizing: height-parity clamps with aspect-ratio from the measured
+     natural PNG dimensions; the caps keep rendered widths at ~450 /
+     425 / 408px — at or under native (710 / 425 / 408), never
+     upscaled. Channels' 408px max sits far inside the ~782px clear
+     budget between the chan-l / chan-r doodles.
+     Known footprint note (reported, not tuned): .ak-kr-title::after
+     keeps its Phase 4.7 empty 60x2+10px spacing box, and the KR PNG
+     (59px) is shorter than the old text line (~113px) — spacing is
+     expected to tighten slightly; flagged for the visual pass.
+     Revert: delete this block — text titles + animations return.
+     If Declan re-exports 2x assets, only the three url()s change. */
+  .ak-lifestyle-page #akmod-adventures-yt .ak-adv-title{
+    font-size:0 !important; line-height:0 !important;
+  }
+  .ak-lifestyle-page #akmod-adventures-yt .ak-adv-title::before{
+    content:""; display:block; margin:0 auto;
+    height:clamp(72px, 8.4vw, 125px); /* owner tune: bigger Adventures title; 125px tall = ~569px wide, still under the 710px native width */
+    aspect-ratio:710 / 156;
+    background:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/adventures_of_amerikid.png?v=1781062547") center / contain no-repeat;
+  }
+  .ak-lifestyle-page #ak-kidradio-holo .ak-kr-title{
+    font-size:0 !important; line-height:0 !important;
+  }
+  .ak-lifestyle-page #ak-kidradio-holo .ak-kr-title::before{
+    content:""; display:block; margin:0 auto;
+    height:clamp(38px, 4.1vw, 59px);
+    aspect-ratio:425 / 59;
+    background:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/kid_radio.png?v=1781062547") center / contain no-repeat;
+  }
+  .ak-lifestyle-page #ak-chan-holo .ak-chan-title{
+    font-size:0 !important; line-height:0 !important;
+    letter-spacing:0 !important; gap:0 !important;
+  }
+  .ak-lifestyle-page #ak-chan-holo .ak-chan-title::before{
+    content:""; display:block; margin:0 auto;
+    height:clamp(34px, 3.7vw, 53px);
+    aspect-ratio:408 / 53;
+    background:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/channels.png?v=1781062547") center / contain no-repeat;
+  }
 </style>

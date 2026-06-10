@@ -45,6 +45,49 @@
   (function(){ document.documentElement.classList.add('ak-products-page'); })();
 </script>
 
+{%- comment -%} PHASE 6.2 FONT PROOF (TEMPORARY) — Londrina Solid via Google Fonts
+    hosted CSS, for the Products grid product names ONLY (candidate 3:
+    Permanent Marker was rejected as TOO CLOSE to the handwritten nav/button
+    PNGs; Sedgwick Ave Display was rejected by Declan as too graffiti/loud —
+    the brief is a readable, slightly hand-drawn, LABEL-like secondary font
+    that sits under the nav, not a nav mimic and not a tag). This <link>
+    renders ONLY behind the master-collection Liquid guard in
+    templates/collection.json, so no other route ever requests the font.
+    Google-hosted on purpose: no font file enters the repo until a candidate
+    is approved (self-hosted .woff2 in assets/ is the planned final serving
+    path). display=swap -> titles render in the Impact fallback until the
+    font arrives, never invisible.
+    License: SIL OFL 1.1 (google/fonts/ofl/londrinasolid, Marcelo Magalhães).
+    Revert: delete these three tags + the FONT PROOF CSS block below. {%- endcomment -%}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Londrina+Solid&display=swap" rel="stylesheet">
+
+{%- comment -%} PHASE 7.1 — PRODUCTS "CATALOG MARGINS v2" DOODLE LAYER (Club Hub
+    doodle family, page-specific map — NOT a copy of the Club Hub or Life/Style
+    compositions). Revised from the Phase 7.0 placement proof per owner-direction
+    feedback: MUCH bigger (Club Hub scale, not Club Hub's small margin-mark
+    scale), with a strong header pair flanking the giant KID logo and a strong
+    bottom pair on the CTA flanks. 8 decorative spans, all PAGE-ANCHORED (glued
+    to the scrolling paper — deliberately NOT viewport-fixed: fixed ink would
+    slide across the ruled lines and over products during scroll).
+    aria-hidden + pointer-events:none; hidden <1200px (gutter pair additionally
+    hidden <1366px). Inherits the master-collection Liquid guard. Doodles remain
+    placeholders pending owner verdict — each is one self-contained rule, easy
+    to remove/resize/swap.
+    Revert: delete this wrapper + the PHASE 7.1 CSS block at the end of the
+    style below. {%- endcomment -%}
+<div class="ak-products-doodles" aria-hidden="true">
+  <span class="ak-products-doodle ak-products-doodle--hdr-left"></span>
+  <span class="ak-products-doodle ak-products-doodle--hdr-right"></span>
+  <span class="ak-products-doodle ak-products-doodle--mgn-left"></span>
+  <span class="ak-products-doodle ak-products-doodle--mgn-right"></span>
+  <span class="ak-products-doodle ak-products-doodle--gut-a"></span>
+  <span class="ak-products-doodle ak-products-doodle--gut-b"></span>
+  <span class="ak-products-doodle ak-products-doodle--btm-kid"></span>
+  <span class="ak-products-doodle ak-products-doodle--btm-star"></span>
+</div>
+
 <style>
   /* ============================================================
      PHASE 5.0 — PRODUCTS NOTEBOOK PAPER BACKDROP
@@ -112,6 +155,29 @@
   /* Dawn paints a focus/loading veil + skeletons in scheme colors on AJAX
      section loads; keep any such veil from flashing a dark plate on paper. */
   .ak-products-page .loading-overlay__spinner .path{ stroke:#15120b; }
+
+  /* ============================================================
+     PHASE 6.2 FONT PROOF (TEMPORARY) — Londrina Solid on the
+     Products grid product names ONLY (candidate 3 of the approved
+     font-analysis shortlist; candidate 1 Permanent Marker = too close
+     to the handwritten nav PNGs, candidate 2 Sedgwick Ave Display =
+     too graffiti/loud for Declan — the brief is a readable, slightly
+     hand-drawn, label-like SECONDARY font that supports the nav hand
+     instead of competing with it).
+     Candidates swap via this one variable. Impact stays in the stack
+     as the live fallback. Color/hover rules above are untouched; no
+     size/tracking tuning is baked in (flagged separately if runtime
+     shows it's needed).
+     Revert: delete this block + the three Google Fonts <link> tags
+     after the page-hook script. */
+  .ak-products-page{
+    --ak-products-label-font: 'Londrina Solid', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  }
+  .ak-products-page .card-wrapper .card__heading,
+  .ak-products-page .card-wrapper .card__heading a,
+  .ak-products-page .card-wrapper .full-unstyled-link{
+    font-family: var(--ak-products-label-font) !important;
+  }
 
   /* ============================================================
      PRODUCT CUTOUT SHADOW v3 — open the real remaining clipping ancestor.
@@ -267,4 +333,123 @@
   .ak-products-page .ak-btt:hover .ak-btt-text,
   .ak-products-page .ak-btt:focus-visible .ak-btt-text{ color:#ff33ff !important; } /* preserve purple hover/focus */
   .ak-products-page .ak-footer-rule{ background:none !important; }           /* remove footer glow line (keep spacing) */
+
+  /* ============================================================
+     PHASE 7.1 — PRODUCTS "CATALOG MARGINS v2" DOODLE LAYER
+     Page-specific 8-doodle map at Club Hub scale (revised from the too-
+     small Phase 7.0 placement proof). Zones (all measured @1440, abs):
+     HEADER — two large marks flanking the giant KID logo (logo x631-812
+     y39-221; nav row 1 starts y254; fixed cart x>=1350 @1440, left edge
+     ~x1104 @1200 — both header marks verified clear at both extremes).
+     MARGINS — outer strips; base size fits 1280's 89px card edge, with a
+     >=1366px bump (card edge 111 @1366 / 129 @1440); ink MAY cross the
+     red/blue vertical rules (like real margin scribbles) but never card
+     boxes. GUTTER — the clean center channel between the product columns
+     (shadow-cleared lane 129px @1366 / 166px @1440), >=1366px only.
+     BOTTOM — two strong marks on the CTA flanks, BOTTOM-ANCHORED in the
+     constant ~219px band between grid end and page end (both ends move
+     together under title-wrap/font variation, so the band never shrinks);
+     CTA x602-838, copyright ~x660-780, cart max-scroll band x>=1350 —
+     all cleared. Layering: wrapper absolute inset:0 / z-index:0 inside
+     #MainContent, rendered BEFORE the product-grid section, so the grid
+     paints above it — no z-lift needed; v3 img shadows untouched.
+     Page-anchored on purpose (glued to the scrolling paper; NOT
+     viewport-fixed — fixed ink would slide across the ruled lines).
+     Ink treatment per the accepted Life/Style learning (blend normal +
+     per-doodle darkening). Star is the ONLY duplicated asset: header
+     star large/upright vs bottom star ~35% smaller + scaleX(-1) mirrored
+     + different rotation, per the duplicate-doodle rule.
+     aria-hidden / pointer-events:none / hidden <1200px (gutter pair
+     additionally <1366px).
+     Revert: delete this block + the .ak-products-doodles wrapper after
+     the font <link> tags. */
+  .ak-products-page #MainContent{ position:relative; } /* doodle-wrapper anchor only — background rule above unchanged */
+  .ak-products-page .ak-products-doodles{
+    display:none;                       /* gated on at >=1200px below */
+    position:absolute; inset:0;
+    z-index:0;
+    pointer-events:none;
+    mix-blend-mode:normal;
+  }
+  .ak-products-page .ak-products-doodle{
+    position:absolute;
+    display:block;
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size:contain;
+    aspect-ratio:1447 / 1385;
+    opacity:1;
+    filter:brightness(0.55) contrast(1.4); /* darken the light sketch ink so it reads on the bright paper */
+    pointer-events:none;
+    transform-origin:center center;
+  }
+  @media (min-width:1200px){
+    .ak-products-page .ak-products-doodles{ display:block; }
+  }
+  /* HEADER LEFT — large star in the open paper left of the KID logo,
+     above nav row 1 (y254): top 24 + max height ~230 incl. rotation
+     stays clear */
+  .ak-products-page .ak-products-doodle--hdr-left{
+    left:clamp(100px, 9vw, 140px); top:24px; width:clamp(170px, 13vw, 240px);
+    transform:rotate(-8deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-star.png?v=1780967556");
+  }
+  /* HEADER RIGHT — large cross right of the logo, left of the fixed cart
+     (cart left edge ~x1104 @1200 / x1350 @1440 — right-inset keeps
+     >=24px clearance at both) */
+  .ak-products-page .ak-products-doodle--hdr-right{
+    right:clamp(120px, 9.5vw, 140px); top:40px; width:clamp(150px, 11vw, 210px);
+    transform:rotate(7deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-cross.png?v=1780967556");
+  }
+  /* LEFT margin — may cross the red rule, never the card edge
+     (89px @1280 caps the base size; bumped >=1366 below) */
+  .ak-products-page .ak-products-doodle--mgn-left{
+    left:clamp(6px, 0.6vw, 10px); top:1300px; width:clamp(64px, 5.8vw, 90px);
+    transform:rotate(-7deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-hashtag.png?v=1780967556");
+  }
+  /* RIGHT margin — may cross the blue rule, never the card edge; far
+     above the fixed cart's max-scroll viewport band (~abs 4343-4440) */
+  .ak-products-page .ak-products-doodle--mgn-right{
+    right:clamp(6px, 0.6vw, 10px); top:2800px; width:clamp(64px, 5.8vw, 90px);
+    transform:rotate(6deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-eyes.png?v=1780967556");
+  }
+  @media (min-width:1366px){
+    .ak-products-page .ak-products-doodle--mgn-left,
+    .ak-products-page .ak-products-doodle--mgn-right{ width:clamp(90px, 7vw, 112px); }
+  }
+  /* CENTER GUTTER pair — page-center lane between the product columns;
+     hidden <1366px (lane too tight at 1280) */
+  .ak-products-page .ak-products-doodle--gut-a,
+  .ak-products-page .ak-products-doodle--gut-b{ display:none; }
+  @media (min-width:1366px){
+    .ak-products-page .ak-products-doodle--gut-a{
+      display:block;
+      left:50%; top:1450px; width:clamp(96px, 8.2vw, 126px);
+      transform:translateX(-50%) rotate(8deg);
+      background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-dollar.png?v=1780967556");
+    }
+    .ak-products-page .ak-products-doodle--gut-b{
+      display:block;
+      left:50%; top:3500px; width:clamp(96px, 8.2vw, 126px);
+      transform:translateX(-50%) rotate(-9deg);
+      background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-dice.png?v=1780967556");
+    }
+  }
+  /* BOTTOM LEFT — large kid on the clean band above the footer, left
+     flank of the centered CTA */
+  .ak-products-page .ak-products-doodle--btm-kid{
+    bottom:2px; left:clamp(110px, 9vw, 150px); width:clamp(150px, 12vw, 185px);
+    transform:rotate(-6deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-kid.png?v=1780967556");
+  }
+  /* BOTTOM RIGHT — the star again, MIRRORED + ~35% smaller + different
+     rotation than the header star (duplicate-doodle rule) */
+  .ak-products-page .ak-products-doodle--btm-star{
+    bottom:14px; right:clamp(130px, 10vw, 170px); width:clamp(110px, 8.5vw, 135px);
+    transform:scaleX(-1) rotate(12deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-star.png?v=1780967556");
+  }
 </style>
