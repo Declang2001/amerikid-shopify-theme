@@ -46,12 +46,22 @@
 </script>
 
 {%- comment -%} PHASE 6.2 FONT PROOF (TEMPORARY) — Londrina Solid via Google Fonts
-    hosted CSS, for the Products grid product names ONLY (candidate 3:
-    Permanent Marker was rejected as TOO CLOSE to the handwritten nav/button
-    PNGs; Sedgwick Ave Display was rejected by Declan as too graffiti/loud —
-    the brief is a readable, slightly hand-drawn, LABEL-like secondary font
-    that sits under the nav, not a nav mimic and not a tag). This <link>
-    renders ONLY behind the master-collection Liquid guard in
+    hosted CSS, for the Products grid product names ONLY — RESTORED baseline
+    after the owner rejected Black Ops One. Candidate history:
+    1 Permanent Marker REJECTED (too close to the handwritten nav/button
+    PNGs); 2 Sedgwick Ave Display REJECTED (too graffiti/loud); 3 Londrina
+    Solid = THIS restored interim proof (friendly rounded label, NOT final);
+    the owner then supplied two stencil fonts, browser-previewed only
+    (2026-06-10, never uploaded): "STENCILED PERSONAL USE" (Billy Argel) —
+    owner LIKES the bold military-stencil look but will not buy the
+    commercial license right now, and the file is personal-use-only/fsType-2
+    with broken demo glyphs (digits = star ornaments; #/().-/& fall back) —
+    MUST NOT be uploaded to Shopify or added to the repo; "d Dizzy Stencil"
+    (wep) — owner-liked direction, full glyphs but light-weight, license
+    unconfirmed — browser-preview only until licensing is confirmed.
+    4 Black Ops One (Google/OFL stencil stand-in) REJECTED by owner
+    (2026-06-10) — do not retry it.
+    This <link> renders ONLY behind the master-collection Liquid guard in
     templates/collection.json, so no other route ever requests the font.
     Google-hosted on purpose: no font file enters the repo until a candidate
     is approved (self-hosted .woff2 in assets/ is the planned final serving
@@ -158,12 +168,13 @@
 
   /* ============================================================
      PHASE 6.2 FONT PROOF (TEMPORARY) — Londrina Solid on the
-     Products grid product names ONLY (candidate 3 of the approved
-     font-analysis shortlist; candidate 1 Permanent Marker = too close
-     to the handwritten nav PNGs, candidate 2 Sedgwick Ave Display =
-     too graffiti/loud for Declan — the brief is a readable, slightly
-     hand-drawn, label-like SECONDARY font that supports the nav hand
-     instead of competing with it).
+     Products grid product names ONLY (RESTORED interim baseline;
+     full candidate history in the comment above the Google Fonts
+     <link> tags — short version: Permanent Marker too nav-like,
+     Sedgwick too loud, Black Ops One REJECTED by owner 2026-06-10,
+     owner-liked STENCILED blocked on license + broken demo glyphs,
+     Dizzy Stencil browser-preview-only pending license. Londrina is
+     the safe interim, NOT final).
      Candidates swap via this one variable. Impact stays in the stack
      as the live fallback. Color/hover rules above are untouched; no
      size/tracking tuning is baked in (flagged separately if runtime
@@ -453,92 +464,4 @@
     background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-star.png?v=1780967556");
   }
 
-  /* =========================================================
-     PHASE 7.2 — MARKER-BLOB NAV DIVIDER (Products port, REMOVABLE)
-        Port of the ACCEPTED Life/Style Phase 4.10 divider: one
-        hand-drawn-style marker line directly under the full
-        seven-button nav cluster (header/nav chrome — NOT a
-        section/content-title divider). Same accepted technique:
-        ONE inline SVG of INDIVIDUALLY SHAPED FILLED INK BLOBS
-        (pressure swell mid-stroke, tapered + chiseled asymmetric
-        ends, per-dash tilt/y-drift on a wandering baseline,
-        ~8.5-10px rendered ink, fill #15120b, no stroke attrs).
-        PAGE-SPECIFIC GEOMETRY (no-two-pages-identical rule):
-        this line is 10 LONGER, LAZIER dashes (seed 7) — a
-        different rhythm than Life/Style's 13 (seed 23) and
-        Club Hub's 14 choppier dashes (seed 41). Same safety
-        contract: lives on the verified-free ::after of
-        .ak-top-nav-area (already position:relative +
-        overflow:hidden, so the line sits INSIDE the box and
-        horizontal overflow is impossible), ak-top.liquid NOT
-        edited, pointer-events:none, NO ::before echo/overlay
-        (rejected — do not re-add), no repeating-gradient dashes,
-        no stroked dasharray/round linecaps (both rejected),
-        hidden <=768px ON PURPOSE (the 7-button nav grid is
-        display:none there — MENU drawer mode). Ink #15120b —
-        purple stays reserved for nav hover/active. Static
-        (load-in draw animation is a separate queued lane).
-        UPGRADE PATH: swap the background URL for a real
-        hand-drawn PNG/SVG asset — placement code unchanged.
-        REMOVE: delete this whole block; nothing else
-        references this pseudo. */
-  .ak-products-page .ak-top-nav-area::after{
-    content:"";
-    position:absolute;
-    z-index:0;
-    pointer-events:none;
-    left:clamp(38px, 3.2vw, 52px);
-    right:clamp(42px, 3.6vw, 58px);
-    bottom:0;
-    height:24px;
-    opacity:.88;
-    background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 34' preserveAspectRatio='none'><path d='M7.5 12.2C25.4 10.4 60.4 11.1 88.2 11.6C91.0 15.2 89.7 18.6 88.5 20.9C61.7 22.7 31.6 21.9 6.3 22.3C4.2 19.3 4.8 13.4 7.5 12.2ZM118.5 12.0C138.3 10.6 173.9 10.5 195.0 11.5C197.9 14.2 197.8 18.8 195.8 21.3C174.8 22.0 141.9 22.8 117.5 23.4C114.0 20.5 117.6 14.3 118.5 12.0ZM224.1 10.4C249.3 7.8 295.5 8.1 317.2 8.7C321.3 13.2 318.1 17.1 316.9 19.9C295.5 21.9 245.9 20.8 222.2 20.5C222.0 17.2 222.7 12.0 224.1 10.4ZM338.2 10.7C369.8 9.8 414.5 9.2 440.2 8.9C442.9 13.2 441.9 15.6 440.0 19.1C402.5 21.1 362.2 21.2 337.9 20.4C336.5 16.3 337.7 13.3 338.2 10.7ZM459.6 8.8C487.0 6.8 522.3 7.1 557.7 8.3C560.0 11.5 557.7 15.6 556.7 19.8C535.7 19.8 483.0 19.8 458.2 18.4C458.0 15.6 456.6 9.6 459.6 8.8ZM578.6 8.3C602.8 6.5 636.2 5.8 656.2 6.3C659.3 10.5 655.8 13.7 655.5 17.8C630.3 19.5 601.8 20.5 576.5 19.7C575.8 17.0 575.7 9.0 578.6 8.3ZM683.3 7.4C718.5 6.5 772.6 6.3 803.8 6.6C806.7 10.8 806.1 14.0 802.8 16.8C773.0 19.2 714.7 18.4 681.2 17.0C678.9 14.8 682.7 10.1 683.3 7.4ZM824.6 7.9C849.8 7.3 890.6 7.2 910.0 6.4C914.1 9.3 910.3 13.8 910.0 16.3C881.7 18.6 849.1 18.6 824.4 18.8C821.8 14.4 821.8 10.1 824.6 7.9ZM939.7 8.0C979.8 6.5 1028.5 7.2 1067.3 7.3C1070.4 11.7 1068.6 16.3 1065.8 18.7C1034.9 19.2 976.1 19.4 939.4 18.4C937.4 16.2 938.2 9.7 939.7 8.0ZM1096.1 7.2C1126.8 7.5 1159.3 7.1 1191.6 8.5C1195.9 11.8 1191.6 16.4 1191.4 20.1C1162.1 20.3 1119.5 20.3 1094.1 19.8C1092.6 16.6 1093.4 10.4 1096.1 7.2Z' fill='%2315120b'/></svg>") center / 100% 100% no-repeat;
-    /* PHASE 7.3 — one-shot draw-on load animation (keyframes + rules below) */
-    animation: akPrDividerDraw 1.65s cubic-bezier(0.42, 0, 0.22, 1) .35s 1 both;
-  }
-  @media (max-width:768px){
-    .ak-products-page .ak-top-nav-area::after{ display:none !important; }
-  }
-
-  /* =========================================================
-     PHASE 7.3 — DIVIDER DRAW-ON LOAD ANIMATION (REMOVABLE)
-        One-shot, CSS-only, paint-only. On every page load the
-        Phase 7.2 divider draws on left -> right like a Sharpie
-        pull: a clip-path inset reveal on the SAME ::after
-        (technique validated by live probe on the identical
-        Life/Style structure — no layout shift, nav stays
-        clickable DURING the draw, no overflow; final frame
-        inset(0 0 0 0) clips nothing so the end state is
-        byte-identical to the static divider). Timing (owner
-        pass 2): .35s delay + 1.65s draw — slightly SLOWER than
-        Life/Style's 1.45s on purpose (this page's 10 longer/
-        lazier strokes suit a more deliberate pull; motion
-        follows the no-two-pages-identical rule), gentle in-out
-        cubic-bezier. The first version (.9s draw + a chained
-        opacity ink-settle) was REJECTED — too fast + the
-        end-of-draw darkening read glitchy; the settle is
-        REMOVED: ONE animation, clip-path only, opacity stays at
-        the static .88 the whole time — do not re-add a second
-        chained animation. Runs ONCE per load (full-reload
-        navigation naturally replays it — intended). NO loop,
-        NO filters, NO JS, NO new selectors/DOM. Keyframe names
-        are PAGE-SPECIFIC (akPr*) — Life/Style uses akLs*,
-        Club Hub akCh*; never share names across snippets.
-        <=768px needs nothing: the divider is display:none
-        there. Reduced-motion: animation killed + clip-path
-        none -> instant static line.
-        REMOVE: delete this block AND the animation declaration
-        in the Phase 7.2 ::after rule above; the static divider
-        is untouched by removal.
-  ========================================================= */
-  @keyframes akPrDividerDraw{
-    from{ clip-path:inset(0 100% 0 0); }
-    to{ clip-path:inset(0 0 0 0); }
-  }
-  @media (prefers-reduced-motion: reduce){
-    .ak-products-page .ak-top-nav-area::after{
-      animation:none !important;
-      clip-path:none !important;
-    }
-  }
 </style>

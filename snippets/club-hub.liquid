@@ -18,7 +18,6 @@
 
 {%- assign ak_kid_watermark_src = '' -%}
 
-
 <script>
 
   (function(){ document.documentElement.classList.add('ak-clubhub-page'); })();
@@ -555,7 +554,6 @@ placeholder="ex: a zombie-slayer hat with glow ink">{% if dream_piece %}{{ dream
     decoding="async"
   >
 </div>
-
 
 </div>
 
@@ -1232,7 +1230,6 @@ mix-blend-mode: overlay;
   object-fit: contain;
   display: block;
 }
-
 
 .ak-id-title,
 
@@ -2194,98 +2191,6 @@ left: 14px;
 .ak-captcha-spinner{ animation: none; }
 
   }
-
-/* =========================================================
-   PHASE 3.19 — MARKER-BLOB NAV DIVIDER (Club Hub port, REMOVABLE)
-      Port of the ACCEPTED Life/Style Phase 4.10 divider: one
-      hand-drawn-style marker line directly under the full
-      seven-button nav cluster (header/nav chrome — NOT a
-      section/content-title divider). Same accepted technique:
-      ONE inline SVG of INDIVIDUALLY SHAPED FILLED INK BLOBS
-      (pressure swell mid-stroke, tapered + chiseled asymmetric
-      ends, per-dash tilt/y-drift on a wandering baseline,
-      ~8.5-10px rendered ink, fill #15120b, no stroke attrs).
-      PAGE-SPECIFIC GEOMETRY (no-two-pages-identical rule):
-      this line is 14 SHORTER, CHOPPIER dashes (seed 41) — a
-      different rhythm than Life/Style's 13 (seed 23) and
-      Products' 10 longer lazier dashes (seed 7). Placement is
-      the shared accepted geometry: the divider sits in the 26px
-      slot INSIDE the nav box below the lowest tiles (runtime
-      verified identical on Club Hub), so it cannot crowd the
-      member card (which starts 26px below the nav box). Same
-      safety contract: lives on the verified-free ::after of
-      .ak-top-nav-area (already position:relative +
-      overflow:hidden, so horizontal overflow is impossible),
-      ak-top.liquid NOT edited, pointer-events:none, NO ::before
-      echo/overlay (rejected — do not re-add), no
-      repeating-gradient dashes, no stroked dasharray/round
-      linecaps (both rejected), hidden <=768px ON PURPOSE (the
-      7-button nav grid is display:none there — MENU drawer
-      mode). Ink #15120b — purple stays reserved for nav
-      hover/active. Static (load-in draw animation is a separate
-      queued lane).
-      UPGRADE PATH: swap the background URL for a real
-      hand-drawn PNG/SVG asset — placement code unchanged.
-      REMOVE: delete this whole block; nothing else references
-      this pseudo. */
-.ak-clubhub-page .ak-top-nav-area::after{
-  content:"";
-  position:absolute;
-  z-index:0;
-  pointer-events:none;
-  left:clamp(38px, 3.2vw, 52px);
-  right:clamp(42px, 3.6vw, 58px);
-  bottom:0;
-  height:24px;
-  opacity:.88;
-  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 34' preserveAspectRatio='none'><path d='M7.0 12.2C19.7 10.2 43.0 10.5 56.4 12.2C59.9 16.4 57.3 20.0 56.0 23.8C38.8 23.9 22.2 23.8 5.9 23.0C3.3 19.6 4.4 13.6 7.0 12.2ZM74.2 13.6C98.6 12.5 129.3 12.8 153.8 12.6C158.2 16.4 154.8 20.5 154.4 21.7C132.7 24.5 95.7 25.2 72.2 23.3C71.8 19.7 72.1 15.8 74.2 13.6ZM179.1 13.9C194.6 12.3 228.8 12.2 248.5 12.5C251.0 17.6 250.4 21.1 247.9 24.6C233.7 26.8 200.1 26.8 178.5 25.5C176.2 23.0 176.5 14.9 179.1 13.9ZM272.3 14.4C287.4 14.1 316.0 14.4 329.3 14.2C331.7 18.5 331.8 22.3 329.1 23.9C315.2 25.7 286.9 25.3 272.1 24.1C269.9 21.7 270.2 16.7 272.3 14.4ZM355.6 13.1C375.3 10.2 403.9 10.4 421.4 11.7C425.3 15.6 422.2 18.8 420.9 21.5C405.1 23.2 376.6 23.6 354.2 24.2C353.6 21.1 354.0 16.3 355.6 13.1ZM447.6 12.2C469.2 10.2 493.0 10.5 517.2 11.9C520.9 15.0 519.7 20.0 516.9 22.8C498.9 23.8 466.4 23.8 447.4 23.4C443.6 21.1 445.6 13.5 447.6 12.2ZM545.0 10.3C560.6 10.1 583.8 10.2 603.6 10.0C608.0 12.6 605.5 18.4 602.9 20.0C590.7 22.7 560.3 22.6 545.1 21.6C541.2 17.6 544.5 11.1 545.0 10.3ZM621.6 9.3C635.4 8.6 651.0 8.8 666.2 8.9C668.5 13.5 668.7 17.1 666.6 20.7C650.2 21.8 636.7 21.1 621.2 20.3C618.9 16.9 619.4 12.5 621.6 9.3ZM693.5 9.9C705.5 7.6 725.9 8.6 738.2 8.2C742.3 12.1 741.2 18.1 738.0 19.9C726.4 21.3 703.6 21.9 692.6 20.2C689.3 18.0 691.4 10.9 693.5 9.9ZM764.5 8.8C779.8 7.9 816.0 7.8 831.5 7.1C834.6 11.8 832.6 16.4 830.7 19.2C816.6 22.2 786.4 21.6 763.5 21.8C761.4 18.3 763.6 12.0 764.5 8.8ZM846.8 8.6C870.9 8.8 895.9 8.8 922.7 10.3C924.7 14.7 922.3 19.3 920.8 22.2C894.8 22.6 872.1 23.0 847.0 20.5C843.4 15.8 843.9 11.1 846.8 8.6ZM937.4 11.1C958.6 10.4 992.4 10.4 1016.2 13.5C1018.8 16.9 1016.2 21.2 1015.2 24.7C992.0 24.5 959.2 25.3 937.5 22.4C933.1 19.7 934.7 13.9 937.4 11.1ZM1045.4 13.1C1058.5 12.4 1079.2 11.9 1092.8 13.4C1095.0 17.7 1093.8 20.9 1093.2 23.4C1075.6 24.8 1055.1 24.1 1043.4 22.9C1043.2 19.6 1042.9 13.6 1045.4 13.1ZM1120.0 14.0C1135.4 13.2 1174.0 13.3 1191.3 14.2C1193.0 18.2 1192.7 22.8 1192.2 25.0C1169.2 26.5 1141.0 25.8 1118.3 24.9C1117.2 22.1 1119.3 15.9 1120.0 14.0Z' fill='%2315120b'/></svg>") center / 100% 100% no-repeat;
-  /* PHASE 3.20 — one-shot draw-on load animation (keyframes + rules below) */
-  animation: akChDividerDraw 1.35s cubic-bezier(0.42, 0, 0.22, 1) .3s 1 both;
-}
-@media (max-width:768px){
-  .ak-clubhub-page .ak-top-nav-area::after{ display:none !important; }
-}
-
-/* =========================================================
-   PHASE 3.20 — DIVIDER DRAW-ON LOAD ANIMATION (REMOVABLE)
-      One-shot, CSS-only, paint-only. On every page load the
-      Phase 3.19 divider draws on left -> right like a Sharpie
-      pull: a clip-path inset reveal on the SAME ::after
-      (technique validated by live probe on the identical
-      Life/Style structure — no layout shift, nav stays
-      clickable DURING the draw, no overflow; final frame
-      inset(0 0 0 0) clips nothing so the end state is
-      byte-identical to the static divider). Timing (owner
-      pass 2): .3s delay + 1.35s draw — slightly QUICKER than
-      Life/Style's 1.45s on purpose (this page's 14 shorter/
-      choppier strokes suit a faster scrawl; motion follows the
-      no-two-pages-identical rule), gentle in-out cubic-bezier.
-      The first version (.75s draw + a chained opacity
-      ink-settle) was REJECTED — too fast + the end-of-draw
-      darkening read glitchy; the settle is REMOVED: ONE
-      animation, clip-path only, opacity stays at the static
-      .88 the whole time — do not re-add a second chained
-      animation. Runs ONCE per load (full-reload navigation
-      naturally replays it — intended). NO loop, NO filters,
-      NO JS, NO new selectors/DOM. Keyframe names are
-      PAGE-SPECIFIC (akCh*) — Life/Style uses akLs*, Products
-      akPr*; never share names across snippets. <=768px needs
-      nothing: the divider is display:none there.
-      Reduced-motion: animation killed + clip-path none ->
-      instant static line.
-      REMOVE: delete this block AND the animation declaration
-      in the Phase 3.19 ::after rule above; the static divider
-      is untouched by removal. */
-@keyframes akChDividerDraw{
-  from{ clip-path:inset(0 100% 0 0); }
-  to{ clip-path:inset(0 0 0 0); }
-}
-@media (prefers-reduced-motion: reduce){
-  .ak-clubhub-page .ak-top-nav-area::after{
-    animation:none !important;
-    clip-path:none !important;
-  }
-}
 
 </style>
 
