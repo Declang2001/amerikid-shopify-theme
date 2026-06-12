@@ -398,6 +398,14 @@
   .ak-products-page .ak-btt:hover .ak-btt-text,
   .ak-products-page .ak-btt:focus-visible .ak-btt-text{ color:#ff33ff !important; } /* preserve purple hover/focus */
   .ak-products-page .ak-footer-rule{ background:none !important; }           /* remove footer glow line (keep spacing) */
+  /* STAGE 1 FOOTER FONT PROOF (2026-06-11, Products only): the CTA adopts
+     the Due Date secondary font via the @font-face already declared above —
+     no new asset, no Tenada (no '#' in the footer text). Size/tracking
+     untouched (one-line at 375/320 verified at runtime). Stage 2 (Life/Style
+     + Club Hub) pends owner approval; a global footer font change is
+     rejected/deferred unless explicitly approved — dark pages keep Impact.
+     Revert: delete this one rule. */
+  .ak-products-page .ak-btt-text{ font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important; }
 
   /* ============================================================
      PHASE 7.1 — PRODUCTS "CATALOG MARGINS v2" DOODLE LAYER
