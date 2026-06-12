@@ -45,33 +45,34 @@
   (function(){ document.documentElement.classList.add('ak-products-page'); })();
 </script>
 
-{%- comment -%} PHASE 6.2 FONT PROOF (TEMPORARY) — Londrina Solid via Google Fonts
-    hosted CSS, for the Products grid product names ONLY — RESTORED baseline
-    after the owner rejected Black Ops One. Candidate history:
-    1 Permanent Marker REJECTED (too close to the handwritten nav/button
-    PNGs); 2 Sedgwick Ave Display REJECTED (too graffiti/loud); 3 Londrina
-    Solid = THIS restored interim proof (friendly rounded label, NOT final);
-    the owner then supplied two stencil fonts, browser-previewed only
-    (2026-06-10, never uploaded): "STENCILED PERSONAL USE" (Billy Argel) —
-    owner LIKES the bold military-stencil look but will not buy the
-    commercial license right now, and the file is personal-use-only/fsType-2
-    with broken demo glyphs (digits = star ornaments; #/().-/& fall back) —
-    MUST NOT be uploaded to Shopify or added to the repo; "d Dizzy Stencil"
-    (wep) — owner-liked direction, full glyphs but light-weight, license
-    unconfirmed — browser-preview only until licensing is confirmed.
-    4 Black Ops One (Google/OFL stencil stand-in) REJECTED by owner
-    (2026-06-10) — do not retry it.
-    This <link> renders ONLY behind the master-collection Liquid guard in
-    templates/collection.json, so no other route ever requests the font.
-    Google-hosted on purpose: no font file enters the repo until a candidate
-    is approved (self-hosted .woff2 in assets/ is the planned final serving
-    path). display=swap -> titles render in the Impact fallback until the
-    font arrives, never invisible.
-    License: SIL OFL 1.1 (google/fonts/ofl/londrinasolid, Marcelo Magalhães).
-    Revert: delete these three tags + the FONT PROOF CSS block below. {%- endcomment -%}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Londrina+Solid&display=swap" rel="stylesheet">
+{%- comment -%} PHASE 6.3 FONT PROOF — "Due Date" (Dieter Steffmann), self-hosted
+    woff2, for the Products grid product names ONLY. Replaces the TEMPORARY
+    Londrina Solid Google-Fonts proof (interim only, never a finalist): the
+    owner-liked direction was the two supplied stencil fonts, both blocked —
+    "STENCILED PERSONAL USE" (Billy Argel) personal-use/fsType-2, owner will
+    not buy the license; "d Dizzy Stencil" (wep) license unconfirmed,
+    browser-preview only. Due Date is the same distressed military-stencil
+    direction but commercially clean. Candidate history: 1 Permanent Marker
+    REJECTED (too close to the handwritten nav PNGs); 2 Sedgwick Ave Display
+    REJECTED (too graffiti/loud); 3 Black Ops One REJECTED by owner
+    (2026-06-10) — do not retry it; 4 Londrina Solid = interim proof, now
+    removed (this block); 5 Due Date = THIS proof (2026-06-11).
+    LICENSE (verified 2026-06-11): Due Date v2.47, Typographer Mediengestaltung
+    / Dieter Steffmann (Kreuztal), distributed by 1001fonts.com under the
+    1001Fonts Free For Commercial Use (FFC) license — free for commercial use,
+    webfont conversion (WOFF/WOFF2) and web/app embedding expressly permitted
+    (1001fonts.com/licenses/ffc.html); the file's OS/2 fsType = 0 (installable,
+    no embedding restriction). Source zip: 1001fonts.com/due-date-font.html.
+    KNOWN GLYPH GAP: '#' is not in the font's cmap — '#CandyFACTS' /
+    '#FreeVitaly' render the '#' in the Impact fallback (verified visually
+    acceptable in the 2026-06-11 browser preview).
+    The @font-face lives in the FONT PROOF CSS block below, inside this
+    snippet, which renders ONLY behind the master-collection Liquid guard in
+    templates/collection.json — no other route ever requests the font.
+    font-display:swap -> titles render in the Impact fallback until the font
+    arrives, never invisible.
+    Revert: delete the FONT PROOF CSS block below + assets/ak-due-date.woff2
+    (titles fall back to the grid section's Impact). {%- endcomment -%}
 
 {%- comment -%} PHASE 7.1 — PRODUCTS "CATALOG MARGINS v2" DOODLE LAYER (Club Hub
     doodle family, page-specific map — NOT a copy of the Club Hub or Life/Style
@@ -167,27 +168,40 @@
   .ak-products-page .loading-overlay__spinner .path{ stroke:#15120b; }
 
   /* ============================================================
-     PHASE 6.2 FONT PROOF (TEMPORARY) — Londrina Solid on the
-     Products grid product names ONLY (RESTORED interim baseline;
-     full candidate history in the comment above the Google Fonts
-     <link> tags — short version: Permanent Marker too nav-like,
-     Sedgwick too loud, Black Ops One REJECTED by owner 2026-06-10,
-     owner-liked STENCILED blocked on license + broken demo glyphs,
-     Dizzy Stencil browser-preview-only pending license. Londrina is
-     the safe interim, NOT final).
+     PHASE 6.3 FONT PROOF — "Due Date" stencil on the Products grid
+     product names ONLY (full candidate history + verified FFC
+     license details in the comment block after the page-hook
+     script — short version: Permanent Marker too nav-like, Sedgwick
+     too loud, Black Ops One REJECTED by owner 2026-06-10, owner-liked
+     STENCILED blocked on license + broken demo glyphs, Dizzy Stencil
+     license-unconfirmed, Londrina was the interim proof only —
+     replaced by this. Due Date = same distressed stencil direction,
+     free for commercial use, self-hosted woff2 in assets/).
      Candidates swap via this one variable. Impact stays in the stack
-     as the live fallback. Color/hover rules above are untouched; no
-     size/tracking tuning is baked in (flagged separately if runtime
-     shows it's needed).
-     Revert: delete this block + the three Google Fonts <link> tags
-     after the page-hook script. */
+     as the live fallback (and renders the missing '#' glyph).
+     SIZE: 3.3rem = the +10% browser-preview winner over the grid
+     section's 3rem base — at 3rem Due Date's wider letterforms split
+     "T-Shirt" across lines (T-/SHIRT); at 3.3rem every title breaks
+     on word boundaries (verified 1440/1024/768/375/320, 2026-06-11).
+     Letter-spacing untouched — the font's built-in tracking reads
+     correctly.
+     Revert: delete this block + assets/ak-due-date.woff2 (titles fall
+     back to the grid section's Impact 3rem). */
+  @font-face{
+    font-family: 'AK Due Date';
+    src: url('{{ 'ak-due-date.woff2' | asset_url }}') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
   .ak-products-page{
-    --ak-products-label-font: 'Londrina Solid', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    --ak-products-label-font: 'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
   }
   .ak-products-page .card-wrapper .card__heading,
   .ak-products-page .card-wrapper .card__heading a,
   .ak-products-page .card-wrapper .full-unstyled-link{
     font-family: var(--ak-products-label-font) !important;
+    font-size: 3.3rem !important;
   }
 
   /* ============================================================
