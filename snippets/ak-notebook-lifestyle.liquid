@@ -466,6 +466,24 @@
   .ak-lifestyle-page .ak-btt:hover .ak-btt-text,
   .ak-lifestyle-page .ak-btt:focus-visible .ak-btt-text{ color:#ff33ff !important; } /* preserve purple hover/focus */
   .ak-lifestyle-page .ak-footer-rule{ background:none !important; }           /* remove footer glow line (keep spacing) */
+  /* STAGE 2 FOOTER FONT (2026-06-12): the CTA adopts the Due Date secondary
+     font, extending the approved Products Stage 1 treatment. The @font-face
+     is duplicated here on purpose — each notebook page's system stays
+     self-contained in its own snippet (house pattern), and the shared
+     ak-footer.liquid stays un-edited. Same assets/ak-due-date.woff2 (FFC
+     license, see the Products snippet for the full ledger); no Tenada (no
+     '#' in the footer text). Size/tracking untouched (one-line at 375/320
+     verified at runtime). Dark/non-notebook routes keep Impact; a global
+     footer font change stays rejected/deferred unless explicitly approved.
+     Revert: delete this @font-face + the .ak-btt-text rule. */
+  @font-face{
+    font-family: 'AK Due Date';
+    src: url('{{ 'ak-due-date.woff2' | asset_url }}') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  .ak-lifestyle-page .ak-btt-text{ font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important; }
 
   /* ============================================================
      PHASE 4.8 — HANDWRITTEN PNG SECTION TITLES (notebook scope only)
