@@ -347,4 +347,104 @@
     border-left-color: rgba(255,51,255,0.65); /* STAGE 1.6 — was lavender rgba(192,132,252,0.65); same alpha, official-purple hue */
     border-bottom-color: rgba(21,18,11,0.30);
   }
+
+  /* ============================================================
+     STAGE 1.7 — LIGHT STICKER FEED V3
+     Owner-preferred direction (chosen over the dark printed overlay
+     Direction A and the kraft-brown paper-slip variant after the
+     read-only prototype): turn the fake-Twitter feed into pale
+     PRINTED STICKER LABELS on the notebook paper, while keeping the
+     exact layout / DOM / posting JS / Due Date+Tenada / route
+     isolation. CSS-only, page-scoped, no DOM, no new assets.
+
+     OVERRIDE STRATEGY: this block OVERRIDES the committed Stage 1.5
+     dark material with HIGHER SPECIFICITY (`html.ak-narrative-page X`
+     = 0,2,1 beats Stage 1.5's `.ak-narrative-page X` = 0,2,0) instead
+     of editing those lines — so reverting to the dark feed is a
+     single-block delete (Stage 1.5/1.6 lines above are left intact).
+     The text/handle/time/avatar/input/button recolors and the social
+     cues are NEW rules (no Stage 1.5 conflict), written at 2-class
+     specificity. NO `!important` anywhere.
+
+     akBoxPulse: the feed section animates `.ak-glow-box` box-shadow
+     with a magenta pulse — that reads sickly/unreadable over cream,
+     so it is neutralized PAGE-SCOPED here (`animation:none` +
+     `box-shadow:none` on `html.ak-narrative-page .ak-glow-box`); the
+     paper depth comes from `filter:drop-shadow` instead. The global
+     `@keyframes akBoxPulse` is NOT edited.
+
+     Tweet text flips white -> ink `#14110a` (white would vanish on
+     white cards); the Due Date/Tenada stack + sizes + wrapping are
+     untouched, so hashtags still render in Tenada. Handles move to a
+     forest green `#1c7c2e` (neon `#39ff14` is unreadable on white) and
+     STAY Impact; timestamps warm-grey `#6b6358`, STAY Impact. Loader
+     dots are part of `.ak-tweet-text` so they become ink dots on white
+     (still blink via akDotBlink). `.ak-tweet::after` hover glow is
+     left intact — magenta `#ff33ff` glow reads fine on white (no
+     `overflow:hidden` is added, so it is NOT clipped — the read-only
+     pass caught that sheen-variant regression and it is avoided).
+
+     Social cues (pseudo-only, inherit to runtime posts): a small
+     "NARRATIVE FEED" header label + magenta live-dot above the
+     composer, and a magenta verified check after every handle. NO
+     faux reply/repost/like row and NO pinned @AMERIKID.CA tab — the
+     owner-liked white version stays clean, not an over-busy fake UI.
+
+     Official purple stays `#ff33ff` (set in the html block at Stage
+     1.6); no lavender. Revert = delete this whole block (returns to
+     the Stage 1.5/1.6 dark sticker feed), or `git revert`.
+     ============================================================ */
+  /* shell -> warm cream sticker mat; kill the magenta pulse on cream */
+  html.ak-narrative-page .ak-glow-box{
+    background:#fdf3c9;
+    -webkit-backdrop-filter:none; backdrop-filter:none;
+    border:2px solid #14110a; border-radius:16px;
+    box-shadow:none; animation:none;
+    filter:drop-shadow(7px 7px 0 rgba(21,18,11,0.28));
+  }
+  /* composer -> pale off-white sticker strip on the paper */
+  html.ak-narrative-page .ak-input-wrapper{
+    background:#fffdf3;
+    -webkit-backdrop-filter:none; backdrop-filter:none;
+    border:2px solid #14110a;
+    filter:drop-shadow(5px 5px 0 rgba(21,18,11,0.24));
+  }
+  /* cards -> near-white sticker slips, official-purple tab, hard offset */
+  html.ak-narrative-page .ak-tweet{
+    background:#fffef8;
+    -webkit-backdrop-filter:none; backdrop-filter:none;
+    border:1.5px solid #1a160d;
+    border-left:5px solid #ff33ff;
+    border-bottom:1.5px solid #1a160d;
+    box-shadow:4px 4px 0 rgba(21,18,11,0.18);
+  }
+  /* ink-safe text on the light cards (Due Date/Tenada stack untouched) */
+  .ak-narrative-page .ak-tweet-text{ color:#14110a; text-shadow:none; }
+  .ak-narrative-page .ak-handle{ color:#1c7c2e; }  /* forest green — neon #39ff14 fails on white; stays Impact */
+  .ak-narrative-page .ak-time{ color:#6b6358; }    /* warm ink-grey; stays Impact */
+  .ak-narrative-page .ak-avatar{
+    background:radial-gradient(circle at 35% 30%, #d8cfae 0%, #b3a988 60%, #8d8463 100%);
+    border:2px solid #14110a; box-shadow:none;
+  }
+  /* composer input + send button -> official-purple family, readable on cream */
+  .ak-narrative-page #akTweetInput{ color:#ff33ff; caret-color:#ff33ff; }
+  .ak-narrative-page #akTweetInput::placeholder{ color:#b34a9e; opacity:1; } /* deepened so it isn't too light on cream */
+  .ak-narrative-page #akTweetButton{ border-color:#ff33ff; color:#c41fb0; background:#fffdf3; }
+  .ak-narrative-page #akTweetButton::after{ background:#ff33ff; }            /* ripple magenta, not green */
+  .ak-narrative-page #akTweetButton:hover{ background:#ff33ff; color:#fff; box-shadow:0 0 10px rgba(255,51,255,0.6), 0 0 18px rgba(255,51,255,0.4); }
+  /* social-feed cues (pseudo-only; inherit to runtime posts by construction) */
+  .ak-narrative-page .ak-input-wrapper::before{
+    content:"NARRATIVE FEED"; position:absolute; left:8px; top:-2.0rem;
+    font-family:'AK Due Date',Impact,Haettenschweiler,'Arial Narrow Bold',sans-serif;
+    font-size:1.15rem; letter-spacing:0.16em; color:#15120b; opacity:0.9;
+    pointer-events:none; white-space:nowrap;
+  }
+  .ak-narrative-page .ak-input-wrapper::after{
+    content:""; position:absolute; right:16px; top:-1.55rem;
+    width:9px; height:9px; border-radius:50%; background:#ff33ff;
+    box-shadow:0 0 7px rgba(255,51,255,0.75); pointer-events:none;
+  }
+  .ak-narrative-page .ak-handle::after{
+    content:" \2714"; color:#ff33ff; font-size:0.72em; text-shadow:0 0 4px rgba(255,51,255,0.5);
+  }
 </style>
