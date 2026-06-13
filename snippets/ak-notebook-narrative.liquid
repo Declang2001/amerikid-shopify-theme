@@ -73,6 +73,16 @@
   html.ak-narrative-page{
     --ak-paper-top-gap: clamp(150px, 17vw, 220px);    /* blank top band behind the KID logo */
     --ak-paper-bottom-gap: clamp(130px, 12vw, 190px); /* blank bottom band — ruled lines fade out so the page doesn't end mid-line */
+    /* STAGE 1.6 — OFFICIAL PURPLE SYNC: re-point the feed's lavender --ak-purple
+       (#c084fc, declared in the active feed section's :root) to the official
+       AmeriKid purple #ff33ff used by the header/nav active state. Set on
+       html.ak-narrative-page (specificity 0,1,1) so it beats the feed's later
+       :root{--ak-purple:#c084fc} (0,1,0) without !important; inheritance then
+       carries #ff33ff to every var(--ak-purple) consumer in the feed —
+       #akTweetInput text/caret/placeholder, .ak-name, and the .ak-tweet::after
+       hover glow. Already-correct #ff33ff values (glow-box pulse, avatar glow,
+       .ak-tweet:hover border) are untouched. Revert = delete this one line. */
+    --ak-purple:#ff33ff;
     background:#f5dd4f !important;                    /* overscroll/canvas fallback — beats the feed section's html #000 via specificity */
   }
   html.ak-narrative-page body{
@@ -334,7 +344,7 @@
   }
   .ak-narrative-page .ak-tweet{
     background: rgba(8,5,14,0.82);
-    border-left-color: rgba(192,132,252,0.65);
+    border-left-color: rgba(255,51,255,0.65); /* STAGE 1.6 — was lavender rgba(192,132,252,0.65); same alpha, official-purple hue */
     border-bottom-color: rgba(21,18,11,0.30);
   }
 </style>
