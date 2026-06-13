@@ -15,10 +15,9 @@
     },
     "custom_liquid_izr6z3": {
       "type": "custom-liquid",
-      "disabled": true,
       "name": "t:sections.custom-liquid.presets.name",
       "settings": {
-        "custom_liquid": "<!-- sections/amerikid-fast-banner.liquid -->\n<style>\n  .akfb-banner {\n    background-color: #000;\n    overflow: hidden;\n    position: relative;\n    height: auto;\n    display: flex;\n    align-items: center;\n    padding: 12px 0;     /* increased vertical padding */\n    margin: 0;\n    font-size: 6rem;     /* updated font size */\n    line-height: 1;\n  }\n\n  .akfb-track-wrapper {\n    display: flex;\n    width: 200%;\n    animation: akfb-scroll-ltr 25s linear infinite;\n  }\n\n  .akfb-track {\n    display: flex;\n    white-space: nowrap;\n  }\n\n  .akfb-word {\n    font-family: Impact, sans-serif;\n    font-size: inherit;\n    line-height: 1;\n    margin: 0;\n    padding: 0 6px;     /* slight horizontal spacing */\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    animation: none !important;\n    transform: none !important;\n  }\n\n  @keyframes akfb-scroll-ltr {\n    0% {\n      transform: translateX(-50%);\n    }\n    100% {\n      transform: translateX(0%);\n    }\n  }\n</style>\n\n<div class=\"akfb-banner\">\n  <div class=\"akfb-track-wrapper\">\n    <div class=\"akfb-track\">\n      {% for i in (1..30) %}\n        <div class=\"akfb-word\">🍭‼️🇺🇸🛍️🗣️💯🔌💰💧📖🪬🥇🎱</div>\n      {% endfor %}\n    </div>\n    <div class=\"akfb-track\">\n      {% for i in (1..30) %}\n        <div class=\"akfb-word\">🍭‼️🇺🇸🛍️🗣️💯🔌💰💧📖🪬🥇🎱</div>\n      {% endfor %}\n    </div>\n  </div>\n</div>",
+        "custom_liquid": "{% if page.handle == 'narrative' %}{% render 'ak-notebook-narrative' %}{% endif %}",
         "color_scheme": "scheme-4",
         "padding_top": 0,
         "padding_bottom": 0
