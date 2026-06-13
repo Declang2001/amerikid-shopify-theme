@@ -297,4 +297,44 @@
      the footer text). Dark/non-notebook routes keep Impact; a global
      footer font change stays REJECTED/DEFERRED. Revert: delete this rule. */
   .ak-narrative-page .ak-btt-text{ font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important; }
+
+  /* ============================================================
+     STAGE 1.5 — FEED MATERIAL DE-MUDDING
+     Dark Ink Sticker Hybrid. Page-scoped Narrative-only pass.
+     Fixes muddy olive bleed on the outer feed shell + composer by
+     raising alpha, reducing backdrop blur/saturate, and adding a
+     hard ink-sticker shadow. Feed JS, layout, tweet formatting,
+     animations, footer, nav, and active section stay untouched.
+
+     WHY THIS WORKS WITHOUT !important: the active feed section
+     (custom_liquid_7HLMyz, NOT edited) declares .ak-glow-box /
+     .ak-input-wrapper / .ak-tweet WITHOUT !important, so these
+     page-scoped two-class selectors (.ak-narrative-page X) win on
+     SPECIFICITY (0,2,0 > 0,1,0), independent of source order.
+     The hard offset shadow uses filter:drop-shadow (NOT box-shadow)
+     so the feed's akBoxPulse box-shadow breathing animation on
+     .ak-glow-box is preserved untouched. No text/handle/time/font
+     recolor; no size/spacing/order/keyframe change.
+     Revert = delete this block.
+     ============================================================ */
+  .ak-narrative-page .ak-glow-box{
+    background: rgba(13,9,20,0.93);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    border: 2px solid #14110a;
+    border-radius: 18px;
+    filter: drop-shadow(7px 7px 0 rgba(21,18,11,0.30));
+  }
+  .ak-narrative-page .ak-input-wrapper{
+    background: rgba(13,9,20,0.93);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    border: 2px solid #14110a;
+    filter: drop-shadow(5px 5px 0 rgba(21,18,11,0.26));
+  }
+  .ak-narrative-page .ak-tweet{
+    background: rgba(8,5,14,0.82);
+    border-left-color: rgba(192,132,252,0.65);
+    border-bottom-color: rgba(21,18,11,0.30);
+  }
 </style>
