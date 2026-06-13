@@ -420,7 +420,7 @@
   }
   /* ink-safe text on the light cards (Due Date/Tenada stack untouched) */
   .ak-narrative-page .ak-tweet-text{ color:#14110a; text-shadow:none; }
-  .ak-narrative-page .ak-handle{ color:#1c7c2e; }  /* forest green — neon #39ff14 fails on white; stays Impact */
+  .ak-narrative-page .ak-handle{ color:#ff33ff; font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; }  /* STAGE 1.8 — official AmeriKid purple + Due Date stencil (was forest green Impact); the '@' falls back to Impact in-stack because Due Date's cmap lacks '@', verified acceptable */
   .ak-narrative-page .ak-time{ color:#6b6358; }    /* warm ink-grey; stays Impact */
   .ak-narrative-page .ak-avatar{
     background:radial-gradient(circle at 35% 30%, #d8cfae 0%, #b3a988 60%, #8d8463 100%);
@@ -432,19 +432,45 @@
   .ak-narrative-page #akTweetButton{ border-color:#ff33ff; color:#c41fb0; background:#fffdf3; }
   .ak-narrative-page #akTweetButton::after{ background:#ff33ff; }            /* ripple magenta, not green */
   .ak-narrative-page #akTweetButton:hover{ background:#ff33ff; color:#fff; box-shadow:0 0 10px rgba(255,51,255,0.6), 0 0 18px rgba(255,51,255,0.4); }
-  /* social-feed cues (pseudo-only; inherit to runtime posts by construction) */
-  .ak-narrative-page .ak-input-wrapper::before{
-    content:"NARRATIVE FEED"; position:absolute; left:8px; top:-2.0rem;
-    font-family:'AK Due Date',Impact,Haettenschweiler,'Arial Narrow Bold',sans-serif;
-    font-size:1.15rem; letter-spacing:0.16em; color:#15120b; opacity:0.9;
-    pointer-events:none; white-space:nowrap;
+  /* ============================================================
+     STAGE 1.8 — FEED CLEANUP (owner feedback)
+     Removed the Stage 1.7 social-feed pseudo cues: the
+     .ak-input-wrapper::before "NARRATIVE FEED" header, the
+     .ak-input-wrapper::after magenta live-dot, and the
+     .ak-handle::after verified check (redundant once the handle is
+     purple). Handles recolored to official #ff33ff + Due Date (see
+     the .ak-handle rule above; '@' -> Impact fallback).
+
+     INPUT FOCUS FIX: clicking the input showed an ugly white inner
+     box. Root cause = Dawn's GLOBAL :focus-visible rule in base.css
+     (box-shadow: var(--focused-base-box-shadow) -> a SOLID WHITE ring
+     `rgb(255,255,255) 0 0 0 3.3px` + dark halo). It is NOT autofill /
+     native outline / input bg / selection / the feed section / Stage
+     1.7. Killed PAGE-SCOPED only (Dawn's global focus styles are NOT
+     touched) and replaced with an intentional magenta active state.
+     A11y PRESERVED: the wrapper :focus-within border+glow is the
+     input's visible focus indicator, and #akTweetButton:focus-visible
+     gets its own magenta indicator (Dawn's white ring also hit the
+     button on keyboard focus). No !important. #akTweetButton::after
+     ripple is UNTOUCHED. .ak-time stays Impact/warm-grey.
+     Revert = restore the three deleted pseudo rules + the green
+     handle, and delete these four focus rules.
+     ============================================================ */
+  .ak-narrative-page #akTweetInput:focus,
+  .ak-narrative-page #akTweetInput:focus-visible{
+    box-shadow:none;
+    outline:none;
   }
-  .ak-narrative-page .ak-input-wrapper::after{
-    content:""; position:absolute; right:16px; top:-1.55rem;
-    width:9px; height:9px; border-radius:50%; background:#ff33ff;
-    box-shadow:0 0 7px rgba(255,51,255,0.75); pointer-events:none;
+  .ak-narrative-page .ak-input-wrapper:focus-within{
+    border-color:#ff33ff;
+    box-shadow:0 0 0 2px rgba(255,51,255,0.30);
   }
-  .ak-narrative-page .ak-handle::after{
-    content:" \2714"; color:#ff33ff; font-size:0.72em; text-shadow:0 0 4px rgba(255,51,255,0.5);
+  .ak-narrative-page #akTweetInput::selection{
+    background:rgba(255,51,255,0.25);
+    color:#14110a;
+  }
+  .ak-narrative-page #akTweetButton:focus-visible{
+    box-shadow:0 0 0 3px rgba(255,51,255,0.5);
+    outline:none;
   }
 </style>
