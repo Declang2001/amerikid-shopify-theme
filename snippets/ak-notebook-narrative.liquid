@@ -61,6 +61,27 @@
   (function(){ document.documentElement.classList.add('ak-narrative-page'); })();
 </script>
 
+{%- comment -%}
+  STAGE 1.9 — NARRATIVE DOODLE MAP ("Margin Reactions").
+  Decorative ONLY: aria-hidden, pointer-events:none (CSS), page-anchored
+  (absolute inside #MainContent, scrolls WITH the paper — NOT viewport-
+  fixed), behind the white feed so any stray is occluded by a card.
+  A Narrative-SPECIFIC composition (social-reaction marginalia) — NOT
+  Club Hub's diagonal scatter and NOT Life/Style's full-height edge rails.
+  Social-subset assets only (hashtag/eyes/star/cross/kid); NO dice/dollar.
+  Hidden on mobile/tablet (<=1023px). Revert = delete this wrapper + the
+  labeled STAGE 1.9 CSS block below.
+{%- endcomment -%}
+<div class="ak-narrative-doodles" aria-hidden="true">
+  <span class="ak-narrative-doodle ak-narrative-doodle--hdr-star"></span>
+  <span class="ak-narrative-doodle ak-narrative-doodle--hdr-hash"></span>
+  <span class="ak-narrative-doodle ak-narrative-doodle--hdr-eyes"></span>
+  <span class="ak-narrative-doodle ak-narrative-doodle--mgn-star"></span>
+  <span class="ak-narrative-doodle ak-narrative-doodle--mgn-hash"></span>
+  <span class="ak-narrative-doodle ak-narrative-doodle--mgn-x"></span>
+  <span class="ak-narrative-doodle ak-narrative-doodle--btm-kid"></span>
+</div>
+
 <style>
   /* ============================================================
      STAGE 1 — NARRATIVE NOTEBOOK PAPER BACKDROP
@@ -472,5 +493,112 @@
   .ak-narrative-page #akTweetButton:focus-visible{
     box-shadow:0 0 0 3px rgba(255,51,255,0.5);
     outline:none;
+  }
+
+  /* ============================================================
+     STAGE 1.9 — NARRATIVE DOODLE MAP / MARGIN REACTIONS
+     A Narrative-SPECIFIC decorative doodle composition — social-
+     reaction marginalia (hashtags = the feed's # motif, eyes =
+     lurking/"seen", star = "liked", cross = the "X"/cancelled mark,
+     kid = mascot sign-off). DELIBERATELY DIFFERENT from Club Hub's
+     loose diagonal scatter and Life/Style's full-height edge rails:
+     sparse + asymmetric, narrowed to the SOCIAL subset (NO dice,
+     NO dollar). 7 marks: 3 header (flanking the KID logo, above the
+     nav) + 3 feed-margin (outer strips, hashtag-led) + 1 bottom kid.
+
+     PAGE-ANCHORED, NOT viewport-fixed: absolute inside
+     #MainContent{position:relative} so the layer scrolls WITH the
+     paper (viewport-fixed ink slides across the ruled lines — same
+     rejection as Products). BEHIND CONTENT: the feed wrapper + footer
+     are lifted to z-index:1 and the doodle layer is z-index:0, so the
+     white feed cards OCCLUDE any stray mark (safer than overlaying
+     the white feed). The feed wrapper's own isolation:isolate +
+     overflow:hidden are respected (the doodle layer is a sibling
+     OUTSIDE it). mix-blend-mode:multiply soaks the black ink into the
+     yellow paper (Club Hub-proven: reads solid black on this paper).
+
+     Decorative contract: aria-hidden (markup) + pointer-events:none;
+     can NEVER block interaction or cover tweets/input/nav/cart/footer.
+     Hidden on tablet/mobile (<=1023px) — the feed fills the width
+     there with no safe margin. Existing assets only (1447x1385 ink
+     PNGs, v=1780967556). Revert = delete this block + the
+     <div class="ak-narrative-doodles"> wrapper above.
+     ============================================================ */
+  .ak-narrative-page #MainContent{ position:relative; }                 /* doodle-layer anchor */
+  .ak-narrative-page .ak-twitter-feed-wrapper{ z-index:1; }             /* feed (white cards/composer) above doodles; it is already position:relative */
+  .ak-narrative-page .ak-footer{ position:relative; z-index:1; }        /* footer + CTA above doodles */
+  .ak-narrative-page .ak-narrative-doodles{
+    position:absolute; inset:0;
+    z-index:0;
+    pointer-events:none;
+    mix-blend-mode:multiply;
+  }
+  .ak-narrative-page .ak-narrative-doodle{
+    position:absolute;
+    display:block;
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size:contain;
+    aspect-ratio:1447 / 1385;
+    opacity:1;
+    pointer-events:none;
+    transform-origin:center center;
+  }
+  /* --- HEADER marks: open paper flanking the KID logo, above the nav --- */
+  .ak-narrative-page .ak-narrative-doodle--hdr-star{
+    left:clamp(40px, 5vw, 95px); top:40px; width:clamp(105px, 9vw, 150px);
+    transform:rotate(-11deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-star.png?v=1780967556");
+  }
+  .ak-narrative-page .ak-narrative-doodle--hdr-hash{
+    left:clamp(180px, 15vw, 300px); top:48px; width:clamp(120px, 10vw, 170px);
+    transform:rotate(-6deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-hashtag.png?v=1780967556");
+  }
+  .ak-narrative-page .ak-narrative-doodle--hdr-eyes{
+    right:clamp(230px, 18vw, 370px); top:70px; width:clamp(110px, 9vw, 150px);
+    transform:rotate(7deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-eyes.png?v=1780967556");
+  }
+  /* --- FEED-MARGIN marks: outer strips beside the feed (sparse, asymmetric, hashtag-led) --- */
+  .ak-narrative-page .ak-narrative-doodle--mgn-star{
+    right:clamp(8px, 1vw, 20px); top:840px; width:clamp(72px, 5.6vw, 98px);
+    transform:rotate(8deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-star.png?v=1780967556");
+  }
+  .ak-narrative-page .ak-narrative-doodle--mgn-hash{
+    left:clamp(8px, 1vw, 20px); top:1500px; width:clamp(74px, 5.8vw, 100px);
+    transform:rotate(-7deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-hashtag.png?v=1780967556");
+  }
+  .ak-narrative-page .ak-narrative-doodle--mgn-x{
+    right:clamp(8px, 1vw, 20px); top:2400px; width:clamp(66px, 5vw, 90px);
+    transform:rotate(10deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-cross.png?v=1780967556");
+  }
+  /* --- BOTTOM mark: bottom band, left of the footer CTA. Uses `bottom:` so it
+         stays in the bottom band even as the feed grows when users post. --- */
+  .ak-narrative-page .ak-narrative-doodle--btm-kid{
+    left:clamp(150px, 12vw, 260px); bottom:clamp(28px, 3.5vw, 64px); width:clamp(150px, 11vw, 210px); /* tuned down from 80/8vw/140: keeps the kid below the glow-box bottom, in the clean footer band left of the CTA */
+    transform:rotate(-8deg);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-kid.png?v=1780967556");
+  }
+  /* --- RESPONSIVE GATES (DevTools-tuned) ---
+     >=1400: all 7. 1280-1399: header trio + bottom kid (margins need a clear
+     outer strip outside the 1200px shell, gone below ~1400). 1024-1279:
+     far-left header star only (logo/cart migrate into the other marks).
+     <=1023: whole layer hidden (mobile feed fills the width). */
+  @media (max-width:1399px){
+    .ak-narrative-page .ak-narrative-doodle--mgn-star,
+    .ak-narrative-page .ak-narrative-doodle--mgn-hash,
+    .ak-narrative-page .ak-narrative-doodle--mgn-x{ display:none; }
+  }
+  @media (max-width:1279px){
+    .ak-narrative-page .ak-narrative-doodle--hdr-hash,
+    .ak-narrative-page .ak-narrative-doodle--hdr-eyes,
+    .ak-narrative-page .ak-narrative-doodle--btm-kid{ display:none; }
+  }
+  @media (max-width:1023px){
+    .ak-narrative-page .ak-narrative-doodles{ display:none; }
   }
 </style>
