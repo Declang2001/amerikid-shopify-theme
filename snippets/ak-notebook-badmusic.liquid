@@ -1,0 +1,284 @@
+{%- comment -%}
+  ============================================================
+  snippets/ak-notebook-badmusic.liquid
+  BAD MUSIC — NOTEBOOK CONVERSION (Stage BM-1)
+  (experiment theme 186464731416 only — DO NOT PUBLISH)
+
+  The FIFTH notebook page (after Products, Life/Style, Club Hub,
+  Narrative). Converts /pages/2025 (the Bad Music page → the
+  TV-hero + cassette-shelf media page) to the notebook-paper system
+  using the "scrapbook / taped media on notebook paper" direction —
+  dark media modules stay dark ON the paper (the accepted Life/Style
+  precedent, NOT a module reskin).
+
+  - Rendered from ONE repurposed disabled spare custom_liquid slot in
+    templates/page.badmusic.json (custom_liquid_RnLA6b — was a
+    disabled fastbanner, position 3 right after ak-top so the class +
+    paper render EARLY -> no flash of dark content) behind a LIQUID
+    HANDLE GUARD: {% raw %}{% if page.handle == '2025' %}{% endraw %}.
+  - Adds .ak-badmusic-page to <html> via the standard one-line
+    classList hook (the established pattern; the ONLY JS here).
+  - Paints the accepted legal-pad paper scoped to .ak-badmusic-page.
+    The TV hero declares its own opaque #000; #MainContent/.gradient/
+    .shopify-section/.ak-top-wrap are forced transparent so the paper
+    shows through everywhere else (incl. the mobile top band).
+  - Ports the accepted mask-PNG nav + ink header/cart/footer
+    (Club Hub Phase 3.9 lineage, via the Products/Narrative port)
+    re-scoped to .ak-badmusic-page; BAD (.ak-top-bad, the active tile
+    on this route) reads purple #ff33ff + magenta glow at rest (the
+    glow comes from base ak-top's .ak-top-bad.is-active .ak-top-bad-mask
+    drop-shadow; this snippet only sets the colour to official #ff33ff).
+  - Footer CTA adopts Due Date (Stage of the accepted footer-font lane;
+    no '#' in the CTA -> no Tenada).
+  - "BAD MUSIC" heading (custom_liquid_bm_heading) -> ink Due Date
+    (its inline white/Impact/stroke/magenta-glow would be low-contrast
+    on yellow); CONTENT + layout preserved.
+  - Right "Coming Soon" cassette case (.ak-cas--soon .ak-cas__case has
+    opacity:.72 -> turns muddy-olive over the yellow) is de-mudded to
+    opacity:1; link/MP4/IntersectionObserver/geometry untouched.
+  - Red banner (#akrb) kept RED + scrolling, restyled as a deliberate
+    "taped red marker strip" (ink top/bottom borders + hard offset
+    shadow); copy/scroll/marquee untouched; NO rotation (it is
+    full-width -> rotation would overflow).
+  - NO doodles in BM-1 (separate Stage BM-2 after owner review).
+  - NOT touched: sections/ak-top.liquid, sections/ak-footer.liquid,
+    sections/ak-bm-album-link.liquid (cassette behaviour), the TV-hero
+    custom-liquid (player/YouTube/scanlines/static + its #000 band),
+    the red-banner copy/scroll, all other pages' snippets/templates.
+
+  Revert: in templates/page.badmusic.json set custom_liquid_RnLA6b
+  back to "disabled": true with its original fastbanner liquid (or
+  git checkout templates/page.badmusic.json), and delete this snippet.
+  ============================================================
+{%- endcomment -%}
+
+<script>
+  /* Page hook — this snippet only renders behind the page.handle == '2025'
+     Liquid guard in templates/page.badmusic.json, so the class can be
+     added unconditionally. */
+  (function(){ document.documentElement.classList.add('ak-badmusic-page'); })();
+</script>
+
+<style>
+  /* ============================================================
+     BAD MUSIC NOTEBOOK PAPER BACKDROP — CSS-only, scoped to
+     .ak-badmusic-page. Same accepted values as the other notebook
+     pages (shared --ak-paper-side-gap). html.ak-badmusic-page
+     specificity is LOAD-BEARING: it must beat the global
+     html,body{background:#000 !important} net in layout/theme.liquid.
+     ============================================================ */
+  html.ak-badmusic-page{
+    --ak-paper-top-gap: clamp(150px, 17vw, 220px);    /* blank top band behind the KID logo */
+    --ak-paper-bottom-gap: clamp(130px, 12vw, 190px); /* blank bottom band — ruled lines fade out so the page doesn't end mid-line */
+    --ak-purple:#ff33ff;                              /* official AmeriKid purple (any var(--ak-purple) consumer, incl. base BAD active, resolves official) */
+    background:#f5dd4f !important;                    /* overscroll/canvas fallback — beats the global html #000 via specificity */
+  }
+  html.ak-badmusic-page body{
+    --ak-paper-side-gap: clamp(82px, 7vw, 128px);     /* shared inset for both vertical rules (red left + blue right) */
+    background-color:#f5dd4f !important;              /* pale legal-pad yellow */
+    background-image:
+      linear-gradient(90deg,
+        transparent calc(100% - var(--ak-paper-side-gap)),
+        rgba(44,120,180,.60) calc(100% - var(--ak-paper-side-gap)),
+        rgba(44,120,180,.60) calc(100% - var(--ak-paper-side-gap) + 2px),
+        transparent calc(100% - var(--ak-paper-side-gap) + 2px)),   /* blue RIGHT margin rule */
+      linear-gradient(90deg,
+        transparent var(--ak-paper-side-gap),
+        rgba(218,40,50,.74) var(--ak-paper-side-gap),
+        rgba(218,40,50,.74) calc(var(--ak-paper-side-gap) + 2px),
+        transparent calc(var(--ak-paper-side-gap) + 2px)),          /* red LEFT margin rule */
+      linear-gradient(180deg,
+        #f5dd4f 0,
+        #f5dd4f var(--ak-paper-top-gap),
+        transparent var(--ak-paper-top-gap)),                       /* blank yellow TOP band */
+      linear-gradient(180deg,
+        transparent calc(100% - var(--ak-paper-bottom-gap)),
+        #f5dd4f calc(100% - var(--ak-paper-bottom-gap) + 36px)),     /* blank yellow BOTTOM band */
+      repeating-linear-gradient(180deg,
+        transparent 0 31px,
+        rgba(44,120,180,.60) 31px 32px) !important;                 /* blue horizontal ruled lines */
+    background-repeat:no-repeat, no-repeat, no-repeat, no-repeat, repeat !important;
+    background-position:0 0, 0 0, 0 0, 0 0, 0 var(--ak-paper-top-gap) !important;
+    background-attachment:scroll, scroll, scroll, scroll, scroll !important;
+  }
+  /* Transparency backstops so the body paper shows through the page chrome.
+     .shopify-section + .ak-top-wrap are REQUIRED here (the Bad Music sections +
+     the ak-top header wrapper carry opaque dark backgrounds — without these the
+     top reads as a black band, esp. on mobile). The TV hero keeps its own #000
+     (handled by its own selector below — paper deliberately does NOT show through
+     the TV band). */
+  .ak-badmusic-page #MainContent{ background:transparent !important; }
+  .ak-badmusic-page #MainContent .gradient{ background:transparent !important; background-image:none !important; }
+  .ak-badmusic-page .shopify-section{ background:transparent !important; }
+
+  /* ============================================================
+     FONTS — Due Date display voice (duplicated scoped @font-face,
+     the deliberate house pattern; same self-hosted asset as the
+     other notebook pages). No Tenada: there is no '#' on this page.
+     ============================================================ */
+  @font-face{
+    font-family: 'AK Due Date';
+    src: url('{{ 'ak-due-date.woff2' | asset_url }}') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  /* ============================================================
+     HEADER / NAV / CART — FULL notebook parity, ported from the
+     accepted treatment (Club Hub Phase 3.9 mask-PNG nav lineage)
+     and re-scoped to .ak-badmusic-page. ak-top.liquid is NOT edited.
+     BAD (.ak-top-bad) is the active tile on /pages/2025: it reads
+     purple #ff33ff + magenta glow at rest (glow from base ak-top's
+     .ak-top-bad.is-active .ak-top-bad-mask drop-shadow).
+     ============================================================ */
+  .ak-badmusic-page .ak-top-wrap{ background:transparent !important; }
+  .ak-badmusic-page .ak-top-wrap::after{ background:none !important; }
+  .ak-badmusic-page .ak-top-label{ color:#15120b !important; }
+  .ak-badmusic-page .ak-top-bad{ color:#15120b !important; }
+  .ak-badmusic-page .ak-top-mobile-trigger{ color:#15120b !important; text-shadow:none !important; }
+  .ak-badmusic-page .ak-top-label::before,
+  .ak-badmusic-page .ak-top-label::after{ opacity:0 !important; }
+  .ak-badmusic-page .ak-top-tile:hover .ak-top-label,
+  .ak-badmusic-page .ak-top-tile.is-active .ak-top-label,
+  .ak-badmusic-page .ak-top-bad:hover,
+  .ak-badmusic-page .ak-top-bad.is-active,
+  .ak-badmusic-page .ak-top-mobile-trigger:hover{ color:#ff33ff !important; }
+  /* cart: black ink at rest, magenta glow on hover/focus; small right nudge so the blue right rule isn't crowded */
+  .ak-badmusic-page .ak-top-cart-container{ transform:translateX(clamp(4px, .6vw, 10px)) !important; }
+  .ak-badmusic-page .ak-top-cart-img{ filter:brightness(0) !important; }
+  .ak-badmusic-page .ak-top-cart-link:hover .ak-top-cart-img,
+  .ak-badmusic-page .ak-top-cart-link:focus-visible .ak-top-cart-img{
+    filter:brightness(0) drop-shadow(0 0 6px #ff33ff) drop-shadow(0 0 12px rgba(255,51,255,.5)) !important;
+  }
+  /* tighten logo->nav spacing + remove the dark-theme glow divider */
+  .ak-badmusic-page .ak-top-divider{ display:none !important; }
+  .ak-badmusic-page .ak-top-nav-panel{ padding-top:clamp(2px,0.6vw,8px) !important; }
+  .ak-badmusic-page .ak-top-nav-area{ margin-top:clamp(-22px,-2.2vw,-8px) !important; }
+  /* per-tile mask + size + tilt (same PNGs / sizes / tilts as the accepted notebook nav) */
+  .ak-badmusic-page .ak-top-life{    --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/lifestyle_button.png?v=1780886497"); --ak-nav-png-size:clamp(260px, 21vw, 400px);   --ak-nav-tilt:-2.2deg; }
+  .ak-badmusic-page .ak-top-products{--ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/products_button.png?v=1780886497");  --ak-nav-png-size:clamp(280px, 23vw, 430px);   --ak-nav-tilt:1.4deg; }
+  .ak-badmusic-page .ak-top-archive{ --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/archive_button.png?v=1780885375");   --ak-nav-png-size:clamp(270px, 22vw, 420px);   --ak-nav-tilt:-1.1deg; }
+  .ak-badmusic-page .ak-top-narrative{--ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/narrative_button.png?v=1780885375"); --ak-nav-png-size:clamp(265px, 21.5vw, 410px); --ak-nav-tilt:1.8deg; }
+  .ak-badmusic-page .ak-top-contact{ --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/moniker_button.png?v=1780885375");   --ak-nav-png-size:clamp(220px, 18vw, 340px);   --ak-nav-tilt:-1.6deg; }
+  .ak-badmusic-page .ak-top-bad{ --ak-nav-tilt:-2.5deg; }
+  .ak-badmusic-page .ak-top-candy{ --ak-nav-tilt:1.2deg; }
+  /* clickable tiles (all 7): no transform / bg-png / recolor-filter; transform excluded from transitions */
+  .ak-badmusic-page .ak-top-life,
+  .ak-badmusic-page .ak-top-products,
+  .ak-badmusic-page .ak-top-archive,
+  .ak-badmusic-page .ak-top-narrative,
+  .ak-badmusic-page .ak-top-contact,
+  .ak-badmusic-page .ak-top-bad,
+  .ak-badmusic-page .ak-top-candy{
+    transform:none !important; -webkit-transform:none !important;
+    background-image:none !important; filter:none !important;
+    transition-property:filter, color, opacity, background-color !important;
+    will-change:auto !important;
+  }
+  /* the five wordmark masks live on ::before (holds the static tilt; overrides base .ak-top-tile::before{display:none}) */
+  .ak-badmusic-page .ak-top-life::before,
+  .ak-badmusic-page .ak-top-products::before,
+  .ak-badmusic-page .ak-top-archive::before,
+  .ak-badmusic-page .ak-top-narrative::before,
+  .ak-badmusic-page .ak-top-contact::before{
+    content:"" !important; display:block !important; position:absolute !important;
+    left:50% !important; top:50% !important;
+    width:var(--ak-nav-png-size) !important; height:var(--ak-nav-png-size) !important;
+    transform:translate(-50%, -50%) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    -webkit-transform:translate(-50%, -50%) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    transform-origin:center center !important;
+    backface-visibility:hidden !important; -webkit-backface-visibility:hidden !important;
+    pointer-events:none !important;
+    background-color:#15120b !important;
+    -webkit-mask:var(--ak-nav-mask) center / contain no-repeat !important;
+    mask:var(--ak-nav-mask) center / contain no-repeat !important;
+    transition:background-color .12s ease, opacity .12s ease !important;
+    z-index:1 !important;
+  }
+  /* hover / keyboard-focus / press -> the WHOLE wordmark turns purple (.is-active EXCLUDED — it has its own rule) */
+  .ak-badmusic-page .ak-top-life:hover::before, .ak-badmusic-page .ak-top-life:focus-visible::before, .ak-badmusic-page .ak-top-life:active::before,
+  .ak-badmusic-page .ak-top-products:hover::before, .ak-badmusic-page .ak-top-products:focus-visible::before, .ak-badmusic-page .ak-top-products:active::before,
+  .ak-badmusic-page .ak-top-archive:hover::before, .ak-badmusic-page .ak-top-archive:focus-visible::before, .ak-badmusic-page .ak-top-archive:active::before,
+  .ak-badmusic-page .ak-top-narrative:hover::before, .ak-badmusic-page .ak-top-narrative:focus-visible::before, .ak-badmusic-page .ak-top-narrative:active::before,
+  .ak-badmusic-page .ak-top-contact:hover::before, .ak-badmusic-page .ak-top-contact:focus-visible::before, .ak-badmusic-page .ak-top-contact:active::before{
+    background-color:#ff33ff !important;
+  }
+  /* ACTIVE wordmark cue (only fires if a masked wordmark is the active tile; on
+     /pages/2025 BAD is active — its ::before stays display:none, so this is a
+     harmless no-op here, kept for parity / future-proofing). */
+  .ak-badmusic-page .ak-top-tile.is-active::before{
+    background-color:#ff33ff !important;
+    filter:
+      drop-shadow(0 0 4px #ff33ff)
+      drop-shadow(0 0 12px rgba(255,51,255,.75))
+      drop-shadow(0 0 24px rgba(255,51,255,.5)) !important;
+  }
+  /* keep the five labels in the DOM for screen readers, but visually hidden in ALL states */
+  .ak-badmusic-page .ak-top-life .ak-top-label, .ak-badmusic-page .ak-top-life:hover .ak-top-label, .ak-badmusic-page .ak-top-life:focus-visible .ak-top-label, .ak-badmusic-page .ak-top-life:active .ak-top-label, .ak-badmusic-page .ak-top-life.is-active .ak-top-label,
+  .ak-badmusic-page .ak-top-products .ak-top-label, .ak-badmusic-page .ak-top-products:hover .ak-top-label, .ak-badmusic-page .ak-top-products:focus-visible .ak-top-label, .ak-badmusic-page .ak-top-products:active .ak-top-label, .ak-badmusic-page .ak-top-products.is-active .ak-top-label,
+  .ak-badmusic-page .ak-top-archive .ak-top-label, .ak-badmusic-page .ak-top-archive:hover .ak-top-label, .ak-badmusic-page .ak-top-archive:focus-visible .ak-top-label, .ak-badmusic-page .ak-top-archive:active .ak-top-label, .ak-badmusic-page .ak-top-archive.is-active .ak-top-label,
+  .ak-badmusic-page .ak-top-narrative .ak-top-label, .ak-badmusic-page .ak-top-narrative:hover .ak-top-label, .ak-badmusic-page .ak-top-narrative:focus-visible .ak-top-label, .ak-badmusic-page .ak-top-narrative:active .ak-top-label, .ak-badmusic-page .ak-top-narrative.is-active .ak-top-label,
+  .ak-badmusic-page .ak-top-contact .ak-top-label, .ak-badmusic-page .ak-top-contact:hover .ak-top-label, .ak-badmusic-page .ak-top-contact:focus-visible .ak-top-label, .ak-badmusic-page .ak-top-contact:active .ak-top-label, .ak-badmusic-page .ak-top-contact.is-active .ak-top-label{
+    color:transparent !important; text-shadow:none !important;
+  }
+  /* BAD / CANDY: tilt+scale on the inner graphic, anchor stays transform-stable (sizes BAD 1.18, CANDY 1.75) */
+  .ak-badmusic-page .ak-top-bad-mask{
+    transform:scale(1.18) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    -webkit-transform:scale(1.18) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+  }
+  .ak-badmusic-page .ak-top-candy-img{
+    transform:scale(1.75) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    -webkit-transform:scale(1.75) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+  }
+
+  /* ============================================================
+     FOOTER INTEGRATION — paper shows behind the footer, ink
+     back-to-top, Due Date CTA. ak-footer.liquid is NOT edited.
+     ============================================================ */
+  .ak-badmusic-page .ak-footer{ background:transparent !important; }
+  .ak-badmusic-page .ak-btt{ color:#15120b !important; }                     /* .ak-btt-text inherits */
+  .ak-badmusic-page .ak-footer-copy{ color:rgba(21,18,11,.5) !important; }
+  .ak-badmusic-page .ak-btt:hover .ak-btt-text,
+  .ak-badmusic-page .ak-btt:focus-visible .ak-btt-text{ color:#ff33ff !important; } /* preserve purple hover/focus */
+  .ak-badmusic-page .ak-footer-rule{ background:none !important; }           /* remove footer glow line (keep spacing) */
+  .ak-badmusic-page .ak-btt-text{ font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important; }
+
+  /* ============================================================
+     "BAD MUSIC" HEADING -> ink Due Date. The heading h2 carries
+     INLINE styles (color:#fff, Impact, -webkit-text-stroke,
+     magenta text-shadow) -> !important required to override inline.
+     Content + size + layout preserved; only colour/font/stroke/glow
+     change so it reads as ink on the yellow paper.
+     ============================================================ */
+  .ak-badmusic-page .ak-bm-section-heading h2{
+    color:#15120b !important;
+    font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+    -webkit-text-stroke:0 !important;
+    text-shadow:none !important;
+  }
+
+  /* ============================================================
+     RED BANNER (#akrb) -> "taped red marker strip". Keeps the red
+     bg, copy, and scroll/marquee untouched; only adds ink top/bottom
+     borders + a hard offset shadow so it reads as a deliberate strip
+     of red tape across the notebook rather than a web banner. NO
+     rotation (the banner is full-width -> rotation would overflow).
+     ============================================================ */
+  .ak-badmusic-page #akrb{
+    border-top:3px solid #14110a !important;
+    border-bottom:3px solid #14110a !important;
+    box-shadow:0 6px 0 rgba(21,18,11,0.22) !important;
+  }
+
+  /* ============================================================
+     RIGHT "COMING SOON" CASSETTE CASE — de-mud. Base
+     .ak-cas--soon .ak-cas__case is opacity:.72, so the dark case
+     lets the yellow paper bleed through -> muddy olive. Force it
+     opaque so it reads as a clean dark case on paper. ONLY the
+     opacity changes — link/MP4/IntersectionObserver/geometry and the
+     left "2025" album link are untouched. The "COMING SOON" overlay
+     text + dimmed art-overlay still convey the teaser state.
+     ============================================================ */
+  .ak-badmusic-page .ak-cas--soon .ak-cas__case{ opacity:1 !important; }
+</style>
