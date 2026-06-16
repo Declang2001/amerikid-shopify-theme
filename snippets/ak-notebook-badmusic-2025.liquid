@@ -374,4 +374,33 @@
   .ak-badmusic-2025-page #bad-vinyl .vinyl-artist{
     font-family:'AK Due Date',Impact,Haettenschweiler,'Arial Black',sans-serif !important;
   }
+
+  /* ============================================================
+     STAGE BM-TYPO-2 — long-title tune (2026-06-15). CSS-only, scoped
+     to .vinyl-title ONLY (no font-family/color/markup/layout change;
+     the Tenada-'#' + Due-Date words + white-on-dark from BM-TYPO-1 are
+     untouched). BM-TYPO-1's Due Date is wider than the old Impact, so
+     on the 2-column desktop/tablet grid the long titles wrapped
+     awkwardly (#FREEVITALY / #FASHIONING orphan-wrapped to 2 lines,
+     #SUMMER OF THE HOODIE to 3). This trims the desktop title size a
+     touch (was clamp(28px,6vw,72px) -> 72px @1440) and condenses the
+     wide Due Date tracking slightly so the long titles fit cleanly
+     (#FREEVITALY/#FASHIONING -> 1 line, #SUMMER -> a clean 2 lines)
+     while short titles stay bold + intentional.
+
+     Scoped to min-width:768px = the 2-column grid (where the wrap
+     happens). Mobile (≤767px, the 1-column grid) is left on the base
+     sizing — its titles already fit on one line. The clamp 40px FLOOR
+     protects the narrow 2-col 768px cards (the long titles fit there
+     too). NO width/max-width is added; .vinyl-grid/.vinyl-card/
+     .vinyl-disc geometry, the card material, the player JS, and
+     custom_liquid_QcCtY6 are all untouched.
+     ============================================================ */
+  @media (min-width:768px){
+    .ak-badmusic-2025-page #bad-vinyl .vinyl-title{
+      font-size:clamp(40px, 4.8vw, 66px) !important;
+      letter-spacing:-0.01em !important;
+      line-height:.92 !important;
+    }
+  }
 </style>
