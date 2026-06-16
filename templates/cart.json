@@ -11,13 +11,12 @@
   "sections": {
     "custom_liquid_z76fRN": {
       "type": "custom-liquid",
-      "disabled": true,
       "name": "t:sections.custom-liquid.presets.name",
       "settings": {
-        "custom_liquid": "<!-- sections/amerikid-fast-banner.liquid -->\n<style>\n  .amerikid-fast-banner {\n    background-color: #000;\n    overflow: hidden;\n    position: relative;    /* added to isolate from glow below */\n    z-index: 1;            /* added to sit above glow layers */\n    height: auto;\n    display: flex;\n    align-items: center;\n    padding: 4px 0;       /* slight vertical padding */\n    margin: 0;\n    font-size: 5rem;\n    line-height: 1;\n  }\n\n  .amerikid-fast-track-wrapper {\n    display: flex;\n    width: 200%;\n    animation: amerikid-fast-scroll-ltr 25s linear infinite;\n  }\n\n  .amerikid-fast-track {\n    display: flex;\n    white-space: nowrap;\n  }\n\n  .amerikid-fast-word {\n    font-family: Impact, sans-serif;\n    font-size: inherit;\n    line-height: 1;\n    margin: 0;\n    padding: 0;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    animation: none !important;\n    transform: none !important;\n  }\n\n  @keyframes amerikid-fast-scroll-ltr {\n    0% {\n      transform: translateX(-50%);\n    }\n    100% {\n      transform: translateX(0%);\n    }\n  }\n</style>\n\n<div class=\"amerikid-fast-banner\">\n  <div class=\"amerikid-fast-track-wrapper\">\n    <div class=\"amerikid-fast-track\">\n      {% for i in (1..30) %}\n        <div class=\"amerikid-fast-word\">\ud83c\udf6d\u203c\ufe0f\ud83c\uddfa\ud83c\uddf8\ud83d\udecd\ufe0f\ud83d\udde3\ufe0f\ud83d\udcaf\ud83d\udd0c\ud83d\udcb0\ud83d\udca7\ud83d\udcd6\ud83e\udeac\ud83e\udd47\ud83c\udfb1</div>\n      {% endfor %}\n    </div>\n    <div class=\"amerikid-fast-track\">\n      {% for i in (1..30) %}\n        <div class=\"amerikid-fast-word\">\ud83c\udf6d\u203c\ufe0f\ud83c\uddfa\ud83c\uddf8\ud83d\udecd\ufe0f\ud83d\udde3\ufe0f\ud83d\udcaf\ud83d\udd0c\ud83d\udcb0\ud83d\udca7\ud83d\udcd6\ud83e\udeac\ud83e\udd47\ud83c\udfb1</div>\n      {% endfor %}\n    </div>\n  </div>\n</div>",
+        "custom_liquid": "{% if template == 'cart' %}{% render 'ak-notebook-cart' %}{% endif %}",
         "color_scheme": "scheme-4",
         "padding_top": 0,
-        "padding_bottom": 32
+        "padding_bottom": 0
       }
     },
     "cart-items": {

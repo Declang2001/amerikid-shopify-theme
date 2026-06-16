@@ -1,0 +1,336 @@
+{%- comment -%}
+  ============================================================
+  snippets/ak-notebook-cart.liquid
+  CART — NOTEBOOK CONVERSION (Stage CART-1, paper-only)
+  (experiment theme 186464731416 only — DO NOT PUBLISH)
+
+  The EIGHTH notebook surface (after Products, Life/Style, Club Hub,
+  Narrative, Bad Music /pages/2025, Bad Music /pages/badmusic-2025,
+  Archive /collections). Converts the cart route /cart
+  (templates/cart.json → sections/main-cart-items.liquid +
+  sections/main-cart-footer.liquid) to the notebook-paper system using
+  the accepted "dark objects ON the paper" direction — the cart item
+  cards and the checkout summary panel stay DARK objects laid on the
+  yellow legal-pad paper (the Life/Style / Bad Music / Archive
+  precedent). Paint-only; NO doodles (cart is out of doodle scope per
+  the standing notebook rule).
+
+  - Rendered from the EXISTING disabled host slot custom_liquid_z76fRN
+    in templates/cart.json (the spare disabled fastbanner that already
+    sat in `order` right AFTER ak-top and BEFORE cart-items → early, no
+    FOUC). The slot's custom_liquid was set to
+    {% raw %}{% if template == 'cart' %}{% render 'ak-notebook-cart' %}{% endif %}{% endraw %}
+    and "disabled": true removed. NO new host section; the `order` array
+    is unchanged. cart.json is a dedicated single-route template, so the
+    template == 'cart' guard is belt-and-suspenders (no shared-template
+    leak risk).
+  - Adds .ak-cart-page to <html> via the standard one-line classList
+    hook (the established pattern; the ONLY JS here).
+  - Paints the accepted legal-pad paper scoped to .ak-cart-page.
+    html.ak-cart-page specificity is LOAD-BEARING: it must beat the
+    global html,body{background:#000 !important} net in
+    layout/theme.liquid.
+  - Forces #MainContent / .gradient / .shopify-section / .ak-top-wrap
+    transparent so the paper shows through the page chrome (incl. the
+    mobile top band). Also forces .cart-glow-box transparent — the
+    main-cart-items section wraps the items area in an opaque #000 box;
+    without this it would read as a black band over the paper (this is
+    PAINT-ONLY — .cart-glow-box keeps its padding/overflow/isolation).
+  - Hides the two inert (already JS-disabled) cart particle canvases
+    page-scoped (.ak-cart-field / .ak-cart-footer-field → display:none).
+    The elements stay in the DOM and their IIFEs are NOT touched (both
+    already early-return); this only removes them from the now-transparent
+    boxes.
+  - Ports the accepted mask-PNG nav + ink header/cart (Club Hub Phase 3.9
+    lineage, via the Products/Narrative/Bad Music/Archive port) re-scoped
+    to .ak-cart-page. /cart is NOT one of the seven nav destinations, so
+    NO tile is .is-active here — every wordmark renders ink, hover/focus →
+    purple, and NO active wordmark glows (the shared .is-active rule is
+    kept for parity but never matches on this route).
+  - NO footer block / NO Due Date @font-face: cart.json has NO ak-footer
+    (confirmed) → there is no back-to-top CTA to restyle, and no '#' →
+    no Tenada.
+  - Cart item cards (.cart-item-card) read as DARK INK objects: the base
+    translucent rgba(0,0,0,.78) reads muddy-olive over yellow (the
+    Narrative/Bad Music lesson), so it is raised page-scoped to a
+    near-opaque ink rgba(13,9,20,0.93) + 2px ink border + a hard offset
+    paper shadow. The override is .ak-cart-page .cart-item-card (0,2,0) —
+    it beats the section's .cart-item-card (0,1,0) at REST with NO
+    !important, so the section's .cart-item-card:hover (0,2,0, declared
+    LATER in the DOM) still wins on hover → the magenta hover lift is
+    preserved. Internal green QTY pill, red REMOVE chip, white title,
+    variant, pricing, grid layout are NOT touched (they sit on the dark
+    card and stay legible).
+  - Checkout summary panel (.cart__footer) gets the same de-mud via
+    .ak-cart-page #main-cart-footer .cart__footer (1,2,0) — the ID is
+    REQUIRED to beat the section's #main-cart-footer .cart__footer
+    (1,1,0). Purple estimated-total, magenta checkout button, dynamic
+    checkout buttons, cart note, tax/shipping copy, discounts, and
+    #cart-errors are NOT touched (all on the dark panel).
+  - Title bar ("CART" + Continue shopping) and the empty-cart copy
+    ("DUDE BUY SOME SHIT." + HAVE AN ACCOUNT?) are the only text on the
+    bare paper → inked. The purple Continue-shopping button and LOG IN
+    button (dark pills, purple border) read fine on paper and are left
+    as-is.
+
+  HARD PRESERVATION — NOT touched here (paint-only, by specificity):
+  sections/main-cart-items.liquid + sections/main-cart-footer.liquid
+  (BYTE-IDENTICAL): the cart <form id="cart">, name="updates[]" inputs,
+  the quantity change→form.submit() handler, the item.url_to_remove
+  remove links, the checkout <button name="checkout" form="cart">, the
+  dynamic/additional checkout buttons, cart note, discounts,
+  #cart-errors, the empty-cart logic, and the inert particle IIFEs.
+  Dawn cart.js / quantity-popover.js / <cart-items> element. ak-top.liquid,
+  ak-footer.liquid, layout/theme.liquid, component-cart CSS, products,
+  Mystery Box, checkout, the live theme, the normal dev theme.
+  NO width / max-width / layout constraints are added to any cart
+  structure — only background / color / border / box-shadow.
+
+  Revert (whole CART notebook host): in templates/cart.json restore
+  custom_liquid_z76fRN to its disabled fastbanner ("disabled": true + the
+  original emoji-marquee custom_liquid), and delete this snippet. (Or
+  git revert the "experiment: cart notebook paper" commit.) The two cart
+  sections never change either way.
+  ============================================================
+{%- endcomment -%}
+
+<script>
+  /* Page hook — this snippet only renders behind the template == 'cart'
+     Liquid guard in templates/cart.json, so the class can be added
+     unconditionally. */
+  (function(){ document.documentElement.classList.add('ak-cart-page'); })();
+</script>
+
+<style>
+  /* ============================================================
+     CART NOTEBOOK PAPER BACKDROP — CSS-only, scoped to .ak-cart-page.
+     Same accepted values as the other notebook pages (shared
+     --ak-paper-side-gap). html.ak-cart-page specificity is LOAD-BEARING:
+     it must beat the global html,body{background:#000 !important} net in
+     layout/theme.liquid.
+     ============================================================ */
+  html.ak-cart-page{
+    --ak-paper-top-gap: clamp(150px, 17vw, 220px);    /* blank top band behind the KID logo / nav */
+    --ak-paper-bottom-gap: clamp(130px, 12vw, 190px); /* blank bottom band — ruled lines fade out so the page doesn't end mid-line */
+    --ak-purple:#ff33ff;                              /* official AmeriKid purple */
+    background:#f5dd4f !important;                    /* overscroll/canvas fallback — beats the global html #000 via specificity */
+  }
+  html.ak-cart-page body{
+    --ak-paper-side-gap: clamp(82px, 7vw, 128px);     /* shared inset for both vertical rules (red left + blue right) */
+    background-color:#f5dd4f !important;              /* pale legal-pad yellow */
+    background-image:
+      linear-gradient(90deg,
+        transparent calc(100% - var(--ak-paper-side-gap)),
+        rgba(44,120,180,.60) calc(100% - var(--ak-paper-side-gap)),
+        rgba(44,120,180,.60) calc(100% - var(--ak-paper-side-gap) + 2px),
+        transparent calc(100% - var(--ak-paper-side-gap) + 2px)),   /* blue RIGHT margin rule */
+      linear-gradient(90deg,
+        transparent var(--ak-paper-side-gap),
+        rgba(218,40,50,.74) var(--ak-paper-side-gap),
+        rgba(218,40,50,.74) calc(var(--ak-paper-side-gap) + 2px),
+        transparent calc(var(--ak-paper-side-gap) + 2px)),          /* red LEFT margin rule */
+      linear-gradient(180deg,
+        #f5dd4f 0,
+        #f5dd4f var(--ak-paper-top-gap),
+        transparent var(--ak-paper-top-gap)),                       /* blank yellow TOP band */
+      linear-gradient(180deg,
+        transparent calc(100% - var(--ak-paper-bottom-gap)),
+        #f5dd4f calc(100% - var(--ak-paper-bottom-gap) + 36px)),     /* blank yellow BOTTOM band */
+      repeating-linear-gradient(180deg,
+        transparent 0 31px,
+        rgba(44,120,180,.60) 31px 32px) !important;                 /* blue horizontal ruled lines */
+    background-repeat:no-repeat, no-repeat, no-repeat, no-repeat, repeat !important;
+    background-position:0 0, 0 0, 0 0, 0 0, 0 var(--ak-paper-top-gap) !important;
+    background-attachment:scroll, scroll, scroll, scroll, scroll !important;
+  }
+
+  /* ============================================================
+     TRANSPARENCY BACKSTOPS — let the body paper show through the page
+     chrome AND behind the cart cards / checkout panel.
+     - #MainContent / .gradient / .shopify-section / .ak-top-wrap: the
+       shared notebook backstops (without them the top reads as a black
+       band, esp. on mobile). .gradient also clears the scheme-4 bg on
+       <cart-items class="gradient"> and #main-cart-footer.gradient.
+     - .cart-glow-box: the main-cart-items wrapper paints itself opaque
+       #000 → forced transparent so the paper shows and the individual
+       .cart-item-card objects float on it. PAINT-ONLY — padding /
+       overflow / isolation untouched.
+     ============================================================ */
+  .ak-cart-page #MainContent{ background:transparent !important; }
+  .ak-cart-page #MainContent .gradient{ background:transparent !important; background-image:none !important; }
+  .ak-cart-page .shopify-section{ background:transparent !important; }
+  .ak-cart-page .cart-glow-box{ background:transparent !important; }
+  /* the two inert (already JS-disabled) ambient canvases — hidden page-scoped;
+     elements stay in the DOM and their early-returning IIFEs are NOT touched. */
+  .ak-cart-page .ak-cart-field,
+  .ak-cart-page .ak-cart-footer-field{ display:none !important; }
+
+  /* ============================================================
+     HEADER / NAV / CART — FULL notebook parity, ported from the
+     accepted treatment (Club Hub Phase 3.9 mask-PNG nav lineage, via
+     the Archive port) and re-scoped to .ak-cart-page. ak-top.liquid is
+     NOT edited. /cart is NOT a nav destination → NO tile is .is-active
+     here, so no wordmark glows; every wordmark is ink, hover/focus →
+     purple. The shared .is-active rule is kept for parity but never
+     matches on this route.
+     ============================================================ */
+  .ak-cart-page .ak-top-wrap{ background:transparent !important; }
+  .ak-cart-page .ak-top-wrap::after{ background:none !important; }
+  .ak-cart-page .ak-top-label{ color:#15120b !important; }
+  .ak-cart-page .ak-top-bad{ color:#15120b !important; }
+  .ak-cart-page .ak-top-mobile-trigger{ color:#15120b !important; text-shadow:none !important; }
+  .ak-cart-page .ak-top-label::before,
+  .ak-cart-page .ak-top-label::after{ opacity:0 !important; }
+  .ak-cart-page .ak-top-tile:hover .ak-top-label,
+  .ak-cart-page .ak-top-tile.is-active .ak-top-label,
+  .ak-cart-page .ak-top-bad:hover,
+  .ak-cart-page .ak-top-bad.is-active,
+  .ak-cart-page .ak-top-mobile-trigger:hover{ color:#ff33ff !important; }
+  /* cart icon: black ink at rest, magenta glow on hover/focus; small right nudge so the blue right rule isn't crowded */
+  .ak-cart-page .ak-top-cart-container{ transform:translateX(clamp(4px, .6vw, 10px)) !important; }
+  .ak-cart-page .ak-top-cart-img{ filter:brightness(0) !important; }
+  .ak-cart-page .ak-top-cart-link:hover .ak-top-cart-img,
+  .ak-cart-page .ak-top-cart-link:focus-visible .ak-top-cart-img{
+    filter:brightness(0) drop-shadow(0 0 6px #ff33ff) drop-shadow(0 0 12px rgba(255,51,255,.5)) !important;
+  }
+  /* tighten logo->nav spacing + remove the dark-theme glow divider */
+  .ak-cart-page .ak-top-divider{ display:none !important; }
+  .ak-cart-page .ak-top-nav-panel{ padding-top:clamp(2px,0.6vw,8px) !important; }
+  .ak-cart-page .ak-top-nav-area{ margin-top:clamp(-22px,-2.2vw,-8px) !important; }
+  /* per-tile mask + size + tilt (same PNGs / sizes / tilts as the accepted notebook nav) */
+  .ak-cart-page .ak-top-life{    --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/lifestyle_button.png?v=1780886497"); --ak-nav-png-size:clamp(260px, 21vw, 400px);   --ak-nav-tilt:-2.2deg; }
+  .ak-cart-page .ak-top-products{--ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/products_button.png?v=1780886497");  --ak-nav-png-size:clamp(280px, 23vw, 430px);   --ak-nav-tilt:1.4deg; }
+  .ak-cart-page .ak-top-archive{ --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/archive_button.png?v=1780885375");   --ak-nav-png-size:clamp(270px, 22vw, 420px);   --ak-nav-tilt:-1.1deg; }
+  .ak-cart-page .ak-top-narrative{--ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/narrative_button.png?v=1780885375"); --ak-nav-png-size:clamp(265px, 21.5vw, 410px); --ak-nav-tilt:1.8deg; }
+  .ak-cart-page .ak-top-contact{ --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/moniker_button.png?v=1780885375");   --ak-nav-png-size:clamp(220px, 18vw, 340px);   --ak-nav-tilt:-1.6deg; }
+  .ak-cart-page .ak-top-bad{ --ak-nav-tilt:-2.5deg; }
+  .ak-cart-page .ak-top-candy{ --ak-nav-tilt:1.2deg; }
+  /* clickable tiles (all 7): no transform / bg-png / recolor-filter; transform excluded from transitions */
+  .ak-cart-page .ak-top-life,
+  .ak-cart-page .ak-top-products,
+  .ak-cart-page .ak-top-archive,
+  .ak-cart-page .ak-top-narrative,
+  .ak-cart-page .ak-top-contact,
+  .ak-cart-page .ak-top-bad,
+  .ak-cart-page .ak-top-candy{
+    transform:none !important; -webkit-transform:none !important;
+    background-image:none !important; filter:none !important;
+    transition-property:filter, color, opacity, background-color !important;
+    will-change:auto !important;
+  }
+  /* the five wordmark masks live on ::before (holds the static tilt; overrides base .ak-top-tile::before{display:none}) */
+  .ak-cart-page .ak-top-life::before,
+  .ak-cart-page .ak-top-products::before,
+  .ak-cart-page .ak-top-archive::before,
+  .ak-cart-page .ak-top-narrative::before,
+  .ak-cart-page .ak-top-contact::before{
+    content:"" !important; display:block !important; position:absolute !important;
+    left:50% !important; top:50% !important;
+    width:var(--ak-nav-png-size) !important; height:var(--ak-nav-png-size) !important;
+    transform:translate(-50%, -50%) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    -webkit-transform:translate(-50%, -50%) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    transform-origin:center center !important;
+    backface-visibility:hidden !important; -webkit-backface-visibility:hidden !important;
+    pointer-events:none !important;
+    background-color:#15120b !important;
+    -webkit-mask:var(--ak-nav-mask) center / contain no-repeat !important;
+    mask:var(--ak-nav-mask) center / contain no-repeat !important;
+    transition:background-color .12s ease, opacity .12s ease !important;
+    z-index:1 !important;
+  }
+  /* hover / keyboard-focus / press -> the WHOLE wordmark turns purple (.is-active EXCLUDED — it has its own rule) */
+  .ak-cart-page .ak-top-life:hover::before, .ak-cart-page .ak-top-life:focus-visible::before, .ak-cart-page .ak-top-life:active::before,
+  .ak-cart-page .ak-top-products:hover::before, .ak-cart-page .ak-top-products:focus-visible::before, .ak-cart-page .ak-top-products:active::before,
+  .ak-cart-page .ak-top-archive:hover::before, .ak-cart-page .ak-top-archive:focus-visible::before, .ak-cart-page .ak-top-archive:active::before,
+  .ak-cart-page .ak-top-narrative:hover::before, .ak-cart-page .ak-top-narrative:focus-visible::before, .ak-cart-page .ak-top-narrative:active::before,
+  .ak-cart-page .ak-top-contact:hover::before, .ak-cart-page .ak-top-contact:focus-visible::before, .ak-cart-page .ak-top-contact:active::before{
+    background-color:#ff33ff !important;
+  }
+  /* ACTIVE wordmark cue — kept for parity with the shared port; on /cart NO
+     tile is .is-active (cart is not a nav destination), so this never fires. */
+  .ak-cart-page .ak-top-tile.is-active::before{
+    background-color:#ff33ff !important;
+    filter:
+      drop-shadow(0 0 4px #ff33ff)
+      drop-shadow(0 0 12px rgba(255,51,255,.75))
+      drop-shadow(0 0 24px rgba(255,51,255,.5)) !important;
+  }
+  /* keep the five labels in the DOM for screen readers, but visually hidden in ALL states */
+  .ak-cart-page .ak-top-life .ak-top-label, .ak-cart-page .ak-top-life:hover .ak-top-label, .ak-cart-page .ak-top-life:focus-visible .ak-top-label, .ak-cart-page .ak-top-life:active .ak-top-label, .ak-cart-page .ak-top-life.is-active .ak-top-label,
+  .ak-cart-page .ak-top-products .ak-top-label, .ak-cart-page .ak-top-products:hover .ak-top-label, .ak-cart-page .ak-top-products:focus-visible .ak-top-label, .ak-cart-page .ak-top-products:active .ak-top-label, .ak-cart-page .ak-top-products.is-active .ak-top-label,
+  .ak-cart-page .ak-top-archive .ak-top-label, .ak-cart-page .ak-top-archive:hover .ak-top-label, .ak-cart-page .ak-top-archive:focus-visible .ak-top-label, .ak-cart-page .ak-top-archive:active .ak-top-label, .ak-cart-page .ak-top-archive.is-active .ak-top-label,
+  .ak-cart-page .ak-top-narrative .ak-top-label, .ak-cart-page .ak-top-narrative:hover .ak-top-label, .ak-cart-page .ak-top-narrative:focus-visible .ak-top-label, .ak-cart-page .ak-top-narrative:active .ak-top-label, .ak-cart-page .ak-top-narrative.is-active .ak-top-label,
+  .ak-cart-page .ak-top-contact .ak-top-label, .ak-cart-page .ak-top-contact:hover .ak-top-label, .ak-cart-page .ak-top-contact:focus-visible .ak-top-label, .ak-cart-page .ak-top-contact:active .ak-top-label, .ak-cart-page .ak-top-contact.is-active .ak-top-label{
+    color:transparent !important; text-shadow:none !important;
+  }
+  /* BAD / CANDY: tilt+scale on the inner graphic, anchor stays transform-stable (sizes BAD 1.18, CANDY 1.75) */
+  .ak-cart-page .ak-top-bad-mask{
+    transform:scale(1.18) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    -webkit-transform:scale(1.18) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+  }
+  .ak-cart-page .ak-top-candy-img{
+    transform:scale(1.75) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    -webkit-transform:scale(1.75) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+  }
+
+  /* ============================================================
+     CART TITLE BAR — the "CART" heading + "Continue shopping" link sit
+     on the bare paper → inked (they inherit scheme-4 white otherwise).
+     The faint white divider under them is re-tinted to ink. Impact font
+     + layout untouched.
+     ============================================================ */
+  .ak-cart-page .title--primary{ color:#15120b !important; }
+  .ak-cart-page .underlined-link{ color:#15120b !important; }
+  .ak-cart-page .underlined-link:hover,
+  .ak-cart-page .underlined-link:focus-visible{ color:#ff33ff !important; }
+  .ak-cart-page .cart-title-bar{ border-bottom-color:rgba(21,18,11,.20) !important; }
+
+  /* ============================================================
+     EMPTY-CART COPY — "DUDE BUY SOME SHIT." + "HAVE AN ACCOUNT?" sit on
+     the bare paper → inked (base color:#fff). The purple Continue-shopping
+     button + LOG IN pill (dark bg, purple border/glow) read fine on paper
+     and are intentionally LEFT AS-IS (preserved).
+     ============================================================ */
+  .ak-cart-page .cart__empty-text,
+  .ak-cart-page .cart__login-title{ color:#15120b !important; }
+
+  /* ============================================================
+     CART ITEM CARDS — DARK INK objects on paper. The base translucent
+     rgba(0,0,0,.78) reads muddy-olive over yellow, so raise to near-opaque
+     ink + ink border + a hard offset paper shadow. .ak-cart-page
+     .cart-item-card (0,2,0) beats the section base .cart-item-card (0,1,0)
+     at REST with NO !important, so the section's .cart-item-card:hover
+     (0,2,0, declared LATER in the DOM) still wins on hover → the magenta
+     hover lift is preserved. NO width/max-width/layout change; internal
+     QTY/REMOVE/title/variant/price untouched.
+     ============================================================ */
+  .ak-cart-page .cart-item-card{
+    background:rgba(13,9,20,0.93);
+    border:2px solid #14110a;
+    box-shadow:8px 8px 0 0 rgba(21,18,11,0.85);
+  }
+
+  /* ============================================================
+     CHECKOUT SUMMARY PANEL — same de-mud. .ak-cart-page #main-cart-footer
+     .cart__footer (1,2,0) is REQUIRED to beat the section's
+     #main-cart-footer .cart__footer (1,1,0); rest wins by specificity, the
+     section's :hover (1,2,0, later in DOM) keeps the magenta hover lift.
+     Purple total, magenta checkout button, dynamic checkout buttons, cart
+     note, tax/shipping copy, discounts, #cart-errors all sit on the dark
+     panel and are NOT touched.
+     ============================================================ */
+  .ak-cart-page #main-cart-footer .cart__footer{
+    background:rgba(13,9,20,0.93);
+    border:2px solid #14110a;
+    box-shadow:8px 8px 0 0 rgba(21,18,11,0.85);
+  }
+
+  /* soften the hard offset on the smallest phones so it never bites the
+     edge inside the narrow page-width padding */
+  @media (max-width:480px){
+    .ak-cart-page .cart-item-card,
+    .ak-cart-page #main-cart-footer .cart__footer{
+      box-shadow:5px 5px 0 0 rgba(21,18,11,0.85);
+    }
+  }
+</style>
