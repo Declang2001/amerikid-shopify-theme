@@ -855,6 +855,31 @@ padding-right: 0 !important;
    are all UNCHANGED (ak-footer.liquid is not edited; this is Club-Hub-scoped CSS only). */
 .ak-clubhub-page .ak-btt{ margin-top:12px; }
 @media(max-width:680px){ .ak-clubhub-page .ak-btt{ margin-top:8px; } }
+
+/* ============================================================
+   STAGE TYPO-1B — CLUB HUB NOTEBOOK TYPOGRAPHY (2026-06-16)
+   font-family ONLY. Moves the Club Hub member-card DISPLAY tier into the
+   notebook 'AK Due Date' voice (the Products / Bad Music / Cart lineage).
+   Club Hub forces Impact GLOBALLY via `.ak-clubhub, .ak-clubhub *{
+   font-family:Impact… !important }` (near the top of this snippet), so
+   these overrides need `!important` AND higher specificity:
+   `.ak-clubhub-page .ak-id-title` (0,2,0)+!important beats `.ak-clubhub *`
+   (0,1,0)+!important. Reuses the 'AK Due Date' @font-face already declared
+   ABOVE (same assets/ak-due-date.woff2 — NO new file, NO upload).
+   DISPLAY tier ONLY → Due Date: the member-ID title (.ak-id-title, ~28px)
+   + the value lines (.ak-value, ~18px).
+   KEPT readable in Impact (small/functional — the Bad-Music meta-text
+   precedent; Due Date at 11–14px would hurt legibility): .ak-id-photo-mark,
+   .ak-id-hint, .ak-id-sub, .ak-id-btn (LOG IN / JOIN), .ak-id-photo-note,
+   .ak-label, and any logged-in drops-form inputs/helper text.
+   Footer CTA (.ak-btt-text) is already Due Date and is UNCHANGED.
+   NO size/letter-spacing/line-height/spacing/layout/card/button/animation/
+   doodle/markup/behaviour change.
+   Revert: delete this block (titles + values return to Impact). */
+.ak-clubhub-page .ak-id-title,
+.ak-clubhub-page .ak-value{
+  font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+}
 /* FUTURE ARCHITECTURE NOTE (not implemented here): when the notebook look expands site-wide,
    doodles should be driven by a PER-PAGE doodle map (page-specific / pseudo-random sets),
    NOT this one fixed Club-Hub composition repeated identically on every page. This pass stays
