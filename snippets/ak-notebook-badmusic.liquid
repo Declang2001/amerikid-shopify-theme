@@ -19,9 +19,10 @@
   - Adds .ak-badmusic-page to <html> via the standard one-line
     classList hook (the established pattern; the ONLY JS here).
   - Paints the accepted legal-pad paper scoped to .ak-badmusic-page.
-    The TV hero declares its own opaque #000; #MainContent/.gradient/
-    .shopify-section/.ak-top-wrap are forced transparent so the paper
-    shows through everywhere else (incl. the mobile top band).
+    The TV hero declares its own opaque #000 (overridden to transparent
+    in Stage BM-1.1 — see below); #MainContent/.gradient/.shopify-section/
+    .ak-top-wrap are forced transparent so the paper shows through
+    everywhere (incl. the mobile top band).
   - Ports the accepted mask-PNG nav + ink header/cart/footer
     (Club Hub Phase 3.9 lineage, via the Products/Narrative port)
     re-scoped to .ak-badmusic-page; BAD (.ak-top-bad, the active tile
@@ -36,19 +37,30 @@
   - Right "Coming Soon" cassette case (.ak-cas--soon .ak-cas__case has
     opacity:.72 -> turns muddy-olive over the yellow) is de-mudded to
     opacity:1; link/MP4/IntersectionObserver/geometry untouched.
-  - Red banner (#akrb) kept RED + scrolling, restyled as a deliberate
-    "taped red marker strip" (ink top/bottom borders + hard offset
-    shadow); copy/scroll/marquee untouched; NO rotation (it is
-    full-width -> rotation would overflow).
-  - NO doodles in BM-1 (separate Stage BM-2 after owner review).
+  - Red banner (#akrb / custom_liquid_JpKeak): REMOVED in Stage BM-1.1
+    (2026-06-15) by DISABLING the section in templates/page.badmusic.json
+    ("disabled": true) — not CSS-hidden. The BM-1 "taped red marker
+    strip" CSS for #akrb was dead afterward and has been deleted.
+  - TV hero (#amerikid-tv-hero): BM-1.1 makes it sit on the paper
+    (transparent bg, min-height:0, breathing padding, ink caption,
+    subtle TV offset shadow) instead of a full-width #000 slab — see the
+    STAGE BM-1.1 CORRECTION block below. The TV custom-liquid markup/JS
+    is NOT edited (paint/spacing override only).
+  - NO doodles in BM-1/BM-1.1 (separate Stage BM-2 after owner review).
   - NOT touched: sections/ak-top.liquid, sections/ak-footer.liquid,
     sections/ak-bm-album-link.liquid (cassette behaviour), the TV-hero
-    custom-liquid (player/YouTube/scanlines/static + its #000 band),
-    the red-banner copy/scroll, all other pages' snippets/templates.
+    custom-liquid MARKUP/JS (player/YouTube/scanlines/static — BM-1.1
+    only overrides its background/min-height via page-scoped CSS, it does
+    NOT edit the section), all other pages' snippets/templates.
 
-  Revert: in templates/page.badmusic.json set custom_liquid_RnLA6b
-  back to "disabled": true with its original fastbanner liquid (or
-  git checkout templates/page.badmusic.json), and delete this snippet.
+  Revert (whole notebook host): in templates/page.badmusic.json set
+  custom_liquid_RnLA6b back to "disabled": true with its original
+  fastbanner liquid (or git checkout templates/page.badmusic.json), and
+  delete this snippet.
+  Revert BM-1.1 ONLY: remove "disabled": true from custom_liquid_JpKeak
+  in templates/page.badmusic.json (the red banner returns) and delete the
+  "STAGE BM-1.1 CORRECTION" CSS block in this snippet (the TV hero
+  returns to its own #000 full-width slab).
   ============================================================
 {%- endcomment -%}
 
@@ -104,9 +116,9 @@
   /* Transparency backstops so the body paper shows through the page chrome.
      .shopify-section + .ak-top-wrap are REQUIRED here (the Bad Music sections +
      the ak-top header wrapper carry opaque dark backgrounds — without these the
-     top reads as a black band, esp. on mobile). The TV hero keeps its own #000
-     (handled by its own selector below — paper deliberately does NOT show through
-     the TV band). */
+     top reads as a black band, esp. on mobile). The TV hero's own #000 band is
+     overridden to transparent in the STAGE BM-1.1 CORRECTION block below, so the
+     paper now shows through the TV section too (BM-1.1, 2026-06-15). */
   .ak-badmusic-page #MainContent{ background:transparent !important; }
   .ak-badmusic-page #MainContent .gradient{ background:transparent !important; background-image:none !important; }
   .ak-badmusic-page .shopify-section{ background:transparent !important; }
@@ -259,19 +271,6 @@
   }
 
   /* ============================================================
-     RED BANNER (#akrb) -> "taped red marker strip". Keeps the red
-     bg, copy, and scroll/marquee untouched; only adds ink top/bottom
-     borders + a hard offset shadow so it reads as a deliberate strip
-     of red tape across the notebook rather than a web banner. NO
-     rotation (the banner is full-width -> rotation would overflow).
-     ============================================================ */
-  .ak-badmusic-page #akrb{
-    border-top:3px solid #14110a !important;
-    border-bottom:3px solid #14110a !important;
-    box-shadow:0 6px 0 rgba(21,18,11,0.22) !important;
-  }
-
-  /* ============================================================
      RIGHT "COMING SOON" CASSETTE CASE — de-mud. Base
      .ak-cas--soon .ak-cas__case is opacity:.72, so the dark case
      lets the yellow paper bleed through -> muddy olive. Force it
@@ -281,4 +280,57 @@
      text + dimmed art-overlay still convey the teaser state.
      ============================================================ */
   .ak-badmusic-page .ak-cas--soon .ak-cas__case{ opacity:1 !important; }
+
+  /* ============================================================
+     STAGE BM-1.1 CORRECTION (2026-06-15, owner feedback) — CSS-only,
+     page-scoped. BM-1 passed QA but left two visual problems; this
+     pass fixes both:
+
+     (1) RED BANNER REMOVED. The moving red purchase banner
+         (custom_liquid_JpKeak / #akrb) is now DISABLED at the template
+         level in templates/page.badmusic.json ("disabled": true) — NOT
+         CSS-hidden. The BM-1 '#akrb taped strip' rule is therefore dead
+         code and has been deleted from this snippet. (Its CSS is
+         recoverable from git history if the banner ever returns.)
+
+     (2) TV HERO NO LONGER A FULL-WIDTH BLACK SLAB. The
+         "2025 (The Album)" TV/player section (#amerikid-tv-hero) was a
+         #000, ~100svh full-bleed band. It now sits ON the notebook
+         paper: transparent background, content-driven height, vertical
+         breathing room, ink caption, and a subtle hard offset paper
+         shadow on the TV object. The ACTUAL TV/player is PRESERVED —
+         .ak-tv and all of its markup/JS (player facade, YouTube,
+         scanlines, static, play button, caption text) are untouched;
+         only paint/spacing change here.
+
+     HARD HAZARD — never add width / max-width / layout constraints to
+     #amerikid-tv-hero, .ak-bg, .ak-stack, or .ak-tv, and never dispatch
+     resize / rely on resize recompute: the TV's sizing/resize path can
+     HANG THE RENDERER (Option A "constrain widths" was tried and
+     rejected for exactly this). Only paint/spacing is touched here:
+     background, min-height, padding, caption color, box-shadow,
+     border-radius. The .ak-bg child is already transparent (not the
+     problem); .ak-stage stays clamp(360px,96vw,1300px) and the hero's
+     own overflow:hidden clips any shadow bleed -> no horizontal overflow.
+     ============================================================ */
+  .ak-badmusic-page #amerikid-tv-hero{
+    background:transparent !important;
+    min-height:0 !important;
+    padding:clamp(24px,4vw,64px) 0 !important;
+  }
+  .ak-badmusic-page .ak-caption{
+    color:#15120b !important;
+  }
+  .ak-badmusic-page .ak-tv{
+    box-shadow:14px 14px 0 0 rgba(21,18,11,0.85) !important;
+    border-radius:6px !important;
+  }
+  /* Mobile shadow safety — paint-only offset reduction so the hard
+     offset shadow doesn't crowd the tight side gutter on small screens
+     (.ak-stage is 96vw / 360px-min there). NO width/max-width touched. */
+  @media (max-width:480px){
+    .ak-badmusic-page .ak-tv{
+      box-shadow:7px 7px 0 0 rgba(21,18,11,0.85) !important;
+    }
+  }
 </style>
