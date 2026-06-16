@@ -486,6 +486,30 @@
   .ak-lifestyle-page .ak-btt-text{ font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important; }
 
   /* ============================================================
+     STAGE TYPO-1C — LIFESTYLE CHANNELS NOTEBOOK TYPOGRAPHY (2026-06-16)
+     font-family ONLY. Moves the VISIBLE Channels card display text into the
+     notebook 'AK Due Date' voice (the Products / Bad Music / Cart / Club Hub
+     lineage). The Channels styles live in templates/page.json
+     (`#ak-chan-holo .ak-holo-label` / `.ak-holo-meta`, Impact, specificity
+     1,1,0, NO `!important`), so the page-scoped override `.ak-lifestyle-page
+     #ak-chan-holo X` (1,2,0) wins on SPECIFICITY with **NO `!important`** —
+     templates/page.json stays un-edited. Reuses the 'AK Due Date' @font-face
+     already declared ABOVE (same assets/ak-due-date.woff2 — NO new file, NO
+     upload). Targets ONLY the visible channel-card text:
+       .ak-holo-label -> channel names (INSTAGRAM / TIKTOK / X / YOUTUBE, ~22px)
+       .ak-holo-meta  -> taglines (PHOTOS + DROPS / CLIPS + CHAOS / …, ~12px)
+     NOT touched: the big CHANNELS PNG title (.ak-chan-title + its spans),
+     .ak-chan-sub, the Adventures/Kid Radio PNG titles (.ak-adv-title /
+     .ak-kr-title), every PNG ::before pseudo-element, the footer CTA, the
+     doodles, video embeds, links, layout, sizes, animations.
+     NO size/letter-spacing/line-height/spacing/grid/layout/markup change.
+     Revert: delete this block (labels + meta return to Impact). */
+  .ak-lifestyle-page #ak-chan-holo .ak-holo-label,
+  .ak-lifestyle-page #ak-chan-holo .ak-holo-meta{
+    font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  }
+
+  /* ============================================================
      PHASE 4.8 — HANDWRITTEN PNG SECTION TITLES (notebook scope only)
      Replaces the VISIBLE text of the three Life/Style section titles
      with Declan's handwritten wordmark PNGs (CDN), via the same
