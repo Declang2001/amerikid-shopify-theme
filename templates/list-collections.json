@@ -17,6 +17,16 @@
       "type": "ak-top",
       "settings": {}
     },
+    "custom_liquid_akArch1": {
+      "type": "custom-liquid",
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "{% if template contains 'list-collections' %}{% render 'ak-notebook-archive' %}{% endif %}",
+        "color_scheme": "scheme-4",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
     "ak-archive": {
       "type": "ak-archive",
       "settings": {
@@ -31,6 +41,7 @@
   "order": [
     "main",
     "ak-top",
+    "custom_liquid_akArch1",
     "ak-archive",
     "ak-footer"
   ]
