@@ -374,40 +374,51 @@
     background-repeat:no-repeat; background-size:contain; background-position:center;
     transform:rotate(var(--r,0deg));
   }
-  /* top paper band — far-left + center-left, ABOVE the nav, clear of the logo + the fixed top-right cart */
+  /* ---- STAGE BM-DOODLE-2 — scale correction (2026-06-15): BM-DOODLE-1
+     read too small vs the Club Hub page (its main doodles measure ~155–249px
+     @1440; BM-DOODLE-1 was ~50–88px). Sizes raised to Club-Hub scale
+     (~130–205px) via the --s vars; positions moved into the roomier open
+     paper (top header band, footer band) and the cassette gutters, with the
+     LEFT cassette doodle bled partly off the left edge (off-LEFT bleed is
+     clipped → no overflow; off-RIGHT bleed was measured to CAUSE overflow,
+     so the right doodle stays fully on-page). Still decorative / aria-hidden
+     / pointer-events:none / multiply / behind content. ---- */
+  /* top paper band — far-left hero hash + top-right star (left of the fixed cart), ABOVE the nav, clear of the logo */
   .ak-badmusic-page .ak-bmd--hash-top{
-    --s:clamp(64px,5.6vw,88px); --r:-8deg; top:46px; left:clamp(28px,3vw,96px);
+    --s:clamp(150px,13vw,205px); --r:-8deg; top:18px; left:clamp(45px,5vw,90px);
     background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-hashtag.png?v=1780967556");
   }
   .ak-badmusic-page .ak-bmd--star-top{
-    --s:clamp(56px,4.8vw,80px); --r:-6deg; top:34px; left:clamp(168px,14vw,300px);
+    --s:clamp(130px,11vw,180px); --r:-5deg; top:24px; right:clamp(180px,14vw,300px);
     background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-star.png?v=1780967556");
   }
-  /* cassette-shelf side gutters — outside the red/blue rules, beside (never over) the cassettes; bottom-anchored so they track the shelf near the page bottom */
+  /* cassette-shelf side gutters — beside (never over) the cassettes; LEFT bleeds off the edge for scale, RIGHT stays fully on-page (no off-right bleed); bottom-anchored to track the shelf */
   .ak-badmusic-page .ak-bmd--dollar-cassette-left{
-    --s:clamp(64px,5.6vw,88px); --r:6deg; left:clamp(26px,3vw,96px); bottom:clamp(230px,17vw,300px);
+    --s:clamp(150px,13vw,205px); --r:6deg; left:clamp(-45px,-2vw,-20px); bottom:clamp(200px,16vw,290px);
     background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-dollar.png?v=1780967556");
   }
   .ak-badmusic-page .ak-bmd--kid-cassette-right{
-    --s:clamp(60px,5.2vw,84px); --r:-5deg; right:clamp(26px,3vw,96px); bottom:clamp(210px,16vw,290px);
+    --s:clamp(130px,11vw,170px); --r:-5deg; right:clamp(10px,1vw,20px); bottom:clamp(215px,17vw,300px);
     background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-kid.png?v=1780967556");
   }
-  /* footer paper band — left of the CTA (smaller, differentiated 2nd hashtag) */
+  /* footer paper band — left of the CTA (differentiated 2nd hashtag); kept ~150px
+     so the 158px footer band contains it (a taller doodle would clip the cassette above) */
   .ak-badmusic-page .ak-bmd--hash-footer-left{
-    --s:clamp(50px,4.4vw,72px); --r:9deg; left:clamp(120px,12vw,260px); bottom:clamp(56px,5vw,84px);
+    --s:clamp(120px,10vw,150px); --r:9deg; left:clamp(80px,9vw,210px); bottom:clamp(10px,1.2vw,24px);
     background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-hashtag.png?v=1780967556");
   }
-  /* width gates: the cassette shelf is 94vw/max-1060px, so its side gutters
-     are only wide enough for a clear doodle at >=1366px (measured: gutter
-     ~153px @1366, ~70px @1200 where the doodle would overlap the cassette);
-     so the cassette-side doodles need >=1366px. The top/footer band doodles
-     are clear from >=1024px. Whole layer hidden <=1023px (no mobile/tablet). */
-  @media (max-width:1365px){
+  /* width gates (retuned for the LARGER doodles): the whole layer is hidden
+     <=1199px (big doodles crowd narrow laptops/tablets/mobile — no doodles
+     there). BOTH cassette-shelf doodles need >=1440px — the cassette shelf is
+     94vw/max-1060, so below 1440 its side gutters are too narrow for a
+     Club-Hub-scale doodle even with the off-left bleed (the rotated box clips
+     the cassette). The top + footer band doodles show from >=1200px. */
+  @media (max-width:1199px){
+    .ak-badmusic-page .ak-badmusic-doodles{ display:none !important; }
+  }
+  @media (max-width:1439px){
     .ak-badmusic-page .ak-bmd--dollar-cassette-left,
     .ak-badmusic-page .ak-bmd--kid-cassette-right{ display:none !important; }
-  }
-  @media (max-width:1023px){
-    .ak-badmusic-page .ak-badmusic-doodles{ display:none !important; }
   }
 </style>
 
