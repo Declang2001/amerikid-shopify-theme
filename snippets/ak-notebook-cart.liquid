@@ -333,4 +333,52 @@
       box-shadow:5px 5px 0 0 rgba(21,18,11,0.85);
     }
   }
+
+  /* ============================================================
+     STAGE TYPO-1A — CART NOTEBOOK TYPOGRAPHY (2026-06-16)
+     font-family ONLY. Brings the cart DISPLAY text into the notebook
+     'AK Due Date' voice (the Products/Bad Music lineage), resolving the
+     post-CART-1 three-font mix (Impact + Dawn's Fjalla One + Arial).
+     Reuses the EXISTING assets/ak-due-date.woff2 — NO new font file, NO
+     upload. CSS-only, page-scoped to .ak-cart-page; the two cart sections
+     stay BYTE-IDENTICAL (override by specificity; `!important` ONLY where
+     beating the main-cart-items Impact-force list 0,1,0+!important).
+     KEPT readable / deliberately NOT converted: `.quantity-input` (the
+     typed number, Arial), `.tax-note` (legal copy), `.cart-item-variant`
+     (small meta — stays Dawn Fjalla One). NO size/letter-spacing/
+     line-height/layout/animation/markup change. The leading `#` on product
+     titles (e.g. "#FreeVitaly Longsleeve") falls back to Impact (Due Date
+     has no `#` glyph); the Tenada `unicode-range:U+23` face was evaluated
+     at runtime and deliberately NOT added — the Impact-fallback `#` reads
+     acceptably (the Bad-Music `$`-fallback precedent). If full `#`-stencil
+     parity with Products/Bad Music is later wanted, add an `AK Tenada`
+     @font-face (reuse assets/ak-tenada.woff2, unicode-range:U+23) and
+     prepend 'AK Tenada' to the .cart-item-title stack only.
+     Revert: delete this whole block (incl. the @font-face) — fonts return
+     to the CART-1 state (Impact + Fjalla One + Arial).
+     ============================================================ */
+  @font-face{
+    font-family:'AK Due Date';
+    src:url('{{ 'ak-due-date.woff2' | asset_url }}') format('woff2');
+    font-weight:normal; font-style:normal; font-display:swap;
+  }
+  /* (1) display text on the main-cart-items Impact-force list → needs !important */
+  .ak-cart-page .cart__empty-text,
+  .ak-cart-page .cart__login-title,
+  .ak-cart-page .title--primary,
+  .ak-cart-page .underlined-link,
+  .ak-cart-page .custom-continue-button,
+  .ak-cart-page .cart__login-paragraph a,
+  .ak-cart-page .cart__remove-link{
+    font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+  }
+  /* (2) display text on Dawn's default (Fjalla One) → specificity is enough, no !important */
+  .ak-cart-page .cart-item-title,
+  .ak-cart-page .cart-meta-label,
+  .ak-cart-page .cart-meta-value,
+  .ak-cart-page #main-cart-footer .totals__total,
+  .ak-cart-page #main-cart-footer .totals__total-value,
+  .ak-cart-page #main-cart-footer .cart__checkout-button{
+    font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  }
 </style>
