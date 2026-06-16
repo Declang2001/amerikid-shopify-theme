@@ -11,6 +11,16 @@
     "ak-top": {
       "type": "ak-top"
     },
+    "custom_liquid_bm2025host": {
+      "type": "custom-liquid",
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "{% if page.handle == 'badmusic-2025' %}{% render 'ak-notebook-badmusic-2025' %}{% endif %}",
+        "color_scheme": "scheme-4",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
     "ak-footer": {
       "type": "ak-footer"
     },
@@ -29,6 +39,7 @@
     "ak-collection-bg",
     "main",
     "ak-top",
+    "custom_liquid_bm2025host",
     "custom_liquid_QcCtY6",
     "ak-footer"
   ]
