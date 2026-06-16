@@ -345,4 +345,76 @@
   .ak-badmusic-page .ak-caption{
     font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Black', sans-serif !important;
   }
+
+  /* ============================================================
+     STAGE BM-DOODLE-1 — mixtape margins (2026-06-15). Decorative ink
+     doodle layer for /pages/2025 — "record-shop stickers in the paper
+     margins". EXISTING ink assets only (hashtag/star/dollar/kid; the
+     album's '#'-title motif + '$' + flair star + mascot). 5 marks, all
+     in the OUTER paper gutters + top/footer bands — NEVER over the TV /
+     YouTube / caption / BAD MUSIC heading / cassette shelf / album link /
+     Coming Soon case / footer CTA / nav / cart. Decorative contract:
+     aria-hidden (markup) + pointer-events:none + mix-blend-mode:multiply,
+     PAGE-ANCHORED (absolute inside #MainContent{position:relative}, scrolls
+     with the paper — NOT viewport-fixed), z-index:0 behind content (footer
+     lifted to z-index:1). Right doodle sits LOW (bottom-anchored) so it
+     never rests under the fixed top-right cart. Each mark is one
+     self-contained rule; duplicate assets (hashtag ×2) are differentiated
+     by placement/size/rotation. Revert = delete the
+     <div class="ak-badmusic-doodles"> wrapper + this labeled block.
+     ============================================================ */
+  .ak-badmusic-page #MainContent{ position:relative; }              /* offset parent for the page-anchored layer */
+  .ak-badmusic-page .ak-footer{ position:relative; z-index:1; }     /* footer + CTA above the doodles */
+  .ak-badmusic-page .ak-badmusic-doodles{
+    position:absolute; inset:0; z-index:0;
+    pointer-events:none; mix-blend-mode:multiply;
+  }
+  .ak-badmusic-page .ak-bmd{
+    position:absolute; width:var(--s); height:var(--s);
+    background-repeat:no-repeat; background-size:contain; background-position:center;
+    transform:rotate(var(--r,0deg));
+  }
+  /* top paper band — far-left + center-left, ABOVE the nav, clear of the logo + the fixed top-right cart */
+  .ak-badmusic-page .ak-bmd--hash-top{
+    --s:clamp(64px,5.6vw,88px); --r:-8deg; top:46px; left:clamp(28px,3vw,96px);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-hashtag.png?v=1780967556");
+  }
+  .ak-badmusic-page .ak-bmd--star-top{
+    --s:clamp(56px,4.8vw,80px); --r:-6deg; top:34px; left:clamp(168px,14vw,300px);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-star.png?v=1780967556");
+  }
+  /* cassette-shelf side gutters — outside the red/blue rules, beside (never over) the cassettes; bottom-anchored so they track the shelf near the page bottom */
+  .ak-badmusic-page .ak-bmd--dollar-cassette-left{
+    --s:clamp(64px,5.6vw,88px); --r:6deg; left:clamp(26px,3vw,96px); bottom:clamp(230px,17vw,300px);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-dollar.png?v=1780967556");
+  }
+  .ak-badmusic-page .ak-bmd--kid-cassette-right{
+    --s:clamp(60px,5.2vw,84px); --r:-5deg; right:clamp(26px,3vw,96px); bottom:clamp(210px,16vw,290px);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-kid.png?v=1780967556");
+  }
+  /* footer paper band — left of the CTA (smaller, differentiated 2nd hashtag) */
+  .ak-badmusic-page .ak-bmd--hash-footer-left{
+    --s:clamp(50px,4.4vw,72px); --r:9deg; left:clamp(120px,12vw,260px); bottom:clamp(56px,5vw,84px);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-hashtag.png?v=1780967556");
+  }
+  /* width gates: the cassette shelf is 94vw/max-1060px, so its side gutters
+     are only wide enough for a clear doodle at >=1366px (measured: gutter
+     ~153px @1366, ~70px @1200 where the doodle would overlap the cassette);
+     so the cassette-side doodles need >=1366px. The top/footer band doodles
+     are clear from >=1024px. Whole layer hidden <=1023px (no mobile/tablet). */
+  @media (max-width:1365px){
+    .ak-badmusic-page .ak-bmd--dollar-cassette-left,
+    .ak-badmusic-page .ak-bmd--kid-cassette-right{ display:none !important; }
+  }
+  @media (max-width:1023px){
+    .ak-badmusic-page .ak-badmusic-doodles{ display:none !important; }
+  }
 </style>
+
+<div class="ak-badmusic-doodles" aria-hidden="true">
+  <span class="ak-bmd ak-bmd--hash-top"></span>
+  <span class="ak-bmd ak-bmd--star-top"></span>
+  <span class="ak-bmd ak-bmd--dollar-cassette-left"></span>
+  <span class="ak-bmd ak-bmd--kid-cassette-right"></span>
+  <span class="ak-bmd ak-bmd--hash-footer-left"></span>
+</div>

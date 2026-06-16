@@ -403,4 +403,89 @@
       line-height:.92 !important;
     }
   }
+
+  /* ============================================================
+     STAGE BM-DOODLE-1 — mixtape margins (2026-06-15). Decorative ink
+     doodle layer for /pages/badmusic-2025 — "record-shop stickers in
+     the paper margins". EXISTING ink assets only (hashtag/star/dollar/
+     kid). 6 marks down the TALL outer paper gutters beside the record
+     grid + top/footer bands — NEVER over the vinyl cards / discs / seek
+     bars / play-pause / track titles / the huge "2025" intro / footer
+     CTA / nav / cart. Decorative contract: aria-hidden + pointer-events:
+     none + mix-blend-mode:multiply, PAGE-ANCHORED (absolute inside
+     #MainContent{position:relative}, scrolls with the paper — NOT
+     viewport-fixed), z-index:0 behind content. The vinyl section
+     #bad-vinyl is lifted to z-index:1 so the dark cards always OCCLUDE
+     any stray doodle (z-index is paint-only — NOT a width/layout
+     constraint, so the #bad-vinyl hazard does not apply; #bad-vinyl
+     already isolates). The doodle layer is a SIBLING of #bad-vinyl (in
+     #MainContent), so its own overflow:hidden never clips the doodles.
+     Right doodle sits mid/low so it never rests under the fixed cart.
+     Each mark is one self-contained rule; duplicate assets (hashtag ×2,
+     star ×2) are differentiated by placement/size/rotation. Revert =
+     delete the <div class="ak-badmusic-2025-doodles"> wrapper + this
+     labeled block.
+     ============================================================ */
+  .ak-badmusic-2025-page #MainContent{ position:relative; }                 /* offset parent for the page-anchored layer */
+  .ak-badmusic-2025-page #bad-vinyl{ z-index:1; }                           /* vinyl cards above doodles (already position:relative; isolate) */
+  .ak-badmusic-2025-page .ak-footer{ position:relative; z-index:1; }        /* footer + CTA above the doodles */
+  .ak-badmusic-2025-page .ak-badmusic-2025-doodles{
+    position:absolute; inset:0; z-index:0;
+    pointer-events:none; mix-blend-mode:multiply;
+  }
+  .ak-badmusic-2025-page .ak-bm2d{
+    position:absolute; width:var(--s); height:var(--s);
+    background-repeat:no-repeat; background-size:contain; background-position:center;
+    transform:rotate(var(--r,0deg));
+  }
+  /* top paper band — far-left + center-left, ABOVE the nav, clear of the logo + fixed cart */
+  .ak-badmusic-2025-page .ak-bm2d--hash-top{
+    --s:clamp(64px,5.6vw,88px); --r:-8deg; top:46px; left:clamp(28px,3vw,96px);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-hashtag.png?v=1780967556");
+  }
+  .ak-badmusic-2025-page .ak-bm2d--star-top{
+    --s:clamp(56px,4.8vw,80px); --r:-5deg; top:34px; left:clamp(168px,14vw,300px);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-star.png?v=1780967556");
+  }
+  /* record-grid LEFT/RIGHT side gutters — outside the rules, beside (never over) the cards; spread down the tall page */
+  .ak-badmusic-2025-page .ak-bm2d--dollar-grid-left-upper{
+    --s:clamp(56px,4.4vw,80px); --r:7deg; left:clamp(18px,2vw,40px); top:1060px;
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-dollar.png?v=1780967556");
+  }
+  .ak-badmusic-2025-page .ak-bm2d--hash-grid-right-mid{
+    --s:clamp(50px,4vw,72px); --r:-6deg; right:clamp(18px,2vw,40px); top:2000px;
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-hashtag.png?v=1780967556");
+  }
+  .ak-badmusic-2025-page .ak-bm2d--star-grid-left-lower{
+    --s:clamp(54px,4.2vw,76px); --r:10deg; left:clamp(18px,2vw,40px); bottom:clamp(360px,28vw,520px);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-star.png?v=1780967556");
+  }
+  /* footer paper band — left of the CTA */
+  .ak-badmusic-2025-page .ak-bm2d--kid-footer-left{
+    --s:clamp(60px,5.2vw,84px); --r:-4deg; left:clamp(120px,12vw,260px); bottom:clamp(56px,5vw,86px);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-kid.png?v=1780967556");
+  }
+  /* width gates: the record grid is max-1200px, so its side gutters only
+     open up enough for a clear doodle at >=1440px (measured: ~120px gutter
+     @1440 clear of the cards; below 1440 the grid crowds the gutter and a
+     doodle would touch the cards); so the grid-side doodles need >=1440px.
+     The top/footer band doodles are clear from >=1024px. Whole layer hidden
+     <=1023px (no mobile/tablet doodles). */
+  @media (max-width:1439px){
+    .ak-badmusic-2025-page .ak-bm2d--dollar-grid-left-upper,
+    .ak-badmusic-2025-page .ak-bm2d--hash-grid-right-mid,
+    .ak-badmusic-2025-page .ak-bm2d--star-grid-left-lower{ display:none !important; }
+  }
+  @media (max-width:1023px){
+    .ak-badmusic-2025-page .ak-badmusic-2025-doodles{ display:none !important; }
+  }
 </style>
+
+<div class="ak-badmusic-2025-doodles" aria-hidden="true">
+  <span class="ak-bm2d ak-bm2d--hash-top"></span>
+  <span class="ak-bm2d ak-bm2d--star-top"></span>
+  <span class="ak-bm2d ak-bm2d--dollar-grid-left-upper"></span>
+  <span class="ak-bm2d ak-bm2d--hash-grid-right-mid"></span>
+  <span class="ak-bm2d ak-bm2d--star-grid-left-lower"></span>
+  <span class="ak-bm2d ak-bm2d--kid-footer-left"></span>
+</div>
