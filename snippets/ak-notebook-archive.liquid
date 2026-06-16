@@ -53,9 +53,15 @@
   - Cassette cards stay DARK (.ak-archive-card-inner is already opaque #111
     + the cassette skin gradient — no muddy-translucent problem, so no
     de-mud). Card text (.ak-archive-title #fff) is NOT recolored.
-  - NO doodles in ARCH-1 (the deck is a full-viewport overflow:hidden
-    surface and the arrows occupy the L/R gutters — deferred; if ever
-    wanted, limit to the header/footer bands outside the deck).
+  - DOODLES (Stage ARCH-2, 2026-06-16, owner-approved after ARCH-1): a
+    restrained 5-mark decorative layer (<div class="ak-archive-doodles">)
+    in the OUTER paper zones ONLY (top header band + footer band + one
+    off-LEFT paper edge) — "archive/catalog marks" (star/hashtag/cross/kid,
+    NO dollar), aria-hidden + pointer-events:none + multiply, page-anchored,
+    z-index:0 behind content (deck section + footer lifted to z-index:1),
+    width-gated (layer hidden ≤1199; edge doodle ≥1440; band doodles ≥1200).
+    NEVER over the deck/cards/stage/arrows/nav/cart/MENU/CTA. See the
+    STAGE ARCH-2 block below. (ARCH-1 shipped with no doodles.)
   - NOT touched: sections/ak-archive.liquid (deck HTML/CSS/JS — spring
     physics, drag/tap, arrows, keyboard, the 18 data-href links, the inert
     particle guard, the cassette-case skin, deck geometry), sections/
@@ -306,4 +312,77 @@
   .ak-archive-page .ak-btt:focus-visible .ak-btt-text{ color:#ff33ff !important; } /* preserve purple hover/focus */
   .ak-archive-page .ak-footer-rule{ background:none !important; }           /* remove footer glow line (keep spacing) */
   .ak-archive-page .ak-btt-text{ font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important; }
+
+  /* ============================================================
+     STAGE ARCH-2 — archive margin doodles (2026-06-16). Decorative ink
+     doodle layer for /collections — "archive labels / storage-box
+     marginalia / catalog marks" on the paper (NOT music stickers — no
+     dollar). EXISTING ink assets only (star/hashtag/cross/kid). 5 marks,
+     ALL in the OUTER paper zones (top header band + footer band + ONE
+     off-LEFT paper edge) — NEVER over the cassette deck / archive cards /
+     stage / arrows / drag-tap area / nav / KID logo / cart / MENU / footer
+     CTA. Decorative contract: aria-hidden (markup) + pointer-events:none
+     (cannot intercept the deck's drag/tap/arrow/keyboard) + mix-blend-mode:
+     multiply, PAGE-ANCHORED (absolute inside #MainContent{position:relative},
+     scrolls with the paper — NOT viewport-fixed), z-index:0 BEHIND content
+     (the deck section + footer lifted to z-index:1 — PAINT-ONLY z-index, NOT
+     a width/layout constraint; the doodle layer is a SIBLING, never inside
+     .ak-archive's overflow:hidden, and the deck geometry is byte-untouched).
+     Off-LEFT bleed is clipped → no overflow (off-RIGHT bleed WOULD overflow,
+     so the right doodles stay fully on-page). Width-gated: whole layer hidden
+     ≤1199px (no tablet/mobile doodles); the off-left edge doodle ≥1440px; the
+     4 band doodles ≥1200px. Each mark is one self-contained rule; the
+     duplicate star is differentiated by placement/size/rotation. Revert =
+     delete the <div class="ak-archive-doodles"> wrapper + this labeled block.
+     ============================================================ */
+  .ak-archive-page #MainContent{ position:relative; }                       /* offset parent for the page-anchored layer */
+  .ak-archive-page .ak-footer{ position:relative; z-index:1; }              /* footer + CTA above the doodles */
+  .ak-archive-page .ak-archive-section{ position:relative; z-index:1; }     /* cassette deck above the doodles (paint-only z-index; deck geometry untouched) */
+  .ak-archive-page .ak-archive-doodles{
+    position:absolute; inset:0; z-index:0;
+    pointer-events:none; mix-blend-mode:multiply;
+  }
+  .ak-archive-page .ak-ad{
+    position:absolute; width:var(--s); height:var(--s);
+    background-repeat:no-repeat; background-size:contain; background-position:center;
+    transform:rotate(var(--r,0deg));
+  }
+  /* top paper band — far-left star (above/left of the nav, clear of the centered KID logo) + right hashtag (below the fixed cart, clear of the nav) */
+  .ak-archive-page .ak-ad--star-top-left{
+    --s:clamp(128px,9.6vw,170px); --r:-7deg; top:clamp(12px,1.2vw,26px); left:clamp(16px,1.7vw,40px);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-star.png?v=1780967556");
+  }
+  .ak-archive-page .ak-ad--hash-top-right{
+    --s:clamp(108px,7.9vw,142px); --r:6deg; top:clamp(84px,7.8vw,138px); right:clamp(120px,10.2vw,210px);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-hashtag.png?v=1780967556");
+  }
+  /* off-LEFT paper edge — second star bled partly off the left margin, in the open band BETWEEN the nav and the deck top (above .ak-archive); off-left is clipped → no overflow */
+  .ak-archive-page .ak-ad--star-edge-left{
+    --s:clamp(120px,8.6vw,156px); --r:5deg; top:clamp(372px,26vw,420px); left:clamp(-44px,-2.5vw,-18px);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-star.png?v=1780967556");
+  }
+  /* footer paper band — kid left of the CTA + cross right of the CTA; capped sizes so the ~157px footer band contains them (a taller doodle would clip the deck above) */
+  .ak-archive-page .ak-ad--kid-footer-left{
+    --s:clamp(126px,9.4vw,150px); --r:-6deg; bottom:clamp(8px,1.1vw,20px); left:clamp(64px,7.6vw,196px);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-kid.png?v=1780967556");
+  }
+  .ak-archive-page .ak-ad--cross-footer-right{
+    --s:clamp(106px,7.7vw,136px); --r:8deg; bottom:clamp(10px,1.2vw,22px); right:clamp(66px,7.7vw,196px);
+    background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-cross.png?v=1780967556");
+  }
+  /* width gates — whole layer hidden ≤1199 (no tablet/mobile doodles); the off-left edge doodle ≥1440; the 4 band doodles ≥1200 */
+  @media (max-width:1199px){
+    .ak-archive-page .ak-archive-doodles{ display:none !important; }
+  }
+  @media (max-width:1439px){
+    .ak-archive-page .ak-ad--star-edge-left{ display:none !important; }
+  }
 </style>
+
+<div class="ak-archive-doodles" aria-hidden="true">
+  <span class="ak-ad ak-ad--star-top-left"></span>
+  <span class="ak-ad ak-ad--hash-top-right"></span>
+  <span class="ak-ad ak-ad--star-edge-left"></span>
+  <span class="ak-ad ak-ad--kid-footer-left"></span>
+  <span class="ak-ad ak-ad--cross-footer-right"></span>
+</div>
