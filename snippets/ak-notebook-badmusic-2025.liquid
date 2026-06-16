@@ -338,4 +338,40 @@
   .ak-badmusic-2025-page #bad-vinyl .vinyl-card.is-playing{
     border-color:#ff33ff !important;
   }
+
+  /* ============================================================
+     STAGE BM-TYPO-1 — typography polish (2026-06-15). CSS-only,
+     font-family ONLY (no color/size/layout/spacing/markup change).
+     Switches the remaining Impact text on this page to the notebook
+     Due Date voice. The hashtag track titles use the Tenada-for-'#'
+     utility (Due Date has no '#' glyph) — the SAME proven mechanism as
+     Narrative/Products: every track title's '#' is a plain text node,
+     so `unicode-range:U+23` renders ONLY the hash in Tenada with ZERO
+     DOM wrapping. `assets/ak-tenada.woff2` is the existing 1.3KB OFL
+     single-glyph subset (no new asset).
+     KEPT Impact (deliberate, do NOT change): `.time-row` (Due Date
+     lacks ':' and '•'), the `.badge` play/pause icon, and the cassette
+     micro-text (on `sections/ak-bm-album-link.liquid`, NOT edited).
+     `.vinyl-title` colour stays WHITE on the dark cards (font-only).
+     ============================================================ */
+  @font-face{
+    font-family:'AK Tenada';
+    src:url('{{ 'ak-tenada.woff2' | asset_url }}') format('woff2');
+    font-weight:400;
+    font-style:normal;
+    font-display:swap;
+    unicode-range:U+23;                                /* '#' only */
+  }
+  /* track titles: '#' -> Tenada, words -> Due Date; white-on-dark colour UNCHANGED */
+  .ak-badmusic-2025-page #bad-vinyl .vinyl-title{
+    font-family:'AK Tenada','AK Due Date',Impact,Haettenschweiler,'Arial Black',sans-serif !important;
+  }
+  /* intro kicker + subtitle + artist credits -> Due Date (no '#'; the '—'
+     on the sub and the '$' in "Killa Goo$e" fall back to Impact per glyph
+     — acceptable single-glyph fallback, like Narrative's '@') */
+  .ak-badmusic-2025-page #bad-vinyl .bv-intro__kicker,
+  .ak-badmusic-2025-page #bad-vinyl .bv-intro__sub,
+  .ak-badmusic-2025-page #bad-vinyl .vinyl-artist{
+    font-family:'AK Due Date',Impact,Haettenschweiler,'Arial Black',sans-serif !important;
+  }
 </style>
