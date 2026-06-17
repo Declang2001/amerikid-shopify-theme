@@ -291,6 +291,78 @@
     html.ak-pdp-page #MainProduct-{{ section.id }} .product__title * {
       font-family: 'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
     }
+
+    /* ============================================================
+       STAGE PDP-2B — PRODUCT TEXT INK + LABEL TYPOGRAPHY
+       Additive, page-class-gated (does NOT modify the PDP-2A block above).
+       Inks the product-column text that now sits on the PDP-2A yellow
+       paper to house ink #15120b, and applies 'AK Due Date' to the short,
+       glyph-safe size/option/quantity LABELS. TEXT COLOR + (where glyph-
+       safe) font-family ONLY — NO markup / JS / layout / price-logic /
+       control-skin change. Beats the ID(1,0,0)+!important Impact/scheme
+       rules via html.ak-pdp-page #MainProduct-{id} ... = (1,2,x). Contrast-
+       safe: the dark-bg controls (variant pill chips, quantity field, ATC
+       button, price badges) are NOT inked (full control skin = PDP-2C).
+       Revert: delete this block. House ink: #15120b.
+       ============================================================ */
+
+    /* Title -> ink (keeps the PDP-2A 'AK Due Date'; COLOR ONLY, no
+       size/line-height/spacing/layout change). */
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product__title,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product__title * {
+      color: #15120b !important;
+    }
+
+    /* Price NUMBERS -> ink. Scoped to .price-item so the sale/sold-out
+       .badge chips (own dark bg) are NOT inked black-on-black. Font left
+       as-is ('AK Due Date' has no '$' glyph). Sale/compare/sold-out
+       visibility is class-driven and untouched. */
+    html.ak-pdp-page #MainProduct-{{ section.id }} .price .price-item {
+      color: #15120b !important;
+    }
+
+    /* Option / size / quantity GROUP labels (text on the paper) -> ink +
+       notebook voice (short + glyph-safe). .form__label covers the variant
+       <legend> ("Size"), the .quantity__label ("Quantity"), and swatch
+       group labels; it does NOT match the pill chips (class-less <label
+       for>). */
+    html.ak-pdp-page #MainProduct-{{ section.id }} .form__label,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .form__label * {
+      color: #15120b !important;
+      font-family: 'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+    }
+
+    /* Variant PILL chips (S / M / L / 2XL): notebook FONT ONLY. Their text
+       color is Dawn's checked(black-on-white)/unchecked(white-on-black)
+       state inversion and stays readable — do NOT ink (would be black-on-
+       black on the unselected chips). Full chip skin = PDP-2C. */
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__input--pill label {
+      font-family: 'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+    }
+
+    /* Description -> ink + a READABLE body stack (NOT 'AK Due Date' — it is
+       arbitrary admin copy with mixed glyphs). Color + readable font only;
+       content/spacing/markup untouched. */
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product__description,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product__description * {
+      color: #15120b !important;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+    }
+
+    /* Remaining helper/meta text sitting on the paper -> ink (COLOR ONLY;
+       markup untouched). Excludes the dark-bg controls above. */
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product__tax,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product__sku,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product__inventory,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .volume-pricing-note,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product__text,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product__text *,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .share-button,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .share-button *,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product__pickup-availabilities,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product__pickup-availabilities * {
+      color: #15120b !important;
+    }
   {%- endstyle -%}
 
   <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
