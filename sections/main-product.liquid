@@ -363,6 +363,33 @@
     html.ak-pdp-page #MainProduct-{{ section.id }} .product__pickup-availabilities * {
       color: #15120b !important;
     }
+
+    /* ============================================================
+       STAGE PDP-CORR-2A — PRODUCT DESCRIPTION + PRICE FONT CORRECTION
+       Additive, page-class-gated. Does NOT modify the PDP-2A/2B blocks
+       above (later source order + equal specificity overrides PDP-2B's
+       description font). Corrects two owner-flagged fonts — description
+       (PDP-2B system stack -> Narrative notebook stack) and price (Impact
+       lock -> AK Due Date). FONT-FAMILY ONLY: color #15120b (PDP-2B), size,
+       line-height, spacing, markup, and price sale/sold-out logic unchanged.
+       The 'AK Tenada' @font-face is loaded by ak-notebook-product.liquid.
+       Revert: delete this block.
+       ============================================================ */
+
+    /* A) Description -> Narrative stack ('AK Tenada' serves '#', AK Due Date
+       the rest, Impact last-resort) — matches .ak-narrative-page .ak-tweet-text. */
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product__description,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product__description * {
+      font-family: 'AK Tenada', 'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+    }
+
+    /* B) Price NUMBERS -> AK Due Date (NO Tenada). '$' has no Due Date glyph
+       and falls back to Impact (accepted, no tofu); digits / '.' / 'USD' render
+       in Due Date. Scoped to .price .price-item so the sale/sold-out .badge
+       chips + visibility logic are untouched; PDP-2B ink color preserved. */
+    html.ak-pdp-page #MainProduct-{{ section.id }} .price .price-item {
+      font-family: 'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+    }
   {%- endstyle -%}
 
   <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>

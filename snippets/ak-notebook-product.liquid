@@ -43,3 +43,55 @@
   (function(){ document.documentElement.classList.add('ak-pdp-page'); })();
 </script>
 {% render 'ak-notebook-drawer' %}
+
+<style>
+  /* ============================================================
+     PDP-CORR-2A — PRODUCT PAYMENT / FOOTER / FONT SUPPORT
+     Page-scoped (html.ak-pdp-page), CSS-only. Corrective fixes after PDP-2B:
+     (A) load the 'AK Tenada' '#'-only face so the product description's
+     '#FreeVitaly' renders the stencil hash (Narrative parity; the description
+     font stack itself lives in main-product.liquid PDP-CORR-2A); (B) ink the
+     readable-on-yellow payment text; (C) ink the Shop Pay installments host;
+     (D) notebook-font the footer CTA (ak-footer added to product.json this
+     pass). NO header/nav, NO body full-bleed, NO drawer, NO control skin,
+     NO doodles (those are PDP-CORR-2B / PDP-2C / PDP-2D). Revert: delete this
+     <style> block (and the ak-footer entry in templates/product.json).
+     ============================================================ */
+
+  /* (A) 'AK Tenada' — 1.3KB OFL '#'-only subset (U+23). Reuses
+     assets/ak-tenada.woff2 (no new asset); every non-'#' glyph falls through
+     to AK Due Date. Mirrors the narrative/products @font-face exactly. */
+  @font-face{
+    font-family: 'AK Tenada';
+    src: url('{{ 'ak-tenada.woff2' | asset_url }}') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+23;
+  }
+
+  /* (B) "More payment options" link (light DOM, was white via
+     var(--color-foreground)) -> ink for the yellow paper. Underline + click
+     behaviour untouched. (0,2,1) beats section-main-product.css's (0,1,0). */
+  html.ak-pdp-page .shopify-payment-button__more-options{
+    color:#15120b !important;
+  }
+
+  /* (C) Shop Pay installments banner host <shopify-payment-terms>. Its text is
+     in shadow DOM but inherits the host `color` (runtime-verified), so inking
+     the host inks the "Pay in 4… / Learn more" text. Fallback if a future Shop
+     Pay render stops inheriting: replace with a readable host chip (dark bg +
+     light text). Host box only — the native Shop Pay button is untouched. */
+  html.ak-pdp-page shopify-payment-terms{
+    color:#15120b !important;
+  }
+
+  /* (D) Footer back-to-top CTA ("CLICK HERE TO GET TOP", rendered by the
+     ak-footer section added to product.json this pass) -> notebook 'AK Due
+     Date' voice, matching the other notebook pages. Copy is letters+spaces
+     only (glyph-safe). The CTA keeps ak-footer's own surface + colour +
+     scroll behaviour — font-family only here. */
+  html.ak-pdp-page .ak-btt-text{
+    font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+  }
+</style>
