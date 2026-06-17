@@ -1,0 +1,45 @@
+{%- comment -%}
+  ============================================================
+  ak-notebook-product.liquid  —  PRODUCT PAGE notebook class hook (PDP-2A)
+  ============================================================
+  First notebook-theme proof for individual product pages.
+
+  Purpose:
+    - Adds the page class `ak-pdp-page` to <html> so the additive,
+      page-class-gated CSS in sections/main-product.liquid's existing
+      {%- style -%} block can repaint ONLY the main product section to
+      notebook paper and move ONLY the product title to 'AK Due Date'.
+    - Renders the shared ak-notebook-drawer snippet so the self-hosted
+      `@font-face 'AK Due Date'` is available on product routes (the same
+      face the other notebook surfaces use; reuses assets/ak-due-date.woff2,
+      no new asset).
+
+  Why the font lock lives in main-product.liquid (not here):
+    main-product.liquid sets `#MainProduct-{id} * { font-family:Impact
+    !important }` and `#MainProduct-{id} { background:#000 !important }` —
+    ID(1,0,0)+!important rules that NO external class/element selector can
+    beat. So the winning overrides (html.ak-pdp-page #MainProduct-{{section.id}}
+    = (1,1,1)) must be authored inside that section's style block, which
+    owns {{ section.id }}. This snippet is the hook + font loader only.
+
+  Scope of THIS pass (PDP-2A): hook + contained paper + title font ONLY.
+    NO commerce markup/JS. NOT styling: price, description, variant picker,
+    quantity, Add to Cart, Shop Pay, media/gallery. NO doodles.
+
+  Hosted from templates/product.json (custom_liquid_akpdp, after ak-top /
+  before main) so it renders ONLY on product routes — the class is route-
+  bounded by construction (no leak to non-product pages).
+
+  Note: ak-notebook-drawer's drawer styling is scoped to the 9 original
+  notebook page classes, NOT ak-pdp-page, so the MENU drawer on product
+  pages stays its dark-Impact baseline in PDP-2A (theming it would require
+  adding ak-pdp-page to that snippet — out of scope here).
+
+  Revert: delete this file + the custom_liquid_akpdp host (+ order entry)
+  in templates/product.json + the `STAGE PDP-2A` block in main-product.liquid.
+  ============================================================
+{%- endcomment -%}
+<script>
+  (function(){ document.documentElement.classList.add('ak-pdp-page'); })();
+</script>
+{% render 'ak-notebook-drawer' %}

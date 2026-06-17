@@ -240,6 +240,57 @@
         display: none;
       }
     }
+
+    /* ============================================================
+       STAGE PDP-2A — NOTEBOOK PRODUCT PAPER + TITLE
+       Additive, page-class-gated (html.ak-pdp-page) overrides ONLY.
+       The class is added by snippets/ak-notebook-product.liquid via the
+       custom_liquid_akpdp host in templates/product.json (product routes
+       only). These rules beat the ID(1,0,0)+!important locks above —
+       `html.ak-pdp-page #MainProduct-{id}` = (1,1,1) > (1,0,0). PAPER +
+       TITLE FONT ONLY: NO layout (width/max-width/padding/margin/min-height/
+       grid/flex/position/overflow) change, and NO price / description /
+       variant / quantity / Add-to-Cart / Shop Pay / media / commerce change
+       (those are PDP-2B/2C/2D). Reuses the house legal-pad values. Revert =
+       delete this block (+ the host in product.json + the snippet).
+       ============================================================ */
+
+    /* A) Contained paper on the main product SECTION only. Re-supplies
+       background-color AND background-image (the lock set
+       `background-image:none !important`). BACKGROUND properties ONLY —
+       position/overflow/isolation/padding/width/layout are untouched. */
+    html.ak-pdp-page #MainProduct-{{ section.id }} {
+      --ak-pdp-side-gap: clamp(40px, 6vw, 120px);
+      background-color: #f5dd4f !important;            /* legal-pad yellow */
+      background-image:
+        linear-gradient(90deg,
+          transparent calc(100% - var(--ak-pdp-side-gap)),
+          rgba(44,120,180,.60) calc(100% - var(--ak-pdp-side-gap)),
+          rgba(44,120,180,.60) calc(100% - var(--ak-pdp-side-gap) + 2px),
+          transparent calc(100% - var(--ak-pdp-side-gap) + 2px)),  /* blue RIGHT margin rule */
+        linear-gradient(90deg,
+          transparent var(--ak-pdp-side-gap),
+          rgba(218,40,50,.74) var(--ak-pdp-side-gap),
+          rgba(218,40,50,.74) calc(var(--ak-pdp-side-gap) + 2px),
+          transparent calc(var(--ak-pdp-side-gap) + 2px)),         /* red LEFT margin rule */
+        repeating-linear-gradient(180deg,
+          transparent 0 31px,
+          rgba(44,120,180,.60) 31px 32px) !important;              /* blue ruled lines (32px) */
+      background-repeat: no-repeat, no-repeat, repeat !important;
+      background-position: 0 0, 0 0, 0 0 !important;
+      background-attachment: scroll, scroll, scroll !important;
+    }
+
+    /* B) Product TITLE font only -> AK Due Date (face loaded via the
+       ak-notebook-drawer @font-face rendered by ak-notebook-product). Beats
+       the universal `#MainProduct-{id} *{Impact !important}` (1,0,0) at
+       (1,2,0). FONT-FAMILY ONLY — size/color/line-height/letter-spacing/
+       margin/layout unchanged; scoped to .product__title so price/
+       description/labels/controls are NOT touched. */
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product__title,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product__title * {
+      font-family: 'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+    }
   {%- endstyle -%}
 
   <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
