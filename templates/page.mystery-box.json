@@ -28,6 +28,16 @@
       "type": "ak-top",
       "settings": {}
     },
+    "custom_liquid_mbhost": {
+      "type": "custom-liquid",
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "{% if page.handle == 'mystery-box' %}{% render 'ak-notebook-mystery-box' %}{% endif %}",
+        "color_scheme": "scheme-4",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
     "ak-mb-prestart": {
       "type": "ak-mb-prestart",
       "settings": {}
@@ -44,6 +54,7 @@
   "order": [
     "main",
     "ak-top",
+    "custom_liquid_mbhost",
     "custom_liquid_mysterybox_embed",
     "ak-mb-prestart",
     "ak-mb-release",
