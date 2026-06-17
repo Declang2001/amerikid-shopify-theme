@@ -91,6 +91,9 @@
   (function(){ document.documentElement.classList.add('ak-archive-page'); })();
 </script>
 
+{%- comment -%} ND-2A — render shared notebook mobile-drawer font (font-only; page-class-scoped; ak-top.liquid untouched) {%- endcomment -%}
+{% render 'ak-notebook-drawer' %}
+
 <style>
   /* ============================================================
      ARCHIVE NOTEBOOK PAPER BACKDROP — CSS-only, scoped to

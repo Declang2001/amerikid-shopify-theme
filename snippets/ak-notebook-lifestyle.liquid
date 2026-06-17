@@ -45,6 +45,9 @@
   })();
 </script>
 
+{%- comment -%} ND-2A — render shared notebook mobile-drawer font (font-only; page-class-scoped; ak-top.liquid untouched) {%- endcomment -%}
+{% render 'ak-notebook-drawer' %}
+
 {%- comment -%} Page-specific doodle map (NOT the Club Hub map): different assets, placements, sizes, rotations. Decorative only. {%- endcomment -%}
 <div class="ak-lifestyle-doodles" aria-hidden="true">
   {%- comment -%} PHASE 4.4 — header doodles (open paper above the nav; Club Hub doodle family, page-specific spots) {%- endcomment -%}

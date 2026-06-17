@@ -24,6 +24,9 @@
 
 </script>
 
+{%- comment -%} ND-2A — render shared notebook mobile-drawer font (font-only; page-class-scoped; ak-top.liquid untouched) {%- endcomment -%}
+{% render 'ak-notebook-drawer' %}
+
 {%- comment -%} Phase 3.15 — decorative notebook doodle layer (Club Hub only); behind content, page-anchored, pointer-events:none, no JS/canvas {%- endcomment -%}
 <div class="ak-clubhub-doodles" aria-hidden="true">
   <span class="ak-clubhub-doodle ak-clubhub-doodle--dice"></span>

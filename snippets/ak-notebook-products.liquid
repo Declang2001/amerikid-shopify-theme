@@ -45,6 +45,9 @@
   (function(){ document.documentElement.classList.add('ak-products-page'); })();
 </script>
 
+{%- comment -%} ND-2A — render shared notebook mobile-drawer font (font-only; page-class-scoped; ak-top.liquid untouched) {%- endcomment -%}
+{% render 'ak-notebook-drawer' %}
+
 {%- comment -%} PHASE 6.3 FONT PROOF — "Due Date" (Dieter Steffmann), self-hosted
     woff2, for the Products grid product names ONLY. Replaces the TEMPORARY
     Londrina Solid Google-Fonts proof (interim only, never a finalist): the

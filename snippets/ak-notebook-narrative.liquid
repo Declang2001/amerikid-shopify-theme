@@ -61,6 +61,9 @@
   (function(){ document.documentElement.classList.add('ak-narrative-page'); })();
 </script>
 
+{%- comment -%} ND-2A — render shared notebook mobile-drawer font (font-only; page-class-scoped; ak-top.liquid untouched) {%- endcomment -%}
+{% render 'ak-notebook-drawer' %}
+
 {%- comment -%}
   STAGE 1.9 — NARRATIVE DOODLE MAP ("Margin Reactions").
   Decorative ONLY: aria-hidden, pointer-events:none (CSS), page-anchored

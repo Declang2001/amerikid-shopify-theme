@@ -1,0 +1,111 @@
+{%- comment -%}
+  ============================================================
+  ak-notebook-drawer.liquid  —  SHARED notebook mobile-drawer styling host
+  ============================================================
+  STAGE ND-2A — NOTEBOOK MOBILE DRAWER FONT PASS (font-only).
+
+  Purpose:
+    The mobile MENU drawer is owned by sections/ak-top.liquid and is the
+    SAME shared component on every page that includes ak-top (~31 templates,
+    incl. dark/non-notebook routes). Its link + trigger text is the old
+    Impact stack. This snippet moves ONLY that text to the notebook
+    'AK Due Date' voice, and ONLY on the 9 notebook surfaces — leaving the
+    dark routes (and the homepage, which has no ak-top) on Impact.
+
+  Why a separate shared snippet (not edits to ak-top.liquid):
+    - ak-top.liquid (and its single header/nav/cart/menu/drawer/particle IIFE)
+      must NOT be touched (known-fragile-areas.md). All notebook nav restyling
+      is page-scoped CSS done OUTSIDE that file.
+    - The drawer JS relocates .ak-top-drawer[data-ak-top-drawer] to be a direct
+      child of <body>; the notebook page class lives on <html>; therefore
+      `html.<page-class> .ak-top-drawer a` reaches the relocated drawer.
+    - Every selector below is prefixed by a notebook page class, so this block
+      is inherently leak-safe: dark routes carry no notebook class and are
+      untouched. The @font-face is declared here so 'AK Due Date' is available
+      on all 9 routes (the existing face is only rendered on /pages/mystery-box).
+
+  Rendered once (additively) from each of the 9 notebook host snippets via
+  `{% render 'ak-notebook-drawer' %}`. No class hook of its own (CSS only).
+
+  Scope of THIS pass — font-family ONLY. Does NOT change:
+    size / letter-spacing / line-height / spacing / color / background /
+    active state / transform / transition / z-index / width / height /
+    display / positioning / markup / JS / open-close / scroll-lock / aria.
+    Does NOT touch the close ✕ (.ak-top-drawer-close is a <button>, never
+    matched by `.ak-top-drawer a`) nor the BAD/CandyFacts PNG image links
+    (.ak-top-mobile-image, explicitly excluded via :not()).
+
+  Revert: delete this file + the 9 `{% render 'ak-notebook-drawer' %}` lines.
+  ============================================================
+{%- endcomment -%}
+
+<style>
+  /* ============================================================
+     STAGE ND-2A — NOTEBOOK MOBILE DRAWER FONT PASS
+     Self-hosted display voice (same asset/face the other notebook
+     pages use). Reuses assets/ak-due-date.woff2 — no new asset.
+     ============================================================ */
+  @font-face{
+    font-family: 'AK Due Date';
+    src: url('{{ 'ak-due-date.woff2' | asset_url }}') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  /* Font-only swap of the MENU trigger label + the drawer TEXT links from
+     Impact to 'AK Due Date', scoped to each notebook page class. The drawer
+     is body-appended at runtime but <html> is still an ancestor, so these
+     html.<class> selectors reach it. Image links (.ak-top-mobile-image) are
+     excluded so the BAD/CandyFacts PNG links are never treated as text; the
+     close ✕ is a <button>, so `.ak-top-drawer a` never matches it. Nothing
+     other than font-family is set here. */
+  html.ak-products-page       .ak-top-mobile-trigger,
+  html.ak-products-page       .ak-top-drawer a:not(.ak-top-mobile-image),
+  html.ak-lifestyle-page      .ak-top-mobile-trigger,
+  html.ak-lifestyle-page      .ak-top-drawer a:not(.ak-top-mobile-image),
+  html.ak-clubhub-page        .ak-top-mobile-trigger,
+  html.ak-clubhub-page        .ak-top-drawer a:not(.ak-top-mobile-image),
+  html.ak-narrative-page      .ak-top-mobile-trigger,
+  html.ak-narrative-page      .ak-top-drawer a:not(.ak-top-mobile-image),
+  html.ak-badmusic-page       .ak-top-mobile-trigger,
+  html.ak-badmusic-page       .ak-top-drawer a:not(.ak-top-mobile-image),
+  html.ak-badmusic-2025-page  .ak-top-mobile-trigger,
+  html.ak-badmusic-2025-page  .ak-top-drawer a:not(.ak-top-mobile-image),
+  html.ak-archive-page        .ak-top-mobile-trigger,
+  html.ak-archive-page        .ak-top-drawer a:not(.ak-top-mobile-image),
+  html.ak-cart-page           .ak-top-mobile-trigger,
+  html.ak-cart-page           .ak-top-drawer a:not(.ak-top-mobile-image),
+  html.ak-mysterybox-page     .ak-top-mobile-trigger,
+  html.ak-mysterybox-page     .ak-top-drawer a:not(.ak-top-mobile-image){
+    font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+  }
+
+  /* ----------------------------------------------------------
+     320px overflow correction (sanctioned by ND-2A plan step 8).
+     Runtime QA at 320px: 'AK Due Date' is slightly wider than the
+     old Impact, so the two longest drawer labels overflowed their
+     link box — LIFE/STYLE (scrollWidth 307 > clientWidth 298) and
+     NARRATIVE (305 > 298); the shorter labels fit. 375px and 390px
+     are clear (no overflow). Smallest correction: tighten tracking
+     on the notebook drawer TEXT links ONLY, on small screens ONLY
+     (<=360px), from the drawer's inherited .22em down to .16em.
+     This returns every label to scrollWidth <= clientWidth with
+     ~10px margin. NO font-size change; tap targets are unchanged
+     (~90px). The MENU trigger ("MENU", 4 chars) never overflows and
+     keeps its inherited spacing. Letter-spacing at >=375px is also
+     left untouched (no overflow there). */
+  @media (max-width:360px){
+    html.ak-products-page       .ak-top-drawer a:not(.ak-top-mobile-image),
+    html.ak-lifestyle-page      .ak-top-drawer a:not(.ak-top-mobile-image),
+    html.ak-clubhub-page        .ak-top-drawer a:not(.ak-top-mobile-image),
+    html.ak-narrative-page      .ak-top-drawer a:not(.ak-top-mobile-image),
+    html.ak-badmusic-page       .ak-top-drawer a:not(.ak-top-mobile-image),
+    html.ak-badmusic-2025-page  .ak-top-drawer a:not(.ak-top-mobile-image),
+    html.ak-archive-page        .ak-top-drawer a:not(.ak-top-mobile-image),
+    html.ak-cart-page           .ak-top-drawer a:not(.ak-top-mobile-image),
+    html.ak-mysterybox-page     .ak-top-drawer a:not(.ak-top-mobile-image){
+      letter-spacing:.16em !important;
+    }
+  }
+</style>
