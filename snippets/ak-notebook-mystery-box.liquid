@@ -160,6 +160,25 @@
   .ak-mysterybox-page #ak-mysterybox-embed.ak-mb-wrap{ background:transparent !important; }
 
   /* ============================================================
+     STAGE MB-2 — OUTLINE FIX (2026-06-17)
+     The pre-existing #ak-mysterybox-embed .ak-mb-stage::before carries a
+     decorative "recessed-well seam" INSET shadow
+     (box-shadow: inset 0 1px 2px rgba(0,0,0,.4), inset 0 0 1px rgba(0,0,0,.6))
+     applied to the FULL-bleed stage (~1396x876 @1440) — invisible on the old
+     #000 .ak-mb-wrap, but after MB-1 made the wrap transparent it reads as a
+     faint larger/offset rectangle around the dark monitor on the yellow paper.
+     Kill ONLY that inset shadow (PAINT-ONLY). The pseudo has content:"" but no
+     background, so it goes fully invisible; inset:0 / pointer-events:none /
+     z-index:3 stay untouched -> zero behavioural effect. The .ak-mb-frame hard
+     1px ring (0 0 0 1px rgba(0,0,0,.95)) AND the wanted soft drop shadow are
+     INTENTIONALLY LEFT as-is (NOT part of this pass; pending owner A/B).
+     Revert: delete this STAGE MB-2 block.
+     ============================================================ */
+  .ak-mysterybox-page #ak-mysterybox-embed .ak-mb-stage::before{
+    box-shadow:none !important;
+  }
+
+  /* ============================================================
      FONTS — Due Date display voice (duplicated scoped @font-face,
      the deliberate house pattern; same self-hosted asset as the
      other notebook pages). No Tenada: there is no '#' on this route.
