@@ -108,4 +108,182 @@
       letter-spacing:.16em !important;
     }
   }
+
+  /* ============================================================
+     STAGE ND-2B — NOTEBOOK MOBILE DRAWER PAPER / INK PASS
+     Repaints the drawer PANEL + its text/controls into the notebook
+     legal-pad look, on the 9 notebook surfaces ONLY. Builds on the
+     ND-2A font pass (font-family + 320 tracking are untouched here).
+     CSS-ONLY, page-class-scoped (leak-safe), NO markup/JS/motion change.
+     `sections/ak-top.liquid` is NOT edited; the drawer is body-appended
+     and the class is on <html>, so html.<class> .ak-top-drawer reaches it.
+     House values reused: paper #f5dd4f, ink #15120b, purple #ff33ff,
+     red rule rgba(218,40,50,*), blue rule rgba(44,120,180,*), 32px ruling.
+     ============================================================ */
+
+  /* (1) PANEL — legal-pad paper. Beats the drawer's own
+     `background:#000 !important` (0,2,0) with a (0,3,1) page-class +
+     attribute selector + !important. A thin red LEFT margin rule (~28px)
+     + subtle blue horizontal ruled lines; yellow base. Layout untouched
+     (position/inset/z-index/transform/opacity/transition/overflow/flex/
+     padding all inherited from ak-top.liquid). background-color +
+     background-image longhands override the #000 shorthand per-property. */
+  html.ak-products-page       .ak-top-drawer[data-ak-top-drawer],
+  html.ak-lifestyle-page      .ak-top-drawer[data-ak-top-drawer],
+  html.ak-clubhub-page        .ak-top-drawer[data-ak-top-drawer],
+  html.ak-narrative-page      .ak-top-drawer[data-ak-top-drawer],
+  html.ak-badmusic-page       .ak-top-drawer[data-ak-top-drawer],
+  html.ak-badmusic-2025-page  .ak-top-drawer[data-ak-top-drawer],
+  html.ak-archive-page        .ak-top-drawer[data-ak-top-drawer],
+  html.ak-cart-page           .ak-top-drawer[data-ak-top-drawer],
+  html.ak-mysterybox-page     .ak-top-drawer[data-ak-top-drawer]{
+    background-color:#f5dd4f !important;            /* pale legal-pad yellow */
+    background-image:
+      linear-gradient(90deg,
+        transparent 27px,
+        rgba(218,40,50,.55) 27px,
+        rgba(218,40,50,.55) 29px,
+        transparent 29px),                          /* red LEFT margin rule */
+      repeating-linear-gradient(180deg,
+        transparent 0 31px,
+        rgba(44,120,180,.30) 31px 32px) !important; /* subtle blue ruled lines */
+    background-repeat:no-repeat, repeat !important;
+    background-position:0 0, 0 0 !important;
+    background-size:auto, auto !important;
+  }
+
+  /* (2) TEXT LINKS — ink on paper. Drops the white-on-black 3D grey
+     text-shadow from ak-top.liquid (looks muddy on yellow). font-family
+     (ND-2A) + size + letter-spacing are NOT restated → preserved. */
+  html.ak-products-page       .ak-top-drawer a:not(.ak-top-mobile-image),
+  html.ak-lifestyle-page      .ak-top-drawer a:not(.ak-top-mobile-image),
+  html.ak-clubhub-page        .ak-top-drawer a:not(.ak-top-mobile-image),
+  html.ak-narrative-page      .ak-top-drawer a:not(.ak-top-mobile-image),
+  html.ak-badmusic-page       .ak-top-drawer a:not(.ak-top-mobile-image),
+  html.ak-badmusic-2025-page  .ak-top-drawer a:not(.ak-top-mobile-image),
+  html.ak-archive-page        .ak-top-drawer a:not(.ak-top-mobile-image),
+  html.ak-cart-page           .ak-top-drawer a:not(.ak-top-mobile-image),
+  html.ak-mysterybox-page     .ak-top-drawer a:not(.ak-top-mobile-image){
+    color:#15120b !important;          /* ink */
+    text-shadow:none !important;       /* remove dark-drawer 3D shadow */
+  }
+
+  /* (3) HOVER / FOCUS — on-brand purple feedback + a subtle ink wash
+     (replaces ak-top.liquid's invisible white tint). */
+  html.ak-products-page       .ak-top-drawer a:not(.ak-top-mobile-image):hover,
+  html.ak-products-page       .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-lifestyle-page      .ak-top-drawer a:not(.ak-top-mobile-image):hover,
+  html.ak-lifestyle-page      .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-clubhub-page        .ak-top-drawer a:not(.ak-top-mobile-image):hover,
+  html.ak-clubhub-page        .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-narrative-page      .ak-top-drawer a:not(.ak-top-mobile-image):hover,
+  html.ak-narrative-page      .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-badmusic-page       .ak-top-drawer a:not(.ak-top-mobile-image):hover,
+  html.ak-badmusic-page       .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-badmusic-2025-page  .ak-top-drawer a:not(.ak-top-mobile-image):hover,
+  html.ak-badmusic-2025-page  .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-archive-page        .ak-top-drawer a:not(.ak-top-mobile-image):hover,
+  html.ak-archive-page        .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-cart-page           .ak-top-drawer a:not(.ak-top-mobile-image):hover,
+  html.ak-cart-page           .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-mysterybox-page     .ak-top-drawer a:not(.ak-top-mobile-image):hover,
+  html.ak-mysterybox-page     .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible{
+    color:#ff33ff !important;                 /* official purple */
+    background:rgba(21,18,11,.07) !important;  /* subtle ink wash */
+  }
+
+  /* (4) ACTIVE LINK — clearly current: purple text + a faint magenta
+     highlighter pill + a subtle ink shadow so it reads on yellow.
+     Equal specificity to (3); ordered AFTER so active wins at rest. */
+  html.ak-products-page       .ak-top-drawer a.active:not(.ak-top-mobile-image),
+  html.ak-lifestyle-page      .ak-top-drawer a.active:not(.ak-top-mobile-image),
+  html.ak-clubhub-page        .ak-top-drawer a.active:not(.ak-top-mobile-image),
+  html.ak-narrative-page      .ak-top-drawer a.active:not(.ak-top-mobile-image),
+  html.ak-badmusic-page       .ak-top-drawer a.active:not(.ak-top-mobile-image),
+  html.ak-badmusic-2025-page  .ak-top-drawer a.active:not(.ak-top-mobile-image),
+  html.ak-archive-page        .ak-top-drawer a.active:not(.ak-top-mobile-image),
+  html.ak-cart-page           .ak-top-drawer a.active:not(.ak-top-mobile-image),
+  html.ak-mysterybox-page     .ak-top-drawer a.active:not(.ak-top-mobile-image){
+    color:#ff33ff !important;
+    background:rgba(255,51,255,.12) !important;        /* highlighter pill */
+    text-shadow:0 1px 1px rgba(21,18,11,.22) !important;
+  }
+
+  /* (5) CLOSE ✕ — ink (was white-on-black), purple on hover/focus.
+     NOT given AK Due Date (it stays its system glyph). Behaviour
+     (background:none / border:none / :active scale) untouched. */
+  html.ak-products-page       .ak-top-drawer .ak-top-drawer-close,
+  html.ak-lifestyle-page      .ak-top-drawer .ak-top-drawer-close,
+  html.ak-clubhub-page        .ak-top-drawer .ak-top-drawer-close,
+  html.ak-narrative-page      .ak-top-drawer .ak-top-drawer-close,
+  html.ak-badmusic-page       .ak-top-drawer .ak-top-drawer-close,
+  html.ak-badmusic-2025-page  .ak-top-drawer .ak-top-drawer-close,
+  html.ak-archive-page        .ak-top-drawer .ak-top-drawer-close,
+  html.ak-cart-page           .ak-top-drawer .ak-top-drawer-close,
+  html.ak-mysterybox-page     .ak-top-drawer .ak-top-drawer-close{
+    color:#15120b !important;
+  }
+  html.ak-products-page       .ak-top-drawer .ak-top-drawer-close:hover,
+  html.ak-products-page       .ak-top-drawer .ak-top-drawer-close:focus-visible,
+  html.ak-lifestyle-page      .ak-top-drawer .ak-top-drawer-close:hover,
+  html.ak-lifestyle-page      .ak-top-drawer .ak-top-drawer-close:focus-visible,
+  html.ak-clubhub-page        .ak-top-drawer .ak-top-drawer-close:hover,
+  html.ak-clubhub-page        .ak-top-drawer .ak-top-drawer-close:focus-visible,
+  html.ak-narrative-page      .ak-top-drawer .ak-top-drawer-close:hover,
+  html.ak-narrative-page      .ak-top-drawer .ak-top-drawer-close:focus-visible,
+  html.ak-badmusic-page       .ak-top-drawer .ak-top-drawer-close:hover,
+  html.ak-badmusic-page       .ak-top-drawer .ak-top-drawer-close:focus-visible,
+  html.ak-badmusic-2025-page  .ak-top-drawer .ak-top-drawer-close:hover,
+  html.ak-badmusic-2025-page  .ak-top-drawer .ak-top-drawer-close:focus-visible,
+  html.ak-archive-page        .ak-top-drawer .ak-top-drawer-close:hover,
+  html.ak-archive-page        .ak-top-drawer .ak-top-drawer-close:focus-visible,
+  html.ak-cart-page           .ak-top-drawer .ak-top-drawer-close:hover,
+  html.ak-cart-page           .ak-top-drawer .ak-top-drawer-close:focus-visible,
+  html.ak-mysterybox-page     .ak-top-drawer .ak-top-drawer-close:hover,
+  html.ak-mysterybox-page     .ak-top-drawer .ak-top-drawer-close:focus-visible{
+    color:#ff33ff !important;
+  }
+
+  /* (6) FOCUS-VISIBLE a11y ring — keep keyboard focus obvious on paper
+     (ink ring) for both the text links and the close button. */
+  html.ak-products-page       .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-products-page       .ak-top-drawer .ak-top-drawer-close:focus-visible,
+  html.ak-lifestyle-page      .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-lifestyle-page      .ak-top-drawer .ak-top-drawer-close:focus-visible,
+  html.ak-clubhub-page        .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-clubhub-page        .ak-top-drawer .ak-top-drawer-close:focus-visible,
+  html.ak-narrative-page      .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-narrative-page      .ak-top-drawer .ak-top-drawer-close:focus-visible,
+  html.ak-badmusic-page       .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-badmusic-page       .ak-top-drawer .ak-top-drawer-close:focus-visible,
+  html.ak-badmusic-2025-page  .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-badmusic-2025-page  .ak-top-drawer .ak-top-drawer-close:focus-visible,
+  html.ak-archive-page        .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-archive-page        .ak-top-drawer .ak-top-drawer-close:focus-visible,
+  html.ak-cart-page           .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-cart-page           .ak-top-drawer .ak-top-drawer-close:focus-visible,
+  html.ak-mysterybox-page     .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-mysterybox-page     .ak-top-drawer .ak-top-drawer-close:focus-visible{
+    outline:2px solid #15120b !important;
+    outline-offset:2px !important;
+  }
+
+  /* (7) IMAGE LINKS — keep the BAD / CandyFacts PNGs as IMAGES (never
+     text). QA at 390/375/320 showed the BAD wordmark is WHITE and washes
+     out on the yellow paper (CandyFacts has dark outlines and reads fine).
+     Add a tiny ink contour drop-shadow so both logos read as stickers on
+     the page. PAINT-ONLY: height / transition / the `:active` transform
+     scale in ak-top.liquid are NOT touched — no resize, no conversion to
+     text, no new asset. `filter` is purely additive (base sets none). */
+  html.ak-products-page       .ak-top-drawer .ak-top-mobile-image img,
+  html.ak-lifestyle-page      .ak-top-drawer .ak-top-mobile-image img,
+  html.ak-clubhub-page        .ak-top-drawer .ak-top-mobile-image img,
+  html.ak-narrative-page      .ak-top-drawer .ak-top-mobile-image img,
+  html.ak-badmusic-page       .ak-top-drawer .ak-top-mobile-image img,
+  html.ak-badmusic-2025-page  .ak-top-drawer .ak-top-mobile-image img,
+  html.ak-archive-page        .ak-top-drawer .ak-top-mobile-image img,
+  html.ak-cart-page           .ak-top-drawer .ak-top-mobile-image img,
+  html.ak-mysterybox-page     .ak-top-drawer .ak-top-mobile-image img{
+    filter: drop-shadow(0 0 1px rgba(21,18,11,1)) drop-shadow(0 1px 2px rgba(21,18,11,.55)) !important;
+  }
 </style>
