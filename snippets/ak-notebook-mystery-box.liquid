@@ -492,4 +492,81 @@
   .ak-mysterybox-page .ak-mb-shell-fx__hairline{ background:rgba(235,200,120,0.18) !important; }
   .ak-mysterybox-page .ak-mb-shell-fx__reg::before,
   .ak-mysterybox-page .ak-mb-shell-fx__reg::after{ background:rgba(235,200,120,0.4) !important; box-shadow:0 0 5px rgba(230,186,82,0.4) !important; }
+
+  /* ============================================================
+     STAGE MB-3D — MARQUEE BULB FLICKER POLISH (2026-06-17)
+     Final bulb polish on the accepted MB-3C marquee: BIGGER, border-mounted
+     carnival bulbs + subtle IRREGULAR flicker (run-down COD-Zombies feel, NOT a
+     Vegas chase). CSS-ONLY, scoped .ak-mysterybox-page. The small MB-3C envelope
+     background dots are removed and replaced with TWO larger interleaved bulb
+     strings on the FREE __envelope::before / ::after pseudos (verified unused in
+     sections/ak-mb-prestart.liquid) + flicker on the existing __env-corner nodes.
+     PLACEMENT: the bulb layer is inset:-8px so each bulb CENTER sits on the
+     envelope border line (mounted on the frame) and the BOTTOM row drops onto
+     the border BELOW the disclaimer/ticker text (fixes the MB-3C bottom crowding).
+     DECORATIVE / PAINT-ONLY: all on the envelope (position:absolute, z-index:2,
+     pointer-events:none — NOT a flow/entrance element) and its pseudos → ZERO
+     layout height, behind the inner content (z3) so the CTA stays clickable.
+     Animations are OPACITY/FILTER only (compositor-cheap), slow + irregular, with
+     a prefers-reduced-motion:reduce fallback that freezes them static (bulbs still
+     shown). The 5 entrance elements (__serial/__hero/__plate/__ctas/__disclaimer)
+     are NOT touched. MB-1/MB-2/MB-3B/MB-3C all preserved. NO texture, NO doodles,
+     NO copy/DOM/JS/height change. Revert: delete this STAGE MB-3D block.
+     ============================================================ */
+  .ak-mysterybox-page .ak-mb-prestart__envelope{ background-image:none !important; }   /* drop small MB-3C dots; keep border+glow */
+
+  .ak-mysterybox-page .ak-mb-prestart__envelope::before,
+  .ak-mysterybox-page .ak-mb-prestart__envelope::after{
+    content:"" !important; position:absolute !important; inset:-8px !important;
+    pointer-events:none !important;
+  }
+  /* string A — bright gold bulbs, centered on the border (4 edges) */
+  .ak-mysterybox-page .ak-mb-prestart__envelope::before{
+    background:
+      radial-gradient(circle, rgba(255,246,218,0.98) 0 1.7px, rgba(242,198,92,0.96) 1.7px 4px, rgba(188,116,38,0.5) 4px 5.2px, transparent 5.6px) left top / 50px 16px repeat-x,
+      radial-gradient(circle, rgba(255,246,218,0.98) 0 1.7px, rgba(242,198,92,0.96) 1.7px 4px, rgba(188,116,38,0.5) 4px 5.2px, transparent 5.6px) left bottom / 50px 16px repeat-x,
+      radial-gradient(circle, rgba(255,246,218,0.98) 0 1.7px, rgba(242,198,92,0.96) 1.7px 4px, rgba(188,116,38,0.5) 4px 5.2px, transparent 5.6px) left top / 16px 50px repeat-y,
+      radial-gradient(circle, rgba(255,246,218,0.98) 0 1.7px, rgba(242,198,92,0.96) 1.7px 4px, rgba(188,116,38,0.5) 4px 5.2px, transparent 5.6px) right top / 16px 50px repeat-y !important;
+    filter:drop-shadow(0 0 4px rgba(242,180,80,0.55)) !important;
+    animation:akMbBulbFlickerA 5.5s ease-in-out infinite !important;
+  }
+  /* string B — dimmer/weaker amber bulbs, interleaved half-tile (broken flicker) */
+  .ak-mysterybox-page .ak-mb-prestart__envelope::after{
+    background:
+      radial-gradient(circle, rgba(255,228,176,0.9) 0 1.5px, rgba(226,150,58,0.82) 1.5px 3.8px, rgba(150,68,28,0.42) 3.8px 5px, transparent 5.4px) 25px top / 50px 16px repeat-x,
+      radial-gradient(circle, rgba(255,228,176,0.9) 0 1.5px, rgba(226,150,58,0.82) 1.5px 3.8px, rgba(150,68,28,0.42) 3.8px 5px, transparent 5.4px) 25px bottom / 50px 16px repeat-x,
+      radial-gradient(circle, rgba(255,228,176,0.9) 0 1.5px, rgba(226,150,58,0.82) 1.5px 3.8px, rgba(150,68,28,0.42) 3.8px 5px, transparent 5.4px) left 25px / 16px 50px repeat-y,
+      radial-gradient(circle, rgba(255,228,176,0.9) 0 1.5px, rgba(226,150,58,0.82) 1.5px 3.8px, rgba(150,68,28,0.42) 3.8px 5px, transparent 5.4px) right 25px / 16px 50px repeat-y !important;
+    filter:drop-shadow(0 0 3px rgba(226,140,50,0.45)) !important;
+    animation:akMbBulbFlickerB 7.3s ease-in-out infinite !important;
+  }
+  /* corner nodes flicker weak/broken (keep MB-3C gold brackets) */
+  .ak-mysterybox-page .ak-mb-prestart__env-corner{ animation:akMbBulbWeak 4.2s ease-in-out infinite !important; }
+
+  @keyframes akMbBulbFlickerA{
+    0%,100%{ opacity:1; }
+    17%{ opacity:0.86; }
+    41%{ opacity:0.97; }
+    62%{ opacity:0.8; }
+    83%{ opacity:0.95; }
+  }
+  @keyframes akMbBulbFlickerB{
+    0%,100%{ opacity:0.9; }
+    23%{ opacity:0.56; }
+    37%{ opacity:0.86; }
+    59%{ opacity:0.4; }
+    74%{ opacity:0.8; }
+  }
+  @keyframes akMbBulbWeak{
+    0%,100%{ opacity:0.78; filter:brightness(0.9); }
+    28%{ opacity:0.3; filter:brightness(0.55); }
+    32%{ opacity:0.64; }
+    61%{ opacity:0.24; filter:brightness(0.5); }
+    66%{ opacity:0.58; }
+  }
+  @media (prefers-reduced-motion:reduce){
+    .ak-mysterybox-page .ak-mb-prestart__envelope::before,
+    .ak-mysterybox-page .ak-mb-prestart__envelope::after,
+    .ak-mysterybox-page .ak-mb-prestart__env-corner{ animation:none !important; opacity:1 !important; }
+  }
 </style>
