@@ -311,4 +311,36 @@
   .ak-mysterybox-page .ak-btt:focus-visible .ak-btt-text{ color:#ff33ff !important; } /* preserve purple hover/focus */
   .ak-mysterybox-page .ak-footer-rule{ background:none !important; }           /* remove footer glow line (keep spacing) */
   .ak-mysterybox-page .ak-btt-text{ font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important; }
+
+  /* ============================================================
+     STAGE MB-3B — COVER FONT PASS (2026-06-17)
+     Font-family ONLY: move the glyph-safe Shopify-side prestart COVER
+     display text (the .ak-mb-prestart overlay from sections/ak-mb-prestart.liquid,
+     mounted inside .ak-mb-frame) into the notebook 'AK Due Date' voice, reusing
+     the @font-face declared above. NO size / letter-spacing / line-height /
+     color / spacing / layout / copy / pseudo / behaviour change. This is the
+     safe font foundation BEFORE the carnival/theatre marquee redesign (MB-3C/3D).
+     CONVERTED (glyph-safe — words + digits only): __title ("MYSTERY BOX"),
+     the step rows __plate-body __brief-line, and __cta-label ("START"/"ACCESS SPINS").
+     The scoped selectors (.ak-mysterybox-page … = 0,3,0 / 0,4,0) + !important beat
+     the prestart file's base + Phase4/5 nth-child rules (which set size/line-height,
+     not font-family).
+     DELIBERATELY KEPT on their current stacks (glyph risk / terminal-meta role):
+     __serial / __subtitle / __disclaimer / __plate-tab-r (the '//' and '·' carriers
+     stay mono), __kicker (em dash '—' — Due Date lacks it), .ak-mb-shell-fx__chin-text
+     (frame furniture), and the __brief-line::before '>' step caret (Due Date lacks '>').
+     The caret is PINNED to mono below so it does NOT inherit Due Date from the
+     converted brief-line. sections/ak-mb-prestart.liquid is NOT edited.
+     Revert: delete this STAGE MB-3B block.
+     ============================================================ */
+  .ak-mysterybox-page .ak-mb-prestart__title,
+  .ak-mysterybox-page .ak-mb-prestart__plate-body .ak-mb-prestart__brief-line,
+  .ak-mysterybox-page .ak-mb-prestart__cta-label{
+    font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+  }
+  /* preserve the '>' step caret on the mono stack — it must NOT inherit Due Date
+     from the converted brief-line (Due Date has no '>' glyph). */
+  .ak-mysterybox-page .ak-mb-prestart__plate-body .ak-mb-prestart__brief-line::before{
+    font-family:ui-monospace, Menlo, Consolas, monospace !important;
+  }
 </style>
