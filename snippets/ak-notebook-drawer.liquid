@@ -286,4 +286,61 @@
   html.ak-mysterybox-page     .ak-top-drawer .ak-top-mobile-image img{
     filter: drop-shadow(0 0 1px rgba(21,18,11,1)) drop-shadow(0 1px 2px rgba(21,18,11,.55)) !important;
   }
+
+  /* ============================================================
+     STAGE PDP-CORR-2B — PRODUCT-PAGE DRAWER SCOPE (10th surface)
+     Adds html.ak-pdp-page (the individual product pages) to the ND-2A font +
+     ND-2B paper/ink mobile-drawer treatment above. SAME values, page-class-
+     prefixed (leak-safe — only product routes carry ak-pdp-page). The drawer
+     markup/JS (body-append, open/close/ESC/aria/scroll-lock) is owned by
+     ak-top.liquid and is NOT touched. Product routes emit no `active` drawer
+     link (no request.path match), so the PRODUCTS active pill is keyed off its
+     href (/collections/master-collection). Revert: delete this block.
+     ============================================================ */
+  /* font (MENU trigger + drawer text links) */
+  html.ak-pdp-page .ak-top-mobile-trigger,
+  html.ak-pdp-page .ak-top-drawer a:not(.ak-top-mobile-image){
+    font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+  }
+  /* 320 tracking correction */
+  @media (max-width:360px){
+    html.ak-pdp-page .ak-top-drawer a:not(.ak-top-mobile-image){ letter-spacing:.16em !important; }
+  }
+  /* panel paper */
+  html.ak-pdp-page .ak-top-drawer[data-ak-top-drawer]{
+    background-color:#f5dd4f !important;
+    background-image:
+      linear-gradient(90deg, transparent 27px, rgba(218,40,50,.55) 27px, rgba(218,40,50,.55) 29px, transparent 29px),
+      repeating-linear-gradient(180deg, transparent 0 31px, rgba(44,120,180,.30) 31px 32px) !important;
+    background-repeat:no-repeat, repeat !important;
+    background-position:0 0, 0 0 !important;
+    background-size:auto, auto !important;
+  }
+  /* text ink */
+  html.ak-pdp-page .ak-top-drawer a:not(.ak-top-mobile-image){
+    color:#15120b !important; text-shadow:none !important;
+  }
+  /* hover / focus purple + ink wash */
+  html.ak-pdp-page .ak-top-drawer a:not(.ak-top-mobile-image):hover,
+  html.ak-pdp-page .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible{
+    color:#ff33ff !important; background:rgba(21,18,11,.07) !important;
+  }
+  /* active = the PRODUCTS link (href /collections/master-collection); ordered
+     after hover (equal specificity) so it wins at rest */
+  html.ak-pdp-page .ak-top-drawer a[href="/collections/master-collection"]:not(.ak-top-mobile-image){
+    color:#ff33ff !important; background:rgba(255,51,255,.12) !important; text-shadow:0 1px 1px rgba(21,18,11,.22) !important;
+  }
+  /* close ✕ ink (purple on hover/focus) */
+  html.ak-pdp-page .ak-top-drawer .ak-top-drawer-close{ color:#15120b !important; }
+  html.ak-pdp-page .ak-top-drawer .ak-top-drawer-close:hover,
+  html.ak-pdp-page .ak-top-drawer .ak-top-drawer-close:focus-visible{ color:#ff33ff !important; }
+  /* focus-visible a11y ring (links + close) */
+  html.ak-pdp-page .ak-top-drawer a:not(.ak-top-mobile-image):focus-visible,
+  html.ak-pdp-page .ak-top-drawer .ak-top-drawer-close:focus-visible{
+    outline:2px solid #15120b !important; outline-offset:2px !important;
+  }
+  /* image-link (BAD/CandyFacts) ink contour */
+  html.ak-pdp-page .ak-top-drawer .ak-top-mobile-image img{
+    filter: drop-shadow(0 0 1px rgba(21,18,11,1)) drop-shadow(0 1px 2px rgba(21,18,11,.55)) !important;
+  }
 </style>

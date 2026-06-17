@@ -94,4 +94,184 @@
   html.ak-pdp-page .ak-btt-text{
     font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
   }
+
+  /* ============================================================
+     PDP-CORR-2B — PRODUCT NOTEBOOK SHELL / HEADER / FOOTER
+     Page-scoped (html.ak-pdp-page), CSS-only. Makes the WHOLE product route
+     read as one notebook page: full-bleed legal-pad paper behind the ak-top
+     header + footer, the proven mask-PNG ink nav (ported verbatim from
+     snippets/ak-notebook-products.liquid, prefix renamed .ak-products-page ->
+     .ak-pdp-page), PRODUCTS active (CSS-only — /products/* has no route-native
+     .is-active tile), the ak-footer surface on paper, and a related-products
+     title-ink backstop. SUPERSEDES the PDP-2A "contained" paper scope but
+     PRESERVES the PDP-2A #MainProduct section paper (opaque, untouched). NO
+     ak-top.liquid / ak-footer.liquid / main-product.liquid / product.json
+     edit, NO doodles, NO control skin, NO media framing, NO commerce change.
+     Revert: delete this block (the product-page drawer scope is a separate
+     PDP-CORR-2B block in snippets/ak-notebook-drawer.liquid).
+     ============================================================ */
+
+  /* (A) FULL-BLEED NOTEBOOK PAPER — beats the global html,body{background:#000}
+     net ONLY on html.ak-pdp-page (specificity html.ak-pdp-page body = (0,1,2)
+     > the net's body (0,0,1)). side-gap = clamp(40px,6vw,120px) matches the
+     PDP-2A #MainProduct margins so the red/blue vertical rules stay continuous
+     through the product section. Same house values as the other notebook pages. */
+  html.ak-pdp-page{
+    --ak-paper-top-gap: clamp(150px, 17vw, 220px);
+    --ak-paper-bottom-gap: clamp(130px, 12vw, 190px);
+  }
+  html.ak-pdp-page body{
+    --ak-paper-side-gap: clamp(40px, 6vw, 120px);
+    background-color:#f5dd4f !important;
+    background-image:
+      linear-gradient(90deg,
+        transparent calc(100% - var(--ak-paper-side-gap)),
+        rgba(44,120,180,.60) calc(100% - var(--ak-paper-side-gap)),
+        rgba(44,120,180,.60) calc(100% - var(--ak-paper-side-gap) + 2px),
+        transparent calc(100% - var(--ak-paper-side-gap) + 2px)),   /* blue RIGHT margin rule */
+      linear-gradient(90deg,
+        transparent var(--ak-paper-side-gap),
+        rgba(218,40,50,.74) var(--ak-paper-side-gap),
+        rgba(218,40,50,.74) calc(var(--ak-paper-side-gap) + 2px),
+        transparent calc(var(--ak-paper-side-gap) + 2px)),          /* red LEFT margin rule */
+      linear-gradient(180deg,
+        #f5dd4f 0, #f5dd4f var(--ak-paper-top-gap),
+        transparent var(--ak-paper-top-gap)),                       /* blank yellow TOP band (clean behind logo/nav) */
+      linear-gradient(180deg,
+        transparent calc(100% - var(--ak-paper-bottom-gap)),
+        #f5dd4f calc(100% - var(--ak-paper-bottom-gap) + 36px)),     /* blank yellow BOTTOM band (lines fade before footer) */
+      repeating-linear-gradient(180deg,
+        transparent 0 31px,
+        rgba(44,120,180,.60) 31px 32px) !important;                 /* blue horizontal ruled lines */
+    background-repeat:no-repeat, no-repeat, no-repeat, no-repeat, repeat !important;
+    background-position:0 0, 0 0, 0 0, 0 0, 0 var(--ak-paper-top-gap) !important;
+    background-attachment:scroll, scroll, scroll, scroll, scroll !important;
+  }
+  /* page chrome transparent so the body paper shows behind header/sections/footer.
+     The PDP-2A #MainProduct paper is on the inner product-info element (its own id),
+     NOT .shopify-section, so it is unaffected. */
+  html.ak-pdp-page #MainContent{ background:transparent !important; }
+  html.ak-pdp-page #MainContent .gradient{ background:transparent !important; background-image:none !important; }
+  html.ak-pdp-page .shopify-section{ background:transparent !important; }
+
+  /* (B) HEADER / NAV — verbatim port of ak-notebook-products.liquid (lines
+     291-391) with the prefix renamed to .ak-pdp-page. Mask-PNG ink wordmarks
+     on paper, purple hover, cart ink, divider/spacing. ak-top.liquid UNTOUCHED. */
+  html.ak-pdp-page .ak-top-wrap{ background:transparent !important; }
+  html.ak-pdp-page .ak-top-wrap::after{ background:none !important; }
+  html.ak-pdp-page .ak-top-label{ color:#15120b !important; }
+  html.ak-pdp-page .ak-top-bad{ color:#15120b !important; }
+  html.ak-pdp-page .ak-top-mobile-trigger{ color:#15120b !important; text-shadow:none !important; }
+  html.ak-pdp-page .ak-top-label::before,
+  html.ak-pdp-page .ak-top-label::after{ opacity:0 !important; }
+  html.ak-pdp-page .ak-top-tile:hover .ak-top-label,
+  html.ak-pdp-page .ak-top-bad:hover,
+  html.ak-pdp-page .ak-top-mobile-trigger:hover{ color:#ff33ff !important; }
+
+  html.ak-pdp-page .ak-top-cart-container{ transform:translateX(clamp(4px, .6vw, 10px)) !important; }
+  html.ak-pdp-page .ak-top-cart-img{ filter:brightness(0) !important; }
+  html.ak-pdp-page .ak-top-cart-link:hover .ak-top-cart-img,
+  html.ak-pdp-page .ak-top-cart-link:focus-visible .ak-top-cart-img{
+    filter:brightness(0) drop-shadow(0 0 6px #ff33ff) drop-shadow(0 0 12px rgba(255,51,255,.5)) !important;
+  }
+  html.ak-pdp-page .ak-top-divider{ display:none !important; }
+  html.ak-pdp-page .ak-top-nav-panel{ padding-top:clamp(2px,0.6vw,8px) !important; }
+  html.ak-pdp-page .ak-top-nav-area{ margin-top:clamp(-22px,-2.2vw,-8px) !important; }
+
+  html.ak-pdp-page .ak-top-life{    --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/lifestyle_button.png?v=1780886497"); --ak-nav-png-size:clamp(260px, 21vw, 400px);   --ak-nav-tilt:-2.2deg; }
+  html.ak-pdp-page .ak-top-products{--ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/products_button.png?v=1780886497");  --ak-nav-png-size:clamp(280px, 23vw, 430px);   --ak-nav-tilt:1.4deg; }
+  html.ak-pdp-page .ak-top-archive{ --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/archive_button.png?v=1780885375");   --ak-nav-png-size:clamp(270px, 22vw, 420px);   --ak-nav-tilt:-1.1deg; }
+  html.ak-pdp-page .ak-top-narrative{--ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/narrative_button.png?v=1780885375"); --ak-nav-png-size:clamp(265px, 21.5vw, 410px); --ak-nav-tilt:1.8deg; }
+  html.ak-pdp-page .ak-top-contact{ --ak-nav-mask:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/moniker_button.png?v=1780885375");   --ak-nav-png-size:clamp(220px, 18vw, 340px);   --ak-nav-tilt:-1.6deg; }
+  html.ak-pdp-page .ak-top-bad{ --ak-nav-tilt:-2.5deg; }
+  html.ak-pdp-page .ak-top-candy{ --ak-nav-tilt:1.2deg; }
+
+  html.ak-pdp-page .ak-top-life,
+  html.ak-pdp-page .ak-top-products,
+  html.ak-pdp-page .ak-top-archive,
+  html.ak-pdp-page .ak-top-narrative,
+  html.ak-pdp-page .ak-top-contact,
+  html.ak-pdp-page .ak-top-bad,
+  html.ak-pdp-page .ak-top-candy{
+    transform:none !important; -webkit-transform:none !important;
+    background-image:none !important; filter:none !important;
+    transition-property:filter, color, opacity, background-color !important;
+    will-change:auto !important;
+  }
+  html.ak-pdp-page .ak-top-life::before,
+  html.ak-pdp-page .ak-top-products::before,
+  html.ak-pdp-page .ak-top-archive::before,
+  html.ak-pdp-page .ak-top-narrative::before,
+  html.ak-pdp-page .ak-top-contact::before{
+    content:"" !important; display:block !important; position:absolute !important;
+    left:50% !important; top:50% !important;
+    width:var(--ak-nav-png-size) !important; height:var(--ak-nav-png-size) !important;
+    transform:translate(-50%, -50%) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    -webkit-transform:translate(-50%, -50%) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    transform-origin:center center !important;
+    backface-visibility:hidden !important; -webkit-backface-visibility:hidden !important;
+    pointer-events:none !important;
+    background-color:#15120b !important;
+    -webkit-mask:var(--ak-nav-mask) center / contain no-repeat !important;
+    mask:var(--ak-nav-mask) center / contain no-repeat !important;
+    transition:background-color .12s ease, opacity .12s ease !important;
+    z-index:1 !important;
+  }
+  html.ak-pdp-page .ak-top-life:hover::before, html.ak-pdp-page .ak-top-life:focus-visible::before, html.ak-pdp-page .ak-top-life:active::before,
+  html.ak-pdp-page .ak-top-products:hover::before, html.ak-pdp-page .ak-top-products:focus-visible::before, html.ak-pdp-page .ak-top-products:active::before,
+  html.ak-pdp-page .ak-top-archive:hover::before, html.ak-pdp-page .ak-top-archive:focus-visible::before, html.ak-pdp-page .ak-top-archive:active::before,
+  html.ak-pdp-page .ak-top-narrative:hover::before, html.ak-pdp-page .ak-top-narrative:focus-visible::before, html.ak-pdp-page .ak-top-narrative:active::before,
+  html.ak-pdp-page .ak-top-contact:hover::before, html.ak-pdp-page .ak-top-contact:focus-visible::before, html.ak-pdp-page .ak-top-contact:active::before{
+    background-color:#ff33ff !important;
+  }
+  /* PRODUCTS ACTIVE on /products/* — no route-native .is-active on product
+     routes, so the active cue (purple wordmark + magenta halo, paint-only) is
+     applied DIRECTLY to the PRODUCTS tile ::before (the same body as the
+     .is-active::before rule on the other notebook pages). */
+  html.ak-pdp-page .ak-top-products::before{
+    background-color:#ff33ff !important;
+    filter:
+      drop-shadow(0 0 4px #ff33ff)
+      drop-shadow(0 0 12px rgba(255,51,255,.75))
+      drop-shadow(0 0 24px rgba(255,51,255,.5)) !important;
+  }
+  /* keep the labels in the DOM for screen readers, visually hidden in all states */
+  html.ak-pdp-page .ak-top-life .ak-top-label, html.ak-pdp-page .ak-top-life:hover .ak-top-label, html.ak-pdp-page .ak-top-life:focus-visible .ak-top-label, html.ak-pdp-page .ak-top-life:active .ak-top-label,
+  html.ak-pdp-page .ak-top-products .ak-top-label, html.ak-pdp-page .ak-top-products:hover .ak-top-label, html.ak-pdp-page .ak-top-products:focus-visible .ak-top-label, html.ak-pdp-page .ak-top-products:active .ak-top-label,
+  html.ak-pdp-page .ak-top-archive .ak-top-label, html.ak-pdp-page .ak-top-archive:hover .ak-top-label, html.ak-pdp-page .ak-top-archive:focus-visible .ak-top-label, html.ak-pdp-page .ak-top-archive:active .ak-top-label,
+  html.ak-pdp-page .ak-top-narrative .ak-top-label, html.ak-pdp-page .ak-top-narrative:hover .ak-top-label, html.ak-pdp-page .ak-top-narrative:focus-visible .ak-top-label, html.ak-pdp-page .ak-top-narrative:active .ak-top-label,
+  html.ak-pdp-page .ak-top-contact .ak-top-label, html.ak-pdp-page .ak-top-contact:hover .ak-top-label, html.ak-pdp-page .ak-top-contact:focus-visible .ak-top-label, html.ak-pdp-page .ak-top-contact:active .ak-top-label{
+    color:transparent !important; text-shadow:none !important;
+  }
+  html.ak-pdp-page .ak-top-bad-mask{
+    transform:scale(1.18) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    -webkit-transform:scale(1.18) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+  }
+  html.ak-pdp-page .ak-top-candy-img{
+    transform:scale(1.75) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+    -webkit-transform:scale(1.75) rotate(var(--ak-nav-tilt)) translateZ(0) !important;
+  }
+
+  /* (C) FOOTER — paper shows behind the ak-footer, ink back-to-top. The
+     .ak-btt-text FONT is already set in the PDP-CORR-2A block above; here only
+     the footer SURFACE + CTA colours change. ak-footer.liquid NOT edited; id
+     "AkBackToTop" / aria-label / scroll-to-top JS / focus-visible / hover /
+     reduced-motion all untouched. */
+  html.ak-pdp-page .ak-footer{ background:transparent !important; }
+  html.ak-pdp-page .ak-btt{ color:#15120b !important; }                     /* .ak-btt-text inherits ink */
+  html.ak-pdp-page .ak-footer-copy{ color:rgba(21,18,11,.5) !important; }
+  html.ak-pdp-page .ak-btt:hover .ak-btt-text,
+  html.ak-pdp-page .ak-btt:focus-visible .ak-btt-text{ color:#ff33ff !important; } /* preserve purple hover/focus */
+  html.ak-pdp-page .ak-footer-rule{ background:none !important; }           /* remove footer glow line (keep spacing) */
+
+  /* (D) RELATED PRODUCTS — full-bleed paper exposes the related-products grid
+     (white Impact card titles, invisible on yellow). Smallest readability
+     backstop: ink the card titles (color ONLY; scoped to .related-products;
+     NO grid/card snippet or global card CSS edit; sizing/links/badges
+     untouched). Not a redesign — a follow-up may style the cards further. */
+  html.ak-pdp-page .related-products .card-wrapper .card__heading,
+  html.ak-pdp-page .related-products .card-wrapper .card__heading a,
+  html.ak-pdp-page .related-products .card-wrapper .card__information .full-unstyled-link{
+    color:#15120b !important;
+  }
 </style>
