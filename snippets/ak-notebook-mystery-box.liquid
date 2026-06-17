@@ -343,4 +343,153 @@
   .ak-mysterybox-page .ak-mb-prestart__plate-body .ak-mb-prestart__brief-line::before{
     font-family:ui-monospace, Menlo, Consolas, monospace !important;
   }
+
+  /* ============================================================
+     STAGE MB-3C — STATIC MARQUEE COVER (2026-06-17)
+     First visual transform of the Shopify-side prestart cover into the
+     abandoned CandyFacts carnival/theatre marquee direction. CSS-ONLY, scoped to
+     .ak-mysterybox-page, PAINT-ONLY overrides of existing .ak-mb-prestart elements
+     (color / background / background-image / border-color / box-shadow / text-shadow /
+     opacity / filter / animation:none + the step-number ::before content). NO size /
+     padding / margin / gap / border-width / line-height / width / height / position /
+     inset / z-index / display / transform-on-flow change → ZERO layout height added
+     (cover still fits the .ak-mb-frame overflow:hidden budget at 320). NO new keyframes,
+     NO new motion (existing magenta glow/flicker/pulse LOOPS are neutralized to static
+     via animation:none on the title + decorative pseudos so the warm palette sticks;
+     the one-shot entrance akMbPrestartIn/akMbPrestartChildRise is LEFT intact — those 5
+     entrance elements (__serial/__hero/__plate/__ctas/__disclaimer) are recolored only,
+     never animation:none'd (their base opacity:0 + forwards would hide them) and never
+     given a transform (entrance forwards-transform would override it)). NO texture/bulb
+     image assets, NO copy/DOM/JS change. Builds on MB-3B fonts; MB-1 paper + MB-2 outline
+     fix untouched. sections/ak-mb-prestart.liquid is NOT edited.
+     Revert: delete this STAGE MB-3C block.
+     ============================================================ */
+
+  /* warm marquee palette (scoped vars) + theatre-wall backdrop */
+  .ak-mysterybox-page .ak-mb-prestart{
+    --mbc-cream:#f0e1b6; --mbc-cream-dim:rgba(240,225,182,0.60);
+    --mbc-gold:#e6ba52; --mbc-gold-soft:rgba(245,216,128,0.85);
+    --mbc-red:#b23a30; --mbc-amber:#c98a3a; --mbc-ink:#130d06;
+    background:linear-gradient(180deg,#1b1409 0%,#130d07 55%,#0a0703 100%) !important;
+    color:var(--mbc-cream) !important;
+  }
+  .ak-mysterybox-page .ak-mb-prestart::before{   /* warm static spotlight haze (was magenta pulse) */
+    background:radial-gradient(ellipse 120% 85% at 50% 36%, rgba(230,186,82,0.12), transparent 72%) !important;
+    animation:none !important;
+  }
+  .ak-mysterybox-page .ak-mb-prestart__scanline{ opacity:0 !important; animation:none !important; }   /* kill CRT scanlines */
+  .ak-mysterybox-page .ak-mb-prestart__grain{ opacity:0.06 !important; animation:none !important; }    /* keep faint dust, static */
+  .ak-mysterybox-page .ak-mb-prestart__vignette{ background:radial-gradient(ellipse at 50% 42%, transparent 28%, rgba(0,0,0,0.68) 100%) !important; }
+  .ak-mysterybox-page .ak-mb-prestart__watermark{ color:rgba(230,186,82,0.05) !important; }   /* warm faint, de-magenta */
+
+  /* ENVELOPE → static marquee bulb frame (4 gold dot rows on the bg + warm border/glow) */
+  .ak-mysterybox-page .ak-mb-prestart__envelope{
+    border-color:rgba(235,200,120,0.42) !important;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,0.5), 0 0 34px -12px rgba(230,186,82,0.40) !important;
+    background:
+      radial-gradient(circle, rgba(245,216,128,0.82) 0 2.3px, rgba(150,95,30,0.4) 2.3px 3px, transparent 3.3px) left top / 28px 13px repeat-x,
+      radial-gradient(circle, rgba(245,216,128,0.82) 0 2.3px, rgba(150,95,30,0.4) 2.3px 3px, transparent 3.3px) left bottom / 28px 13px repeat-x,
+      radial-gradient(circle, rgba(245,216,128,0.82) 0 2.3px, rgba(150,95,30,0.4) 2.3px 3px, transparent 3.3px) left top / 13px 28px repeat-y,
+      radial-gradient(circle, rgba(245,216,128,0.82) 0 2.3px, rgba(150,95,30,0.4) 2.3px 3px, transparent 3.3px) right top / 13px 28px repeat-y !important;
+  }
+  /* corner brackets → warm bulb corner nodes */
+  .ak-mysterybox-page .ak-mb-prestart__env-corner::before,
+  .ak-mysterybox-page .ak-mb-prestart__env-corner::after{
+    background:rgba(245,216,128,0.9) !important;
+    box-shadow:0 0 7px rgba(230,186,82,0.6) !important;
+  }
+
+  /* INNER signboard depth (paint-only; kept transparent so the bulb frame reads around it) */
+  .ak-mysterybox-page .ak-mb-prestart__inner{ filter:drop-shadow(0 2px 1px rgba(0,0,0,0.45)) !important; }
+
+  /* SERIAL / KICKER / SUBTITLE → show-signage labels (recolor magenta→warm) */
+  .ak-mysterybox-page .ak-mb-prestart__serial{
+    background:linear-gradient(180deg, rgba(40,26,12,0.92), rgba(22,14,7,0.94)) !important;
+    border-top-color:rgba(235,200,120,0.32) !important; border-bottom-color:rgba(0,0,0,0.7) !important;
+    color:var(--mbc-cream-dim) !important;
+  }
+  .ak-mysterybox-page .ak-mb-prestart__serial-dot{
+    background:#f0c860 !important;
+    box-shadow:0 0 6px rgba(235,200,120,0.85), 0 0 0 2px #1a1208, 0 0 0 3px rgba(0,0,0,0.85) !important;
+    animation:none !important;
+  }
+  .ak-mysterybox-page .ak-mb-prestart__serial-sep{ color:rgba(235,200,120,0.4) !important; }
+  .ak-mysterybox-page .ak-mb-prestart__kicker{
+    color:var(--mbc-cream) !important;
+    border-top-color:rgba(235,200,120,0.42) !important;
+    border-bottom-color:rgba(178,58,48,0.45) !important;
+  }
+  .ak-mysterybox-page .ak-mb-prestart__subtitle{
+    color:var(--mbc-gold) !important;
+    border-top-color:rgba(235,200,120,0.6) !important; border-bottom-color:rgba(235,200,120,0.22) !important;
+  }
+  .ak-mysterybox-page .ak-mb-prestart__subtitle::before,
+  .ak-mysterybox-page .ak-mb-prestart__subtitle::after{
+    border-color:rgba(235,200,120,0.6) !important; box-shadow:0 0 6px rgba(230,186,82,0.3) !important;
+  }
+
+  /* TITLE → old worn neon marquee (static, weak warm glow; killed magenta glow loop) */
+  .ak-mysterybox-page .ak-mb-prestart__title-frame::before,
+  .ak-mysterybox-page .ak-mb-prestart__title-frame::after{
+    background:linear-gradient(90deg, transparent, rgba(235,200,120,0.5) 50%, transparent) !important;
+  }
+  .ak-mysterybox-page .ak-mb-prestart__title{
+    color:#efe0ad !important;
+    text-shadow:
+      0 0 1px rgba(255,242,205,0.45),
+      0 0 9px rgba(230,160,70,0.34),
+      0 0 20px rgba(178,58,48,0.22),
+      0 2px 0 rgba(0,0,0,0.6) !important;
+    animation:none !important;
+  }
+
+  /* INSTRUCTION PLATE → reader-board placard (recolor; numbered steps via ::before content) */
+  .ak-mysterybox-page .ak-mb-prestart__plate{
+    background:linear-gradient(180deg,#22160b 0%,#160e06 100%) !important;
+    border-color:rgba(235,200,120,0.22) !important; border-top-color:rgba(178,58,48,0.55) !important;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,0.5), inset 0 1px 0 rgba(235,200,120,0.06), 0 6px 14px -8px rgba(0,0,0,0.8) !important;
+  }
+  .ak-mysterybox-page .ak-mb-prestart__plate::before{ box-shadow:inset 0 0 0 1px rgba(235,200,120,0.05) !important; }
+  .ak-mysterybox-page .ak-mb-prestart__plate::after{ background:rgba(230,186,82,0.5) !important; animation:none !important; }   /* top rail static */
+  .ak-mysterybox-page .ak-mb-prestart__plate-label{ background:#1a1208 !important; color:var(--mbc-gold) !important; }
+  .ak-mysterybox-page .ak-mb-prestart__plate-tab-r{ background:#1a1208 !important; color:rgba(235,200,120,0.6) !important; }
+  .ak-mysterybox-page .ak-mb-prestart__brief-line{ color:var(--mbc-cream) !important; }
+  .ak-mysterybox-page .ak-mb-prestart__brief-line::before{ color:var(--mbc-gold) !important; font-weight:700 !important; }
+  .ak-mysterybox-page .ak-mb-prestart__plate-body .ak-mb-prestart__brief-line:nth-child(1)::before{ content:"1" !important; }
+  .ak-mysterybox-page .ak-mb-prestart__plate-body .ak-mb-prestart__brief-line:nth-child(2)::before{ content:"2" !important; }
+  .ak-mysterybox-page .ak-mb-prestart__plate-body .ak-mb-prestart__brief-line:nth-child(3)::before{ content:"3" !important; }
+  .ak-mysterybox-page .ak-mb-prestart__brief-line a{ color:var(--mbc-gold) !important; text-decoration-color:rgba(235,200,120,0.6) !important; }
+
+  /* CTA → theatre/ticket-booth ENTER button (warm, static bulb glow) */
+  .ak-mysterybox-page .ak-mb-prestart__cta--primary{
+    background:linear-gradient(180deg,#3a1410 0%,#220b08 100%) !important;
+    border-color:rgba(235,200,120,0.5) !important; border-top-color:rgba(245,216,128,0.72) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(245,216,128,0.2),
+      inset 0 -3px 8px rgba(0,0,0,0.5),
+      0 0 0 1px rgba(0,0,0,0.6),
+      0 0 22px -4px rgba(230,160,70,0.45),
+      0 6px 14px -6px rgba(0,0,0,0.8) !important;
+  }
+  .ak-mysterybox-page .ak-mb-prestart__cta--primary::before{ background:linear-gradient(180deg, rgba(245,216,128,0.12), transparent 60%) !important; }
+  .ak-mysterybox-page .ak-mb-prestart__cta--primary::after{ box-shadow:0 0 26px -4px rgba(230,160,70,0.5) !important; animation:none !important; }
+  .ak-mysterybox-page .ak-mb-prestart__cta--primary:focus-visible{ outline:2px solid rgba(245,216,128,0.9) !important; outline-offset:2px !important; }
+  .ak-mysterybox-page .ak-mb-prestart__cta-label{ color:#f3e4ba !important; text-shadow:0 0 8px rgba(230,160,70,0.4), 0 1px 0 rgba(0,0,0,0.6) !important; }
+  .ak-mysterybox-page .ak-mb-prestart__cta-sub{ color:rgba(240,225,182,0.7) !important; }
+
+  /* DISCLAIMER → bottom marquee ticker strip (warm, static; mono kept from MB-3B) */
+  .ak-mysterybox-page .ak-mb-prestart__disclaimer{
+    color:rgba(240,225,182,0.45) !important;
+    border-top-color:rgba(235,200,120,0.3) !important;
+    background-image:repeating-linear-gradient(90deg, rgba(235,200,120,0.05) 0 6px, transparent 6px 12px) !important;
+  }
+  .ak-mysterybox-page .ak-mb-prestart__disclaimer::before{ background:#f0c860 !important; box-shadow:0 0 6px rgba(235,200,120,0.7) !important; animation:none !important; }
+  .ak-mysterybox-page .ak-mb-prestart__disclaimer::after{ background:rgba(235,200,120,0.5) !important; }
+
+  /* SHELL-FX frame furniture — recolor magenta→warm only (position/z-index/JS untouched) */
+  .ak-mysterybox-page .ak-mb-shell-fx__chin-text{ color:rgba(235,200,120,0.5) !important; }
+  .ak-mysterybox-page .ak-mb-shell-fx__chin-cursor{ background:rgba(235,200,120,0.6) !important; }
+  .ak-mysterybox-page .ak-mb-shell-fx__hairline{ background:rgba(235,200,120,0.18) !important; }
+  .ak-mysterybox-page .ak-mb-shell-fx__reg::before,
+  .ak-mysterybox-page .ak-mb-shell-fx__reg::after{ background:rgba(235,200,120,0.4) !important; box-shadow:0 0 5px rgba(230,186,82,0.4) !important; }
 </style>
