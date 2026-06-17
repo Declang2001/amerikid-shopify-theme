@@ -390,6 +390,105 @@
     html.ak-pdp-page #MainProduct-{{ section.id }} .price .price-item {
       font-family: 'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
     }
+
+    /* ============================================================
+       STAGE PDP-2C — NOTEBOOK PRODUCT CONTROL SKIN
+       Additive, page-class-gated (html.ak-pdp-page #MainProduct-{id} =
+       (1,2,x), beats the (1,1,0)+!important ATC lock at L182 and Dawn's
+       component rules). VISUAL ONLY — recolors/borders/shadows the visible
+       size pills, quantity field, and Add-to-Cart button to match the
+       notebook shell. NO markup / JS / commerce / size / behaviour change:
+       it never touches the radio inputs, names, values, `for`, the
+       `:checked`/`.disabled` STATE classes (only styles their + label), the
+       quantity input name/min/max/step, the ATC id/name/type/label-span/
+       spinner/disabled logic, or the native Shop Pay button. Reuses house
+       ink #15120b / purple #ff33ff / paper. Revert: delete this block.
+       ============================================================ */
+
+    /* --- SIZE / VARIANT PILLS — paper sticker + ink border at rest, bright
+       magenta when selected, purple ink on hover, muted+dashed when disabled.
+       Targets only `input + label` (the visible pill); the radio input,
+       names, values, for, checked/disabled state are untouched. --- */
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__input--pill input[type='radio'] + label{
+      background:rgba(255,253,243,.92) !important;   /* paper sticker */
+      color:#15120b !important;                      /* ink (Due Date font kept from PDP-2B) */
+      border:2px solid #15120b !important;           /* ink outline */
+      box-shadow:2px 2px 0 rgba(21,18,11,.45) !important; /* hand-drawn offset */
+    }
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__input--pill input[type='radio'] + label:hover{
+      color:#ff33ff !important; border-color:#ff33ff !important;
+      box-shadow:2px 2px 0 rgba(21,18,11,.45), 0 0 10px rgba(255,51,255,.35) !important;
+    }
+    /* SELECTED (very obvious): bright magenta fill + paper-white text + ink outline + glow */
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__input--pill input[type='radio']:checked + label{
+      background:#ff33ff !important; color:#fffdf3 !important; border-color:#15120b !important;
+      box-shadow:2px 2px 0 #15120b, 0 0 14px rgba(255,51,255,.5) !important;
+    }
+    /* UNAVAILABLE / DISABLED: muted ink + dashed outline + keep Dawn's strike-through; ordered after :checked so a sold-out selected size still reads disabled */
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__input--pill input[type='radio']:disabled + label,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__input--pill input[type='radio'].disabled + label{
+      background:rgba(21,18,11,.05) !important; color:rgba(21,18,11,.42) !important;
+      border:2px dashed rgba(21,18,11,.38) !important; box-shadow:none !important;
+    }
+    /* FOCUS-VISIBLE (keyboard): obvious magenta ring (works on any state) */
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__input--pill input[type='radio']:focus-visible + label{
+      outline:3px solid #ff33ff !important; outline-offset:2px !important;
+    }
+
+    /* --- QUANTITY STEPPER — ink-outlined paper field (border via inset
+       box-shadow → ZERO dimension change), ink number, ink +/- icons that go
+       purple on hover/focus. Input name/min/max/step/behaviour untouched. --- */
+    html.ak-pdp-page #MainProduct-{{ section.id }} .quantity{
+      background:rgba(255,253,243,.92) !important;
+      box-shadow:inset 0 0 0 2px #15120b, 2px 2px 0 rgba(21,18,11,.4) !important;
+      border-radius:8px !important;
+    }
+    html.ak-pdp-page #MainProduct-{{ section.id }} .quantity__input{
+      background:transparent !important; color:#15120b !important;
+    }
+    html.ak-pdp-page #MainProduct-{{ section.id }} .quantity__button{
+      background:transparent !important; color:#15120b !important;   /* svg +/- inherit currentColor */
+    }
+    html.ak-pdp-page #MainProduct-{{ section.id }} .quantity__button:hover,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .quantity__button:focus-visible{
+      color:#ff33ff !important;
+    }
+
+    /* --- ADD TO CART — bold comic notebook CTA: paper + thick ink border +
+       hard offset shadow at rest; magenta fill + glow + lift on hover/focus;
+       press-down on :active; muted-but-readable when disabled/sold-out. Keeps
+       the Impact CTA weight, the box size/click area, the label span + spinner
+       and the disabled logic. Beats the L182 #fff lock at (1,2,0). Shop Pay
+       button NOT targeted. --- */
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__submit{
+      background:#fffdf3 !important; color:#15120b !important;
+      border:3px solid #15120b !important; border-radius:8px !important;
+      box-shadow:5px 5px 0 #15120b !important;
+      transition:transform .12s ease, box-shadow .12s ease, background-color .12s ease, color .12s ease !important;
+      margin-bottom:calc(1rem + 6px) !important;     /* clear the offset shadow above Shop Pay */
+    }
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__submit span{ color:inherit !important; }
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__submit:hover,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__submit:focus-visible{
+      background:#ff33ff !important; color:#fffdf3 !important; border-color:#15120b !important;
+      box-shadow:6px 6px 0 #15120b, 0 0 20px rgba(255,51,255,.45) !important;
+      transform:translateY(-1px) !important;
+    }
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__submit:focus-visible{
+      outline:3px solid #ff33ff !important; outline-offset:3px !important;
+    }
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__submit:active{
+      transform:translate(2px,2px) !important; box-shadow:2px 2px 0 #15120b !important;
+    }
+    /* disabled / sold-out / unavailable — visibly muted, text still readable, spinner stays */
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__submit[disabled],
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__submit[aria-disabled='true']{
+      background:rgba(207,199,176,.7) !important; color:rgba(21,18,11,.55) !important;
+      border-color:rgba(21,18,11,.4) !important; box-shadow:2px 2px 0 rgba(21,18,11,.3) !important;
+      transform:none !important;
+    }
+    /* loading spinner stays visible (do NOT touch the `.hidden` toggle) — ink so it reads on the paper button */
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__submit .loading__spinner svg{ color:#15120b !important; }
   {%- endstyle -%}
 
   <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
