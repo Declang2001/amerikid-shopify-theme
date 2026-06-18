@@ -433,4 +433,84 @@
   html.ak-cart-page #main-cart-footer .totals__total-value{ color:#15120b !important; text-shadow:none !important; }
   html.ak-cart-page #main-cart-footer .tax-note{ color:rgba(21,18,11,.7) !important; }
   html.ak-cart-page #cart-errors{ color:#15120b !important; }                                       /* white error text -> readable ink on paper */
+
+  /* ============================================================
+     STAGE CART-2B — CART ITEM CARD + EMPTY BUTTONS WHITE NOTEBOOK PASS
+     Finishes the cart after CART-2A: flips the item-present product line
+     .cart-item-card from the dark de-mud (@310-314) to the white notebook card
+     (same recipe as the CART-2A footer), re-inks the white/neon text inside it,
+     and converts the empty-cart Continue Shopping + LOG IN pills to white
+     notebook buttons. CSS-ONLY, page-scoped html.ak-cart-page; the host renders
+     BEFORE the section (cart.json order), so every override wins on specificity
+     + !important (the source-order tax). EXTENDS — does NOT duplicate/delete —
+     the @310 dark rule (left intact; deleting THIS block returns the card to
+     dark). PRESERVES all commerce: <form id="cart">, name="updates[]" + qty JS,
+     remove links / url_to_remove, product links + images, subtotal/total Liquid,
+     the checkout button (DEFERRED) + Shop Pay / dynamic checkout, and the
+     empty-cart .is-empty/.cart__warnings visibility + the empty totals panel.
+     The REMOVE link STAYS red (destructive affordance). NO markup/JS/doodle/
+     asset change. Revert: delete this block (item card returns to dark).
+     ============================================================ */
+
+  /* (1) ITEM CARD SURFACE — dark -> warm white + ink stroke + sticker shadow
+     (matches the CART-2A footer). Supersedes @310-314 ((0,2,1)+!important >
+     (0,2,0)); radius / padding / width / layout inherited. */
+  html.ak-cart-page .cart-item-card{
+    background:#fffef8 !important;
+    border:2px solid #15120b !important;
+    box-shadow:6px 6px 0 rgba(21,18,11,.22) !important;
+  }
+  @media (max-width:480px){                                          /* edge-safe offset on the narrowest phones */
+    html.ak-cart-page .cart-item-card{ box-shadow:4px 4px 0 rgba(21,18,11,.22) !important; }
+  }
+  /* card hover — purple accent border + offset shadow; the section's :hover
+     translateY lift is KEPT (transform is not restated -> it still applies). */
+  html.ak-cart-page .cart-item-card:hover{
+    border-color:#ff33ff !important;
+    box-shadow:6px 6px 0 rgba(21,18,11,.30) !important;
+  }
+  /* (2) kill the dark-theme HUD scanline overlay (decorative; muddy on white). */
+  html.ak-cart-page .cart-item-card::before{ display:none !important; }
+
+  /* (3) RE-INK item text — TARGETED (never blanket .cart-item-card * so the
+     remove link + qty controls keep their own colours). */
+  html.ak-cart-page .cart-item-title{ color:#15120b !important; }
+  html.ak-cart-page .cart-item-variant{ color:rgba(21,18,11,.75) !important; }    /* muted ink */
+  html.ak-cart-page .cart-meta-label{ color:#15120b !important; }                 /* was neon green #39ff14 */
+  html.ak-cart-page .cart-meta-value{ color:#15120b !important; }
+  html.ak-cart-page .cart-item-meta::before{ background:rgba(21,18,11,.12) !important; } /* vertical divider, was white */
+  html.ak-cart-page .cart-item-media img{ border-color:rgba(21,18,11,.18) !important; }  /* re-ink the dark-theme frame (border colour only) */
+
+  /* (4) QUANTITY INPUT — paper field + ink number + purple focus ring (was
+     neon green on black). COLOUR / BG / BORDER-COLOUR only — name / value /
+     min / max / step / width / behaviour untouched. */
+  html.ak-cart-page .quantity-input{
+    color:#15120b !important; background:#fffef8 !important; border-color:#15120b !important;
+  }
+  html.ak-cart-page .quantity-input:focus,
+  html.ak-cart-page .quantity-input:focus-visible{
+    border-color:#ff33ff !important; box-shadow:0 0 0 2px rgba(255,51,255,.28) !important;
+  }
+  /* (5) REMOVE link stays RED (destructive affordance) — only guarantee a
+     visible focus ring on the white card. */
+  html.ak-cart-page .cart__remove-link:focus-visible{ outline:2px solid #15120b !important; outline-offset:2px !important; }
+
+  /* (6) EMPTY-CART BUTTONS — Continue Shopping + LOG IN -> white notebook
+     buttons (paper + ink border + ink text + offset shadow; purple hover/focus
+     with the paper KEPT, so they never flip to a magenta fill). Radius /
+     padding / bounceIn / transition / hrefs preserved; the base hover scale
+     lift is kept (transform not restated). */
+  html.ak-cart-page .custom-continue-button,
+  html.ak-cart-page .cart__login-paragraph a{
+    background:#fffef8 !important; color:#15120b !important; border:2px solid #15120b !important;
+    box-shadow:4px 4px 0 rgba(21,18,11,.22) !important;
+  }
+  html.ak-cart-page .custom-continue-button:hover,
+  html.ak-cart-page .custom-continue-button:focus-visible,
+  html.ak-cart-page .cart__login-paragraph a:hover,
+  html.ak-cart-page .cart__login-paragraph a:focus-visible{
+    background:#fffef8 !important; color:#ff33ff !important; border-color:#ff33ff !important;
+    box-shadow:5px 5px 0 rgba(21,18,11,.26) !important;
+  }
+  html.ak-cart-page .cart__login-paragraph{ color:#15120b !important; }           /* "Have an account?" prompt copy -> ink */
 </style>
