@@ -569,4 +569,86 @@
     background:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/channels.png?v=1781062547") center / contain no-repeat;
   }
 
+  /* ============================================================
+     STAGE CARDS-2A — LIFESTYLE WHITE NOTEBOOK CARDS
+     Reuses the Narrative `.ak-tweet` white-sticker language (warm white
+     #fffef8 + 1.5px ink #15120b stroke + hard 4px/4px offset shadow) on the
+     ONE shared `.ak-holo-card` across all 16 Life/Style cards — Adventures
+     (#akmod-adventures-yt ×6), Kid Radio (#ak-kidradio-holo ×6), Channels
+     (#ak-chan-holo ×4). CSS-ONLY, page-scoped `html.ak-lifestyle-page`,
+     module-id prefixed so each rule beats the page.json module CSS
+     ((1,2,1) > the (1,1,1)/(1,2,0) base). ADDITIVE — overrides the earlier
+     glass-over-paper fill (lines 293-307) by specificity + source order; that
+     block is left intact so deleting THIS block restores the glass look.
+     Imports NONE of the Narrative JS / scroll-reveal / tweet DOM / fonts /
+     avatar layout. PRESERVES: the YouTube iframes + IframeAPI + `.is-playing`
+     behaviour (only re-inks its white-on-black emphasis PAINT), the `--rx/--ry`
+     3D tilt + the lift transform, Channel `<a>` href/target/rel + brand SVGs,
+     the dark `.ak-adv-frame`/`.ak-kr-frame` video bezels + `.ak-kr-wave-bar`
+     visualizer, the title banners + ambient title animation + PNG titles, the
+     doodle layer. NO motion added, NO doodles, NO new assets.
+     Revert: delete this block (cards return to the frosted glass-over-paper look).
+     ============================================================ */
+
+  /* (1) WHITE CARD SURFACE — all 16 .ak-holo-card (radius left native:
+     Adventures 10px, Kid Radio/Channels 20px — keeps existing dimensions). */
+  html.ak-lifestyle-page #akmod-adventures-yt .ak-holo-card,
+  html.ak-lifestyle-page #ak-kidradio-holo .ak-holo-card,
+  html.ak-lifestyle-page #ak-chan-holo .ak-holo-card{
+    background:#fffef8 !important;                       /* Narrative warm-white paper */
+    border:1.5px solid #15120b !important;               /* house ink stroke */
+    box-shadow:4px 4px 0 rgba(21,18,11,.18) !important;  /* hard offset 'sticker' shadow */
+  }
+
+  /* (2) NEUTRALIZE the holographic sheen pseudo-layers (page.json `::before`
+     scanline+akAdvShimmer / `::after` specular, mix-blend:screen) so the white
+     reads clean. display:none removes the purely-decorative overlays entirely
+     (they hold no content + never gated the iframes); covers base + :hover +
+     .is-playing `::after` re-paints in one shot via the !important. */
+  html.ak-lifestyle-page #akmod-adventures-yt .ak-holo-card::before,
+  html.ak-lifestyle-page #akmod-adventures-yt .ak-holo-card::after,
+  html.ak-lifestyle-page #ak-kidradio-holo .ak-holo-card::before,
+  html.ak-lifestyle-page #ak-kidradio-holo .ak-holo-card::after,
+  html.ak-lifestyle-page #ak-chan-holo .ak-holo-card::before,
+  html.ak-lifestyle-page #ak-chan-holo .ak-holo-card::after{
+    display:none !important;
+  }
+
+  /* (3) HOVER / FOCUS — keep the page.json lift transform; recolor the border
+     to the house purple accent + grow the sticker shadow (this overrides the
+     earlier host hover at 300-307, which would otherwise fade the new solid
+     ink border to a light alpha). Transform/tilt are NOT restated -> preserved. */
+  html.ak-lifestyle-page #akmod-adventures-yt .ak-holo-card:hover,
+  html.ak-lifestyle-page #akmod-adventures-yt .ak-holo-card:focus-visible,
+  html.ak-lifestyle-page #ak-kidradio-holo .ak-holo-card:hover,
+  html.ak-lifestyle-page #ak-kidradio-holo .ak-holo-card:focus-visible,
+  html.ak-lifestyle-page #ak-chan-holo .ak-holo-card:hover,
+  html.ak-lifestyle-page #ak-chan-holo .ak-holo-card:focus-visible{
+    border-color:#ff33ff !important;
+    box-shadow:6px 6px 0 rgba(21,18,11,.22) !important;
+  }
+
+  /* (4) PLAYING CARD — the page.json `.is-playing-card` emphasis is white-on-
+     black (invisible on white). Re-ink ONLY its paint: ink border + a heavier
+     sticker shadow so the active video card still reads. The `.is-playing-card`
+     class, the IframeAPI JS that toggles it, and the dim-the-others
+     `:not(.is-playing-card)` treatment are ALL left untouched. (Channels have
+     no play state, so only the two video modules are targeted.) */
+  html.ak-lifestyle-page #akmod-adventures-yt .ak-holo-card.is-playing-card,
+  html.ak-lifestyle-page #ak-kidradio-holo .ak-holo-card.is-playing-card{
+    border-color:#15120b !important;
+    box-shadow:6px 6px 0 rgba(21,18,11,.30) !important;
+  }
+
+  /* (5) CHANNEL ICON CHIP — was a dark pill (rgba(0,0,0,.40)) + purple glow
+     built for black glass; on the white card re-tune to a light paper chip +
+     ink stroke (the purple brand glyph + the translateZ(18px) 3D layer are
+     untouched; the channel <a> href/target/rel + SVG are untouched). The
+     `.ak-holo-label`/`.ak-holo-meta` are already inked by the host (310-311). */
+  html.ak-lifestyle-page #ak-chan-holo .ak-holo-icon{
+    background:rgba(255,254,248,.92) !important;
+    border:1.5px solid #15120b !important;
+    box-shadow:none !important;
+  }
+
 </style>
