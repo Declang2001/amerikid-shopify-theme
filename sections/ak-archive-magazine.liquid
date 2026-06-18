@@ -2,24 +2,38 @@
   ============================================================================
   ak-archive-magazine.liquid  —  "AmeriKid Archive Issue"
   ----------------------------------------------------------------------------
-  A self-contained, sticker-like 3D magazine/comic flipbook that replaces the
-  cassette deck on the /collections (list-collections) Archive page.
+  A self-contained, tactile printed-zine magazine that replaces the cassette
+  deck on the /collections (list-collections) Archive page. Reads as a rough
+  printed archive issue (halftone/grain/physical paper), NOT a flat flipbook
+  and NOT an 8-bit game UI.
+
+  STATES (class on .ak-mag root): is-closed -> is-opening -> is-open
+    - is-closed : a dimensional closed cover resting/floating on the paper,
+                  with an "Open the Archive Issue" prompt + idle ambient float.
+    - is-opening: the front cover swings open (physical) and fades; the spread
+                  slides to centre.
+    - is-open   : centred two-page spread (desktop) / single page (mobile),
+                  prev/next below the book; settled pages are clean + readable.
 
   - Self-contained: ALL HTML + CSS + JS inline. No external dep, no canvas,
     no WebGL, no new font (reuses ak-due-date.woff2 + ak-tenada.woff2 assets).
   - Progressive enhancement: the semantic `.ak-mag-source` block (masthead +
-    contents + 18 real <a> item pages) is the no-JS fallback. JS adds
-    `.is-enhanced`, hides the source, and composes a two-page (desktop) /
-    single-page (mobile) flipbook by cloning page HTML into a book scaffold.
-  - Reuses the existing notebook paper painted by snippets/ak-notebook-archive
-    (rendered via custom_liquid_akArch1) — this section paints NOTHING on
-    html/body and forces no global background; it only styles its own object.
-  - Logo: reuses settings.logo (the same header/nav logo), never a hardcoded URL.
+    contents + 18 real <a> item pages) is the no-JS fallback + the data store.
+  - Reuses the existing notebook paper (snippets/ak-notebook-archive via
+    custom_liquid_akArch1). This section paints NOTHING on html/body.
+  - Logo: reuses settings.logo (same header/nav logo), never a hardcoded URL.
+
+  FUTURE COVER ART HOOK:
+    The closed cover is intentionally a simple typographic cover for now.
+    When the owner supplies a Shopify cover image, add an image_picker setting
+    (e.g. "cover_image") to {% schema %} and render it into `.ak-mag-cover-art`
+    (commented placeholder below), or set the CSS var --ak-mag-cover-image on
+    `.ak-mag-cover-face`. Do NOT hardcode a CDN asset.
 
   REVERT (whole magazine): in templates/list-collections.json remove
-  "ak-archive-magazine" from `order`, set "ak-archive" "disabled": false (or
-  remove the "disabled" key) — the byte-frozen cassette deck returns identical.
-  Then delete this file. sections/ak-archive.liquid is NEVER edited either way.
+  "ak-archive-magazine" from `order`, set "ak-archive" "disabled": false — the
+  byte-frozen cassette deck returns identical. Then delete this file.
+  sections/ak-archive.liquid is NEVER edited either way.
   ============================================================================
 {%- endcomment -%}
 
@@ -30,7 +44,7 @@
 {%- assign mag_logo_alt = settings.logo.alt | default: shop.name -%}
 
 <section
-  class="ak-mag color-{{ section.settings.color_scheme }}"
+  class="ak-mag"
   data-ak-mag
   aria-roledescription="magazine"
   aria-label="AmeriKid Archive Issue">
@@ -40,8 +54,7 @@
     @font-face{
       font-family:'AK Tenada';
       src:url('{{ 'ak-tenada.woff2' | asset_url }}') format('woff2');
-      font-weight:normal;font-style:normal;font-display:swap;
-      unicode-range:U+23; /* '#' only — must stay first in the stack */
+      font-weight:normal;font-style:normal;font-display:swap;unicode-range:U+23;
     }
     @font-face{
       font-family:'AK Due Date';
@@ -54,88 +67,99 @@
       --ink:#15120b;
       --ink-mut:rgba(21,18,11,.5);
       --purple:#ff33ff;
-      --page:#f6efe0;            /* light readable interior page */
-      --page-2:#efe6d2;          /* page tint variant */
-      --edge:#1a1714;            /* dark magazine edge */
+      --page:#f4ecd8;            /* warm printed paper */
+      --page-2:#ece1c6;
+      --edge:#cdbf9c;            /* page-stack edge */
+      --cover:#1d1a12;           /* dark printed cover board */
+      --cover-2:#2c2718;
+      --ak-mag-cover-image:none; /* FUTURE: set to url(...) to drop in cover art */
       --turn:560ms;
+      --grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='150'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
       --display:'AK Tenada','AK Due Date',Impact,Haettenschweiler,'Arial Narrow Bold',sans-serif;
-      position:relative;
-      z-index:1;                 /* sit above the notebook doodle layer (z-index:0) */
-      background:transparent;
+      position:relative;z-index:1;background:transparent;
       overflow-x:clip;
-      padding:clamp(18px,4vw,52px) clamp(10px,3vw,40px) clamp(40px,7vw,96px);
+      padding:clamp(16px,3.5vw,46px) clamp(10px,3vw,40px) clamp(40px,7vw,96px);
       font-family:var(--display);
-      color:var(--ink);
+      color:var(--ink);                /* INK by default — readable */
     }
     .ak-mag *,.ak-mag *::before,.ak-mag *::after{box-sizing:border-box;}
 
-    .ak-mag-stage{
-      display:flex;flex-direction:column;align-items:center;
-    }
+    .ak-mag-stage{display:flex;flex-direction:column;align-items:center;}
 
     /* ---------- NO-JS / SOURCE FALLBACK (also the data store) ---------- */
-    .ak-mag-source{width:min(680px,94vw);margin:0 auto;}
+    .ak-mag-source{width:min(680px,94vw);margin:0 auto;color:var(--ink);}
     .ak-mag.is-enhanced .ak-mag-source{display:none;}
     .ak-mag-srcpage{
-      background:var(--page);
-      border:1px solid rgba(0,0,0,.12);
-      border-radius:8px;
-      box-shadow:6px 7px 0 rgba(0,0,0,.16);
-      padding:clamp(18px,4vw,34px);
-      margin:0 0 22px;
+      background:var(--page);border:1px solid rgba(0,0,0,.14);border-radius:8px;
+      box-shadow:6px 7px 0 rgba(0,0,0,.16);padding:clamp(18px,4vw,34px);margin:0 0 22px;
     }
     .ak-mag-source .ak-mag-item{display:block;text-decoration:none;color:inherit;}
-    .ak-mag-source .ak-mag-cover{aspect-ratio:4/5;}
+    .ak-mag-source .ak-mag-cover-img{aspect-ratio:4/5;}
 
-    /* ---------- BOOK SCAFFOLD (enhanced only) ---------- */
+    /* ---------- BOOK (enhanced only) ---------- */
     .ak-mag-book{display:none;}
     .ak-mag.is-enhanced .ak-mag-book{
       display:block;position:relative;
       width:min(92vw,1040px);
       height:min(78vh,720px);
       margin-inline:auto;
-      perspective:2200px;
-      perspective-origin:50% 42%;
+      perspective:2400px;perspective-origin:50% 40%;
       touch-action:pan-y;
     }
     .ak-mag-book3d{
-      position:absolute;inset:0;
-      transform-style:preserve-3d;
-      transform:rotateX(-1deg);
-      transition:transform .38s cubic-bezier(.22,.68,.36,1.02);
-      filter:drop-shadow(8px 10px 0 rgba(0,0,0,.20)) drop-shadow(0 22px 40px rgba(0,0,0,.28));
+      position:absolute;inset:0;transform-style:preserve-3d;
+      transform:translateX(0) rotateX(-1.2deg);
+      transition:transform .6s cubic-bezier(.22,.68,.36,1.02);
+      /* believable object shadow on the notebook paper */
+      filter:drop-shadow(11px 15px 0 rgba(0,0,0,.16)) drop-shadow(0 30px 46px rgba(0,0,0,.34));
     }
-    .ak-mag-book.is-jump .ak-mag-book3d{transition:opacity .14s ease;}
-    .ak-mag-book.is-jump .ak-mag-spread{opacity:.55;}
+    /* CLOSED: shift so the right-half cover reads centred (left half is clipped) */
+    .ak-mag.is-closed .ak-mag-book3d,
+    .ak-mag.is-opening .ak-mag-book3d{transform:translateX(-25%) rotateX(-1.4deg);}
+    .ak-mag.is-closed .ak-mag-book3d{animation:akMagFloat 7s ease-in-out infinite;}
+    .ak-mag.is-open .ak-mag-book3d{transform:translateX(0) rotateX(-1deg);}
 
-    .ak-mag-spread{position:absolute;inset:0;display:flex;border-radius:6px;overflow:hidden;}
-    .ak-mag-page{
-      flex:1 1 50%;position:relative;overflow:hidden;
-      background:var(--page);
-      background-image:linear-gradient(180deg,rgba(255,255,255,.35),rgba(0,0,0,.04));
+    @keyframes akMagFloat{
+      0%,100%{transform:translateX(-25%) rotateX(-1.4deg) rotateZ(-.5deg) translateY(0);}
+      50%{transform:translateX(-25%) rotateX(-2.2deg) rotateZ(.4deg) translateY(-9px);}
     }
-    .ak-mag-pageL{border-radius:6px 0 0 6px;box-shadow:inset -14px 0 26px -16px rgba(0,0,0,.55);}
-    .ak-mag-pageR{border-radius:0 6px 6px 0;box-shadow:inset 14px 0 26px -16px rgba(0,0,0,.55);}
-    .ak-mag.is-enhanced .ak-mag-book.is-single .ak-mag-pageL{border-radius:6px;box-shadow:none;flex-basis:100%;}
+
+    /* ---------- OPEN SPREAD ---------- */
+    .ak-mag-spread{position:absolute;inset:0;display:flex;border-radius:5px;overflow:hidden;}
+    .ak-mag-page{
+      flex:1 1 50%;position:relative;overflow:hidden;color:var(--ink);
+      background:var(--page);
+      background-image:linear-gradient(180deg,rgba(255,255,255,.40),rgba(0,0,0,.045));
+    }
+    /* static rough-print grain on every page (subtle; keeps text readable) */
+    .ak-mag-page::after,.ak-mag-face::after,.ak-mag-cover-face::after{
+      content:"";position:absolute;inset:0;pointer-events:none;
+      background-image:var(--grain);background-size:150px 150px;
+      opacity:.05;mix-blend-mode:multiply;z-index:4;
+    }
+    .ak-mag-pageL{border-radius:5px 0 0 5px;box-shadow:inset -22px 0 30px -18px rgba(0,0,0,.6);}
+    .ak-mag-pageR{border-radius:0 5px 5px 0;box-shadow:inset 22px 0 30px -18px rgba(0,0,0,.6);}
+    .ak-mag.is-enhanced .ak-mag-book.is-single .ak-mag-pageL{border-radius:5px;box-shadow:none;flex-basis:100%;}
     .ak-mag.is-enhanced .ak-mag-book.is-single .ak-mag-pageR{display:none;}
 
-    /* dark fore-edge page stack on the outer sides + bottom */
+    /* fore-edge page stack (outer sides + bottom) — thicker, more physical */
     .ak-mag-spread::before,.ak-mag-spread::after{
-      content:"";position:absolute;top:6px;bottom:6px;width:7px;z-index:1;pointer-events:none;
-      background:repeating-linear-gradient(90deg,var(--edge) 0 1px,rgba(0,0,0,.18) 1px 2px,rgba(255,255,255,.12) 2px 3px);
-      opacity:.9;
+      content:"";position:absolute;top:5px;bottom:5px;width:13px;z-index:1;pointer-events:none;
+      background:repeating-linear-gradient(90deg,#fbf6e7 0 1px,var(--edge) 1px 2px,#d8cba6 2px 3px);
+      box-shadow:0 2px 5px rgba(0,0,0,.4);
     }
-    .ak-mag-spread::before{left:-7px;border-radius:3px 0 0 3px;}
-    .ak-mag-spread::after{right:-7px;border-radius:0 3px 3px 0;}
+    .ak-mag-spread::before{left:-13px;border-radius:3px 0 0 3px;}
+    .ak-mag-spread::after{right:-13px;border-radius:0 3px 3px 0;}
     .ak-mag.is-enhanced .ak-mag-book.is-single .ak-mag-spread::before{display:none;}
 
-    /* center spine / gutter */
+    /* center spine / gutter — deeper */
     .ak-mag-spine{
-      position:absolute;top:0;bottom:0;left:50%;width:46px;transform:translateX(-50%);
-      z-index:4;pointer-events:none;
-      background:linear-gradient(90deg,transparent,rgba(0,0,0,.26) 44%,rgba(0,0,0,.36) 50%,rgba(0,0,0,.26) 56%,transparent);
+      position:absolute;top:0;bottom:0;left:50%;width:60px;transform:translateX(-50%);
+      z-index:3;pointer-events:none;
+      background:linear-gradient(90deg,rgba(0,0,0,0) 0,rgba(0,0,0,.05) 30%,rgba(0,0,0,.34) 49%,rgba(0,0,0,.42) 50%,rgba(0,0,0,.34) 51%,rgba(0,0,0,.05) 70%,rgba(0,0,0,0));
     }
     .ak-mag.is-enhanced .ak-mag-book.is-single .ak-mag-spine{display:none;}
+    .ak-mag.is-closed .ak-mag-spread,.ak-mag.is-closed .ak-mag-spine{visibility:hidden;}
 
     /* ---------- TURNING LEAF ---------- */
     .ak-mag-leaf{
@@ -144,9 +168,9 @@
       transition:transform var(--turn) cubic-bezier(.33,0,.2,1);
       z-index:6;display:none;will-change:transform;
     }
-    .ak-mag.is-enhanced .ak-mag-leaf.is-right,
-    .ak-mag.is-enhanced .ak-mag-leaf.is-left,
-    .ak-mag.is-enhanced .ak-mag-leaf.is-full{display:block;}
+    .ak-mag.is-open .ak-mag-leaf.is-right,
+    .ak-mag.is-open .ak-mag-leaf.is-left,
+    .ak-mag.is-open .ak-mag-leaf.is-full{display:block;}
     .ak-mag-leaf.is-right{left:50%;transform-origin:left center;}
     .ak-mag-leaf.is-left{left:0;transform-origin:right center;}
     .ak-mag-leaf.is-full{left:0;width:100%;}
@@ -154,158 +178,184 @@
     .ak-mag-leaf.is-full.to-prev{transform-origin:right center;}
     .ak-mag-leaf.to-next.go{transform:rotateY(-180deg);}
     .ak-mag-leaf.to-prev.go{transform:rotateY(180deg);}
-
     .ak-mag-face{
       position:absolute;inset:0;overflow:hidden;
-      backface-visibility:hidden;-webkit-backface-visibility:hidden;
-      background:var(--page);
+      backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--page);
     }
     .ak-mag-face--front{transform:rotateY(0deg);z-index:2;}
     .ak-mag-face--back{transform:rotateY(180deg);z-index:1;}
-    .ak-mag-leaf.is-right .ak-mag-face{border-radius:0 6px 6px 0;}
-    .ak-mag-leaf.is-left .ak-mag-face{border-radius:6px 0 0 6px;}
-
-    /* moving shadow cast during the turn */
+    .ak-mag-leaf.is-right .ak-mag-face{border-radius:0 5px 5px 0;}
+    .ak-mag-leaf.is-left .ak-mag-face{border-radius:5px 0 0 5px;}
     .ak-mag-shade{
       position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;
-      background:linear-gradient(90deg,rgba(0,0,0,.42),rgba(0,0,0,0) 60%);
+      background:linear-gradient(90deg,rgba(0,0,0,.45),rgba(0,0,0,0) 62%);
       mix-blend-mode:multiply;backface-visibility:hidden;
     }
-    .ak-mag-leaf.is-left .ak-mag-shade{background:linear-gradient(270deg,rgba(0,0,0,.42),rgba(0,0,0,0) 60%);}
+    .ak-mag-leaf.is-left .ak-mag-shade{background:linear-gradient(270deg,rgba(0,0,0,.45),rgba(0,0,0,0) 62%);}
     .ak-mag-leaf.is-turning .ak-mag-shade{animation:akMagShade var(--turn) ease-in-out;}
-    @keyframes akMagShade{0%{opacity:0}45%{opacity:.55}100%{opacity:0}}
+    @keyframes akMagShade{0%{opacity:0}45%{opacity:.6}100%{opacity:0}}
 
-    /* ---------- LO-FI IN-MOTION FX (turn only) ---------- */
+    /* in-motion PRINT roughness (grain + halftone) — turn only, vanishes at settle */
     .ak-mag-fx{
       position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0;
-      mix-blend-mode:overlay;backface-visibility:hidden;
+      mix-blend-mode:multiply;backface-visibility:hidden;
       background-image:
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"),
-        repeating-linear-gradient(0deg,transparent 0 2px,rgba(255,255,255,.10) 2px 3px);
-      background-size:140px 140px,100% 4px;
+        var(--grain),
+        radial-gradient(rgba(0,0,0,.5) 22%,transparent 23%);
+      background-size:150px 150px,5px 5px;
     }
     .ak-mag-leaf.is-turning .ak-mag-fx{animation:akMagFx var(--turn) linear;}
     @keyframes akMagFx{
-      0%{opacity:0}
-      8%{opacity:.26}    /* glitch flicker spike */
-      12%{opacity:.10}
-      16%{opacity:.22}
-      50%{opacity:.16}
-      90%{opacity:.05}
-      93%{opacity:0}
-      100%{opacity:0}
+      0%{opacity:0}10%{opacity:.20}50%{opacity:.13}88%{opacity:.04}94%{opacity:0}100%{opacity:0}
     }
-    /* chromatic aberration on the turning faces only */
-    .ak-mag-leaf.is-turning .ak-mag-face{
-      filter:drop-shadow(2px 0 0 rgba(255,51,255,.55)) drop-shadow(-2px 0 0 rgba(51,255,255,.5));
+
+    /* ---------- CLOSED FRONT COVER (right-half, hinged at spine) ---------- */
+    .ak-mag-cover{
+      position:absolute;top:0;left:50%;width:50%;height:100%;
+      transform-style:preserve-3d;transform-origin:left center;transform:rotateY(0deg);
+      transition:transform .72s cubic-bezier(.4,0,.2,1),opacity .72s ease;
+      z-index:8;cursor:pointer;border:0;padding:0;display:none;text-align:left;
     }
+    .ak-mag.is-enhanced.is-closed .ak-mag-cover,
+    .ak-mag.is-enhanced.is-opening .ak-mag-cover{display:block;}
+    .ak-mag.is-opening .ak-mag-cover{transform:rotateY(-172deg);opacity:0;}
+    .ak-mag-cover-face{
+      position:absolute;inset:0;border-radius:3px 7px 7px 3px;overflow:hidden;
+      background:
+        var(--ak-mag-cover-image),
+        linear-gradient(150deg,var(--cover-2),var(--cover) 60%,#15120b);
+      background-size:cover;background-position:center;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.06), inset 0 2px 0 rgba(255,255,255,.08);
+      display:flex;flex-direction:column;justify-content:space-between;
+      padding:clamp(20px,3vw,40px);color:#f6efe0;
+    }
+    /* cover fore-edge (page stack thickness) on the right */
+    .ak-mag-cover::after{
+      content:"";position:absolute;top:6px;bottom:6px;right:-15px;width:15px;z-index:-1;
+      background:repeating-linear-gradient(90deg,#efe6cf 0 1px,#cbbd98 1px 2px,#d9cca7 2px 3px);
+      border-radius:0 3px 3px 0;box-shadow:3px 3px 8px rgba(0,0,0,.45);
+    }
+    /* cover spine ridge on the left */
+    .ak-mag-cover::before{
+      content:"";position:absolute;top:0;bottom:0;left:0;width:14px;z-index:2;pointer-events:none;
+      background:linear-gradient(90deg,rgba(0,0,0,.5),rgba(255,255,255,.08) 40%,rgba(0,0,0,.35));
+      border-radius:3px 0 0 3px;
+    }
+    .ak-mag-cover-art{position:absolute;inset:0;background-image:var(--ak-mag-cover-image);background-size:cover;background-position:center;}
+    .ak-mag-cover-kicker{font-size:.78rem;letter-spacing:.26em;text-transform:uppercase;color:rgba(246,239,224,.7);margin:0;position:relative;}
+    .ak-mag-cover-mid{position:relative;}
+    .ak-mag-cover-logo{display:block;width:min(58%,150px);height:auto;margin:0 0 14px;filter:invert(1) brightness(1.6);opacity:.92;}
+    .ak-mag-cover-title{font-family:var(--display);font-size:clamp(2rem,5vw,3.4rem);line-height:.95;text-transform:uppercase;margin:0;color:#fff;}
+    .ak-mag-cover-sub{font-size:.92rem;letter-spacing:.2em;text-transform:uppercase;color:var(--purple);margin:.5em 0 0;}
+    .ak-mag-prompt{position:relative;display:inline-flex;align-items:center;gap:.5em;align-self:flex-start;
+      font-family:var(--display);font-size:1rem;letter-spacing:.12em;text-transform:uppercase;color:#fff;
+      padding:.55em .9em;border:1.5px solid rgba(255,255,255,.5);border-radius:2px;background:rgba(255,51,255,.12);}
+    .ak-mag-prompt::after{content:"\203A";font-size:1.3em;line-height:1;}
+    .ak-mag-cover:hover .ak-mag-prompt,.ak-mag-cover:focus-visible .ak-mag-prompt{border-color:var(--purple);background:rgba(255,51,255,.28);}
+    .ak-mag-cover:focus-visible{outline:none;}
+    .ak-mag-cover:focus-visible .ak-mag-cover-face{box-shadow:inset 0 0 0 2px rgba(255,51,255,.7);}
 
     /* ---------- CONTROLS ---------- */
-    .ak-mag-nav{
-      display:flex;align-items:center;justify-content:center;gap:14px;
-      margin:clamp(14px,2.4vw,26px) auto 0;
-    }
-    .ak-mag.is-enhanced ~ .x{}
+    .ak-mag-nav{display:none;align-items:center;justify-content:center;gap:14px;margin:clamp(14px,2.4vw,26px) auto 0;}
+    .ak-mag.is-open .ak-mag-nav{display:flex;}
     .ak-mag-btn{
-      -webkit-appearance:none;appearance:none;cursor:pointer;
-      width:48px;height:48px;border-radius:50%;
-      display:inline-flex;align-items:center;justify-content:center;
-      color:#fff;background:rgba(21,18,11,.62);
-      border:1.5px solid rgba(21,18,11,.32);
-      transition:background .15s ease,border-color .15s ease,transform .1s ease;
+      -webkit-appearance:none;appearance:none;cursor:pointer;width:48px;height:48px;border-radius:50%;
+      display:inline-flex;align-items:center;justify-content:center;color:#fff;background:rgba(21,18,11,.66);
+      border:1.5px solid rgba(21,18,11,.34);transition:background .15s ease,border-color .15s ease,transform .1s ease;
     }
-    .ak-mag-btn:hover{background:rgba(21,18,11,.78);border-color:var(--purple);}
+    .ak-mag-btn:hover{background:rgba(21,18,11,.82);border-color:var(--purple);}
     .ak-mag-btn:active{transform:scale(.92);}
     .ak-mag-btn:focus-visible{outline:none;box-shadow:0 0 0 2px rgba(255,51,255,.25);border-color:var(--purple);}
+    .ak-mag-btn[disabled]{opacity:.35;cursor:default;}
     .ak-mag-btn svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
-    .ak-mag-counter{
-      font-family:var(--display);font-size:.92rem;letter-spacing:.04em;text-transform:uppercase;
-      color:var(--ink);min-width:9.5em;text-align:center;margin:0;
-    }
-    .ak-mag-nav,.ak-mag-corner{display:none;}
-    .ak-mag.is-enhanced .ak-mag-nav{display:flex;}
-    .ak-mag.is-enhanced .ak-mag-corner{display:block;}
+    .ak-mag-counter{font-family:var(--display);font-size:.92rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);min-width:9.5em;text-align:center;margin:0;}
 
-    /* corner-curl cue (bottom-outer of the right page) */
-    .ak-mag-corner{
-      position:absolute;right:0;bottom:0;width:clamp(34px,3.4vw,52px);height:clamp(34px,3.4vw,52px);
-      z-index:7;cursor:pointer;border:0;padding:0;background:transparent;
-      -webkit-appearance:none;appearance:none;
-    }
+    /* corner-curl cue (open state only) */
+    .ak-mag-corner{display:none;position:absolute;right:0;bottom:0;width:clamp(30px,3vw,46px);height:clamp(30px,3vw,46px);z-index:7;cursor:pointer;border:0;padding:0;background:transparent;-webkit-appearance:none;appearance:none;}
+    .ak-mag.is-open .ak-mag-corner{display:block;}
     .ak-mag-corner::before{
-      content:"";position:absolute;inset:0;border-radius:0 0 6px 0;
-      background:linear-gradient(135deg,transparent 46%,rgba(0,0,0,.12) 47%,rgba(255,255,255,.55) 60%,var(--page-2) 62%);
-      box-shadow:-3px -3px 8px rgba(0,0,0,.18);
-      transition:transform .18s ease;transform-origin:bottom right;
+      content:"";position:absolute;inset:0;border-radius:0 0 5px 0;
+      background:linear-gradient(135deg,transparent 45%,rgba(0,0,0,.14) 46%,rgba(255,255,255,.6) 58%,var(--page-2) 60%);
+      box-shadow:-3px -3px 9px rgba(0,0,0,.22);transition:transform .18s ease;transform-origin:bottom right;
     }
-    .ak-mag-corner:hover::before,.ak-mag-corner:focus-visible::before{transform:scale(1.18);}
+    .ak-mag-corner:hover::before,.ak-mag-corner:focus-visible::before{transform:scale(1.16);}
     .ak-mag-corner:focus-visible{outline:none;}
 
-    /* ---------- PAGE CONTENT (shared by source + faces + book pages) ---------- */
-    .ak-mag-pad{position:absolute;inset:0;display:flex;flex-direction:column;padding:clamp(16px,2.4vw,30px);}
+    /* ---------- PAGE CONTENT (ink, readable) ---------- */
+    .ak-mag-pad{position:absolute;inset:0;display:flex;flex-direction:column;padding:clamp(15px,2.3vw,30px);color:var(--ink);}
+    /* programmatic focus target on turn = non-interactive heading; no visible box
+       (also override the theme's global focus box-shadow ring) */
+    .ak-mag-page h1:focus,.ak-mag-page h2:focus,.ak-mag-page:focus,
+    .ak-mag-page h1:focus-visible,.ak-mag-page h2:focus-visible,.ak-mag-page:focus-visible{
+      outline:none !important;box-shadow:none !important;
+    }
     .ak-mag-srcpage .ak-mag-pad{position:static;}
+    .ak-mag-kicker{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-mut);margin:0 0 .45em;}
+    .ak-mag-logo{display:block;width:min(70%,240px);height:auto;margin:4px 0 16px;}
+    .ak-mag-logo-fallback{font-family:var(--display);font-size:2rem;text-transform:uppercase;color:var(--ink);}
+    .ak-mag-mast-title{font-family:var(--display);font-size:clamp(1.5rem,3.1vw,2.4rem);line-height:1;text-transform:uppercase;margin:0 0 .1em;color:var(--ink);}
+    .ak-mag-mast-issue{color:var(--purple);font-size:.94rem;letter-spacing:.18em;text-transform:uppercase;margin:0 0 1em;}
+    .ak-mag-credits{list-style:none;margin:0;padding:0;display:grid;gap:.66em;}
+    .ak-mag-credits li{line-height:1.18;}
+    .ak-mag-credits b{display:block;font-size:1.02rem;letter-spacing:.01em;color:var(--ink);}
+    .ak-mag-credits span{font-size:.78rem;color:var(--ink-mut);text-transform:uppercase;letter-spacing:.07em;}
+    .ak-mag-colophon{margin-top:auto;font-size:.7rem;color:var(--ink-mut);letter-spacing:.06em;padding-top:1em;}
 
-    .ak-mag-kicker{font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-mut);margin:0 0 .5em;}
-    .ak-mag-logo{display:block;width:min(74%,260px);height:auto;margin:6px 0 18px;}
-    .ak-mag-logo-fallback{font-family:var(--display);font-size:2rem;text-transform:uppercase;}
-    .ak-mag-mast-title{font-family:var(--display);font-size:clamp(1.5rem,3.2vw,2.5rem);line-height:1;text-transform:uppercase;margin:0 0 .1em;letter-spacing:.01em;}
-    .ak-mag-mast-issue{color:var(--purple);font-size:.96rem;letter-spacing:.18em;text-transform:uppercase;margin:0 0 1.1em;}
-    .ak-mag-credits{list-style:none;margin:0;padding:0;display:grid;gap:.7em;}
-    .ak-mag-credits li{line-height:1.2;}
-    .ak-mag-credits b{display:block;font-size:1.02rem;letter-spacing:.01em;}
-    .ak-mag-credits span{font-size:.82rem;color:var(--ink-mut);text-transform:uppercase;letter-spacing:.08em;}
-    .ak-mag-colophon{margin-top:auto;font-size:.72rem;color:var(--ink-mut);letter-spacing:.06em;padding-top:1em;}
-
-    .ak-mag-contents-h{font-family:var(--display);font-size:clamp(1.3rem,2.6vw,2rem);text-transform:uppercase;margin:0 0 .6em;}
-    .ak-mag-toc{list-style:none;margin:0;padding:0;display:grid;gap:.18em;overflow:auto;}
-    .ak-mag-toc li{display:flex;align-items:baseline;gap:.5em;border-bottom:1px dashed rgba(21,18,11,.22);padding:.34em 0;}
-    .ak-mag-toc-num{font-variant-numeric:tabular-nums;color:var(--purple);font-size:.86rem;min-width:1.8em;}
-    .ak-mag-toc-jump{flex:1;text-decoration:none;color:var(--ink);font-size:.96rem;line-height:1.15;}
+    .ak-mag-contents-h{font-family:var(--display);font-size:clamp(1.25rem,2.5vw,1.9rem);text-transform:uppercase;margin:0 0 .5em;color:var(--ink);}
+    /* two-column index fits all 18 without scrolling the site */
+    .ak-mag-toc{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.05em .9em;max-height:100%;}
+    .ak-mag-toc li{display:flex;align-items:baseline;gap:.4em;border-bottom:1px dashed rgba(21,18,11,.24);padding:.28em 0;min-width:0;}
+    .ak-mag-toc-num{font-variant-numeric:tabular-nums;color:var(--purple);font-size:.78rem;min-width:1.7em;}
+    .ak-mag-toc-jump{flex:1;text-decoration:none;color:var(--ink);font-size:.86rem;line-height:1.12;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .ak-mag-toc-jump:hover{color:var(--purple);}
     .ak-mag-toc-jump:focus-visible{outline:none;box-shadow:0 0 0 2px rgba(255,51,255,.25);border-radius:3px;}
-    .ak-mag-toc-open{flex:none;text-decoration:none;color:var(--ink-mut);font-size:1rem;line-height:1;padding:0 .25em;border-radius:3px;}
+    .ak-mag-toc-open{flex:none;text-decoration:none;color:var(--ink-mut);font-size:.95rem;line-height:1;padding:0 .2em;border-radius:3px;}
     .ak-mag-toc-open:hover{color:var(--purple);}
     .ak-mag-toc-open:focus-visible{outline:none;box-shadow:0 0 0 2px rgba(255,51,255,.25);}
 
-    .ak-mag-item{display:block;text-decoration:none;color:var(--ink);height:100%;}
-    .ak-mag-item:focus-visible{outline:none;box-shadow:inset 0 0 0 3px rgba(255,51,255,.3);}
-    .ak-mag-cover{position:relative;flex:1;min-height:0;border-radius:4px;overflow:hidden;background:#1a1a1a;}
-    .ak-mag-cover img{width:100%;height:100%;object-fit:cover;display:block;}
-    .ak-mag-cover.is-missing img{display:none;}
-    .ak-mag-cover.is-missing::after{
+    .ak-mag-item{display:block;text-decoration:none;color:var(--ink);}
+    .ak-mag-page .ak-mag-item,.ak-mag-face .ak-mag-item{position:absolute;inset:0;}
+    .ak-mag-item:focus-visible{outline:none;box-shadow:inset 0 0 0 3px rgba(255,51,255,.32);}
+    .ak-mag-cover-img{position:relative;flex:1;min-height:0;border-radius:3px;overflow:hidden;background:#cfc4a6;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12);}
+    .ak-mag-cover-img img{width:100%;height:100%;object-fit:cover;display:block;}
+    .ak-mag-cover-img.is-missing img{display:none;}
+    .ak-mag-cover-img.is-missing::after{
       content:attr(data-title);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-      text-align:center;padding:1em;color:#fff;font-family:var(--display);text-transform:uppercase;
-      font-size:1.1rem;background:linear-gradient(168deg,#1a1a1a,#0e0e0e 60%,#111);
+      text-align:center;padding:1em;color:#fff;font-family:var(--display);text-transform:uppercase;font-size:1.1rem;
+      background:linear-gradient(150deg,#2c2718,#1d1a12 60%,#15120b);z-index:1;
     }
-    .ak-mag-item-bar{display:flex;align-items:flex-end;justify-content:space-between;gap:.6em;padding-top:.7em;}
-    .ak-mag-item-title{font-family:var(--display);font-size:clamp(1.05rem,2vw,1.5rem);line-height:1.05;text-transform:uppercase;margin:0;}
+    .ak-mag-item-bar{display:flex;align-items:flex-end;justify-content:space-between;gap:.6em;padding-top:.6em;}
+    .ak-mag-item-title{font-family:var(--display);font-size:clamp(1.05rem,2vw,1.5rem);line-height:1.04;text-transform:uppercase;margin:0;color:var(--ink);}
     .ak-mag-item-num{font-variant-numeric:tabular-nums;color:var(--purple);font-size:.9rem;}
-    .ak-mag-item-cta{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-mut);margin:.3em 0 0;}
+    .ak-mag-item-cta{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-mut);margin:.3em 0 0;}
 
     /* ---------- MOBILE ---------- */
     @media (max-width:749px){
       .ak-mag{--turn:420ms;}
-      .ak-mag.is-enhanced .ak-mag-book{width:min(94vw,460px);height:min(72vh,620px);perspective:1500px;}
+      .ak-mag.is-enhanced .ak-mag-book{width:min(94vw,460px);height:min(74vh,640px);perspective:1500px;}
       .ak-mag-btn{width:46px;height:46px;}
-      .ak-mag-corner{width:42px;height:42px;}
+      .ak-mag-toc{grid-template-columns:1fr;gap:0;max-height:100%;overflow:auto;-webkit-overflow-scrolling:touch;}
+      .ak-mag-toc li{padding:.2em 0;}
+      .ak-mag-toc-jump{font-size:.92rem;white-space:normal;}
+      .ak-mag-cover-title{font-size:clamp(2rem,9vw,3rem);}
     }
     @media (max-width:420px){
-      .ak-mag.is-enhanced .ak-mag-book{height:min(70vh,560px);}
+      .ak-mag.is-enhanced .ak-mag-book{height:min(72vh,580px);}
     }
 
     /* ---------- REDUCED MOTION ---------- */
     @media (prefers-reduced-motion: reduce){
-      .ak-mag-book3d,.ak-mag-leaf{transition:none;}
-      .ak-mag-leaf.is-turning .ak-mag-fx,
-      .ak-mag-leaf.is-turning .ak-mag-shade{animation:none;}
+      .ak-mag-book3d{transition:none;animation:none;}
+      .ak-mag.is-closed .ak-mag-book3d{animation:none;}
+      .ak-mag-leaf,.ak-mag-cover{transition:none;}
+      .ak-mag-leaf.is-turning .ak-mag-fx,.ak-mag-leaf.is-turning .ak-mag-shade{animation:none;}
       .ak-mag-fx{display:none;}
-      .ak-mag-leaf.is-turning .ak-mag-face{filter:none;}
     }
   {%- endstyle -%}
 
   <div class="ak-mag-stage">
 
-    {%- comment -%} ============ BOOK SCAFFOLD (filled + shown by JS) ============ {%- endcomment -%}
+    {%- comment -%} ============ BOOK (filled + shown by JS) ============ {%- endcomment -%}
     <div class="ak-mag-book" data-book aria-hidden="true">
       <div class="ak-mag-book3d">
         <div class="ak-mag-spread">
@@ -320,13 +370,28 @@
           <span class="ak-mag-fx"></span>
         </div>
         <button class="ak-mag-corner" type="button" data-next aria-label="Turn to next page"></button>
+
+        {%- comment -%} CLOSED FRONT COVER — simple typographic cover (future art hook above) {%- endcomment -%}
+        <button class="ak-mag-cover" type="button" data-cover aria-label="Open the Archive Issue">
+          <span class="ak-mag-cover-art" aria-hidden="true"></span>
+          <span class="ak-mag-cover-face">
+            <span class="ak-mag-cover-kicker">AmeriKid &middot; No. 01</span>
+            <span class="ak-mag-cover-mid">
+              {%- if settings.logo != blank -%}
+                {{ settings.logo | image_url: width: 360 | image_tag: class: 'ak-mag-cover-logo', alt: mag_logo_alt, widths: '180,240,360', loading: 'lazy' }}
+              {%- endif -%}
+              <span class="ak-mag-cover-title">Archive<br>Issue</span>
+              <span class="ak-mag-cover-sub">The AmeriKid Catalog</span>
+            </span>
+            <span class="ak-mag-prompt">Open the Archive Issue</span>
+          </span>
+        </button>
       </div>
     </div>
 
     {%- comment -%} ============ SOURCE / NO-JS FALLBACK (also the data store) ============ {%- endcomment -%}
     <div class="ak-mag-source" data-source>
 
-      {%- comment -%} page 0 — MASTHEAD {%- endcomment -%}
       <article class="ak-mag-srcpage" data-srcpage data-label="Masthead" id="ak-mag-page-0">
         <div class="ak-mag-pad">
           <p class="ak-mag-kicker">Masthead</p>
@@ -339,15 +404,14 @@
           <p class="ak-mag-mast-issue">No. 01</p>
           <ul class="ak-mag-credits">
             <li><b>William Coleman</b><span>Creative Director</span></li>
-            <li><b>Declan Gainey</b><span>Web Experience Designer &amp; Developer</span></li>
             <li><b>Cruz Centeno</b><span>Social Content Creative Lead</span></li>
+            <li><b>Declan Gainey</b><span>Web Experience Designer &amp; Developer</span></li>
             <li><b>Ricardo Garay</b><span>Community &amp; Social Outreach</span></li>
           </ul>
           <p class="ak-mag-colophon">AmeriKid — The Archive, in print.</p>
         </div>
       </article>
 
-      {%- comment -%} page 1 — CONTENTS {%- endcomment -%}
       <nav class="ak-mag-srcpage" data-srcpage data-label="Contents" id="ak-mag-page-1" aria-label="Contents">
         <div class="ak-mag-pad">
           <p class="ak-mag-kicker">Contents</p>
@@ -367,7 +431,6 @@
         </div>
       </nav>
 
-      {%- comment -%} pages 2..19 — 18 ITEM PAGES (real anchors to collections) {%- endcomment -%}
       {%- for title in mag_titles -%}
         {%- assign i = forloop.index0 -%}
         {%- assign pageId = i | plus: 2 -%}
@@ -375,9 +438,9 @@
         {%- assign imgfile = mag_imgs[i] -%}
         <a class="ak-mag-srcpage ak-mag-item" data-srcpage data-label="{{ title | escape }}" id="ak-mag-page-{{ pageId }}" href="{{ mag_urls[i] }}">
           <div class="ak-mag-pad">
-            <div class="ak-mag-cover" data-title="{{ title | escape }}">
+            <div class="ak-mag-cover-img" data-title="{{ title | escape }}">
               <img src="{{ imgfile | file_url }}" alt="{{ title | escape }}" loading="lazy" decoding="async"
-                   onerror="this.closest('.ak-mag-cover').classList.add('is-missing');">
+                   onerror="this.closest('.ak-mag-cover-img').classList.add('is-missing');">
             </div>
             <div class="ak-mag-item-bar">
               <h2 class="ak-mag-item-title">{{ title }}</h2>
@@ -417,19 +480,17 @@
     });
     var N = META.length;
     if(N < 2) return;
-    // build a book page's HTML, re-wrapping item pages in their real collection anchor
     function pageHTML(i){
-      var m = META[i];
-      if(!m) return '';
+      var m = META[i]; if(!m) return '';
       return m.href ? ('<a class="ak-mag-item" href="' + m.href + '">' + m.inner + '</a>') : m.inner;
     }
 
-    var book3d = book.querySelector('.ak-mag-book3d');
     var pageL  = book.querySelector('[data-pageL]');
     var pageR  = book.querySelector('[data-pageR]');
     var leaf   = book.querySelector('[data-leaf]');
     var faceF  = leaf.querySelector('[data-face-front]');
     var faceB  = leaf.querySelector('[data-face-back]');
+    var cover  = book.querySelector('[data-cover]');
     var counter = root.querySelector('.ak-mag-counter');
     var btnPrev = root.querySelectorAll('[data-prev]');
     var btnNext = root.querySelectorAll('[data-next]');
@@ -437,12 +498,12 @@
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
     var mqMobile = window.matchMedia('(max-width: 749px)');
     function isMobile(){ return mqMobile.matches; }
+    function isOpen(){ return root.classList.contains('is-open'); }
 
     var nSpreads = Math.ceil(N/2);
-    var pos = 0;          // spread index (desktop) OR page index (mobile)
-    var turning = false;
-    var safetyT = null;
-    var suppressClick = false;
+    var pos = 0;
+    var turning = false, opening = false;
+    var safetyT = null, openT = null;
 
     function totalViews(){ return isMobile() ? N : nSpreads; }
     function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
@@ -460,16 +521,19 @@
 
     function updateCounter(){
       if(!counter) return;
-      counter.textContent = isMobile()
-        ? ('Page ' + (pos+1) + ' of ' + N)
-        : ('Spread ' + (pos+1) + ' of ' + totalViews());
+      counter.textContent = isMobile() ? ('Page ' + (pos+1) + ' of ' + N)
+                                       : ('Spread ' + (pos+1) + ' of ' + totalViews());
+    }
+    function updateEnds(){
+      var atStart = pos <= 0, atEnd = pos >= totalViews()-1;
+      Array.prototype.forEach.call(btnPrev, function(b){ b.disabled = atStart; });
+      Array.prototype.forEach.call(btnNext, function(b){ if(!b.classList.contains('ak-mag-corner')) b.disabled = atEnd; });
     }
 
     function setStatic(){
       if(isMobile()){
         book.classList.add('is-single');
-        pageL.innerHTML = pageHTML(pos);
-        pageR.innerHTML = '';
+        pageL.innerHTML = pageHTML(pos); pageR.innerHTML = '';
       } else {
         book.classList.remove('is-single');
         var l = pos*2, r = pos*2+1;
@@ -477,7 +541,7 @@
         pageR.innerHTML = (r < N) ? pageHTML(r) : '';
       }
       bindJump(pageL); bindJump(pageR);
-      updateCounter();
+      updateCounter(); updateEnds();
     }
 
     function focusView(){
@@ -485,96 +549,85 @@
       if(t){ t.setAttribute('tabindex','-1'); try{ t.focus({preventScroll:true}); }catch(e){} }
     }
 
-    function goToPage(pageIdx){
-      var view = isMobile() ? pageIdx : Math.floor(pageIdx/2);
-      goToView(view);
-    }
+    function goToPage(pageIdx){ goToView(isMobile() ? pageIdx : Math.floor(pageIdx/2)); }
 
     function goToView(view){
       view = clamp(view, 0, totalViews()-1);
       if(view === pos){ focusView(); return; }
       if(reduce.matches || Math.abs(view - pos) > 1){
-        pos = view; setStatic();
-        book.classList.add('is-jump');
-        requestAnimationFrame(function(){ requestAnimationFrame(function(){ book.classList.remove('is-jump'); }); });
-        focusView();
-        return;
+        pos = view; setStatic(); focusView(); return;
       }
       turn(view > pos ? 1 : -1);
     }
 
-    function next(){ if(!turning && pos < totalViews()-1){ turn(1); } }
-    function prev(){ if(!turning && pos > 0){ turn(-1); } }
+    function next(){ if(isOpen() && !turning && pos < totalViews()-1){ turn(1); } }
+    function prev(){ if(isOpen() && !turning && pos > 0){ turn(-1); } }
 
     function turn(dir){
-      if(turning) return;
+      if(turning || !isOpen()) return;
       var to = clamp(pos + dir, 0, totalViews()-1);
       if(to === pos) return;
-
       if(reduce.matches){ pos = to; setStatic(); focusView(); return; }
       turning = true;
-
       leaf.className = 'ak-mag-leaf';
       if(dir > 0){
-        // NEXT — flip right page (desktop) / current page (mobile) leftwards
-        if(isMobile()){
-          faceF.innerHTML = pageHTML(pos);
-          faceB.innerHTML = pageHTML(to);
-          pageL.innerHTML = pageHTML(to);
-          leaf.classList.add('is-full','to-next');
-        } else {
-          faceF.innerHTML = pageHTML(pos*2+1);
-          faceB.innerHTML = pageHTML(to*2);
-          pageR.innerHTML = pageHTML(to*2+1);
-          leaf.classList.add('is-right','to-next');
-        }
+        if(isMobile()){ faceF.innerHTML = pageHTML(pos); faceB.innerHTML = pageHTML(to); pageL.innerHTML = pageHTML(to); leaf.classList.add('is-full','to-next'); }
+        else { faceF.innerHTML = pageHTML(pos*2+1); faceB.innerHTML = pageHTML(to*2); pageR.innerHTML = pageHTML(to*2+1); leaf.classList.add('is-right','to-next'); }
       } else {
-        // PREV — flip left page (desktop) / current page (mobile) rightwards
-        if(isMobile()){
-          faceF.innerHTML = pageHTML(pos);
-          faceB.innerHTML = pageHTML(to);
-          pageL.innerHTML = pageHTML(to);
-          leaf.classList.add('is-full','to-prev');
-        } else {
-          faceF.innerHTML = pageHTML(pos*2);
-          faceB.innerHTML = pageHTML(to*2+1);
-          pageL.innerHTML = pageHTML(to*2);
-          leaf.classList.add('is-left','to-prev');
-        }
+        if(isMobile()){ faceF.innerHTML = pageHTML(pos); faceB.innerHTML = pageHTML(to); pageL.innerHTML = pageHTML(to); leaf.classList.add('is-full','to-prev'); }
+        else { faceF.innerHTML = pageHTML(pos*2); faceB.innerHTML = pageHTML(to*2+1); pageL.innerHTML = pageHTML(to*2); leaf.classList.add('is-left','to-prev'); }
       }
       bindJump(faceF); bindJump(faceB); bindJump(pageL); bindJump(pageR);
-
-      // start
       leaf.classList.add('is-turning');
-      void leaf.offsetWidth;            // reflow so the rotate transition runs
+      void leaf.offsetWidth;
       leaf.classList.add('go');
-
-      clearTimeout(safetyT);
-      safetyT = setTimeout(finish, 700);
+      clearTimeout(safetyT); safetyT = setTimeout(finish, 700);
       leaf.addEventListener('transitionend', onEnd);
-
-      function onEnd(e){
-        if(e.target !== leaf || e.propertyName !== 'transform') return;
-        finish();
-      }
+      function onEnd(e){ if(e.target !== leaf || e.propertyName !== 'transform') return; finish(); }
       function finish(){
         if(!turning) return;
         leaf.removeEventListener('transitionend', onEnd);
         clearTimeout(safetyT);
-        pos = to;
-        setStatic();
-        leaf.className = 'ak-mag-leaf';   // reset → display:none
-        turning = false;
-        focusView();
+        pos = to; setStatic();
+        leaf.className = 'ak-mag-leaf';
+        turning = false; focusView();
       }
+    }
+
+    /* ---- open the closed cover ---- */
+    function openBook(){
+      if(opening || isOpen()) return;
+      opening = true;
+      var done = function(){
+        clearTimeout(openT);
+        if(cover) cover.removeEventListener('transitionend', onCoverEnd);
+        root.classList.remove('is-opening','is-closed');
+        root.classList.add('is-open');
+        opening = false;
+        try{ book.scrollIntoView({block:'center', behavior: reduce.matches ? 'auto' : 'smooth'}); }catch(e){}
+        focusView();
+      };
+      if(reduce.matches){ done(); return; }
+      root.classList.remove('is-closed');
+      root.classList.add('is-opening');
+      function onCoverEnd(e){ if(e.target === cover && e.propertyName === 'transform') done(); }
+      if(cover) cover.addEventListener('transitionend', onCoverEnd);
+      clearTimeout(openT); openT = setTimeout(done, 820);
+    }
+    if(cover){
+      cover.addEventListener('click', function(e){ e.preventDefault(); openBook(); });
     }
 
     /* ---- controls ---- */
     Array.prototype.forEach.call(btnPrev, function(b){ b.addEventListener('click', function(e){ e.preventDefault(); prev(); }); });
     Array.prototype.forEach.call(btnNext, function(b){ b.addEventListener('click', function(e){ e.preventDefault(); next(); }); });
 
-    /* ---- keyboard (when focus is within the magazine) ---- */
+    /* ---- keyboard ---- */
     root.addEventListener('keydown', function(e){
+      if(!isOpen()){
+        if((e.key==='Enter'||e.key===' ') && e.target === cover){ e.preventDefault(); openBook(); }
+        return;
+      }
       var k = e.key;
       if(k==='ArrowRight'||k==='ArrowDown'){ e.preventDefault(); next(); }
       else if(k==='ArrowLeft'||k==='ArrowUp'){ e.preventDefault(); prev(); }
@@ -582,42 +635,25 @@
       else if(k==='End'){ e.preventDefault(); goToView(totalViews()-1); }
     });
 
-    /* ---- drag / swipe (commit on release) ---- */
-    var sx=0, sy=0, st=0, dragging=false;
-    book.addEventListener('pointerdown', function(e){
-      if(turning) return;
-      sx=e.clientX; sy=e.clientY; st=Date.now(); dragging=true;
-    });
+    /* ---- drag / swipe (open state only) ---- */
+    var sx=0, sy=0, st=0, dragging=false, suppressClick=false;
+    book.addEventListener('pointerdown', function(e){ if(!isOpen()||turning) return; sx=e.clientX; sy=e.clientY; st=Date.now(); dragging=true; });
     book.addEventListener('pointerup', function(e){
       if(!dragging) return; dragging=false;
       var dx=e.clientX-sx, dy=e.clientY-sy, dt=Date.now()-st;
-      if(Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy)) return;  // not a horizontal swipe → let clicks/links work
-      var w = book.clientWidth || 1;
-      var vel = Math.abs(dx)/(dt||1);
-      if(Math.abs(dx) > w*0.18 || vel > 0.5){
-        suppressClick = true;
-        setTimeout(function(){ suppressClick=false; }, 360);
-        if(dx < 0) next(); else prev();
-      }
+      if(Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy)) return;
+      var w = book.clientWidth || 1, vel = Math.abs(dx)/(dt||1);
+      if(Math.abs(dx) > w*0.18 || vel > 0.5){ suppressClick = true; setTimeout(function(){ suppressClick=false; }, 360); if(dx < 0) next(); else prev(); }
     });
-    // stop a swipe from also activating a page link
-    book.addEventListener('click', function(e){
-      if(suppressClick){ e.preventDefault(); e.stopPropagation(); suppressClick=false; }
-    }, true);
+    book.addEventListener('click', function(e){ if(suppressClick){ e.preventDefault(); e.stopPropagation(); suppressClick=false; } }, true);
 
-    /* ---- mode change (desktop <-> mobile): remap position to the same page ---- */
+    /* ---- mode change ---- */
     function onModeChange(){
-      var wasMobile = book.__wasMobile;
-      var nowMobile = isMobile();
-      if(wasMobile === nowMobile){ return; }
-      // translate current position to a page, then to the new view unit
-      var pageIdx;
-      if(wasMobile === undefined){ pageIdx = 0; }
-      else if(wasMobile){ pageIdx = pos; }            // was page index
-      else { pageIdx = pos*2; }                       // was spread index → left page
-      pos = nowMobile ? pageIdx : Math.floor(pageIdx/2);
-      pos = clamp(pos, 0, totalViews()-1);
-      book.__wasMobile = nowMobile;
+      var was = book.__wasMobile, now = isMobile();
+      if(was === now) return;
+      var pageIdx = (was === undefined) ? 0 : (was ? pos : pos*2);
+      pos = clamp(now ? pageIdx : Math.floor(pageIdx/2), 0, totalViews()-1);
+      book.__wasMobile = now;
       if(turning){ turning=false; clearTimeout(safetyT); }
       leaf.className = 'ak-mag-leaf';
       setStatic();
@@ -625,13 +661,13 @@
     if(mqMobile.addEventListener){ mqMobile.addEventListener('change', onModeChange); }
     else if(mqMobile.addListener){ mqMobile.addListener(onModeChange); }
 
-    /* ---- init ---- */
+    /* ---- init: enhanced + CLOSED ---- */
     root.classList.add('is-enhanced');
-    source.setAttribute('hidden','');
-    source.setAttribute('aria-hidden','true');
+    root.classList.add('is-closed');
+    source.setAttribute('hidden',''); source.setAttribute('aria-hidden','true');
     book.removeAttribute('aria-hidden');
     book.__wasMobile = isMobile();
-    setStatic();
+    setStatic(); /* prebuild spread 0 behind the cover */
   })();
   </script>
 
@@ -641,16 +677,9 @@
     "tag": "section",
     "class": "ak-archive-magazine-section",
     "settings": [
-      {
-        "type": "color_scheme",
-        "id": "color_scheme",
-        "default": "scheme-4",
-        "label": "Color scheme"
-      }
+      { "type": "color_scheme", "id": "color_scheme", "default": "scheme-4", "label": "Color scheme" }
     ],
-    "presets": [
-      { "name": "Archive Magazine" }
-    ]
+    "presets": [ { "name": "Archive Magazine" } ]
   }
   {% endschema %}
 </section>
