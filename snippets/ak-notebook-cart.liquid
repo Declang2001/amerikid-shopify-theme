@@ -384,4 +384,53 @@
   .ak-cart-page #main-cart-footer .cart__checkout-button{
     font-family:'AK Due Date', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
   }
+
+  /* ============================================================
+     STAGE CART-2A — CART TOTALS WHITE NOTEBOOK CARD
+     Flips the checkout-summary panel (.cart__footer) from the dark comic card
+     to the Narrative / Life-Style / Club-Hub white notebook language — warm
+     white #fffef8 + 2px ink #15120b stroke + a system-consistent 6px/4px hard
+     offset sticker shadow (22px radius kept) — and re-inks the totals text that
+     was white/magenta-on-dark. CSS-ONLY, page-scoped html.ak-cart-page; the
+     #main-cart-footer ID is LOAD-BEARING in every selector to beat the section's
+     own #main-cart-footer rules (1,1,x). Supersedes the earlier de-mud @325-337
+     (bg/border/shadow) by specificity ((1,2,1)+!important) + source order; that
+     rule is left intact so deleting THIS block restores the dark panel.
+     PRESERVES: <form id="cart">, name="updates[]", quantity/remove, subtotal/
+     total Liquid + discounts, the checkout <button id="checkout"> (id/name/type/
+     form/disabled/submit — DEFERRED, NOT restyled), Shop Pay / dynamic checkout
+     (native, untouched), the cart-note + #cart-errors behaviour, the empty-cart
+     `.is-empty .cart__footer{display:none}` (NOT overridden), and the inert
+     particle canvases. NO markup / JS / doodle / asset change.
+     Revert: delete this block (panel returns to the dark de-mud card).
+     ============================================================ */
+
+  /* (1) PANEL SURFACE — dark -> warm white + ink stroke + sticker shadow
+     consistent with the other notebook cards (Club Hub 6px/.22). 22px radius /
+     overflow / position / the section's hover-lift transform are inherited. */
+  html.ak-cart-page #main-cart-footer .cart__footer{
+    background:#fffef8 !important;
+    border:2px solid #15120b !important;
+    box-shadow:6px 6px 0 rgba(21,18,11,.22) !important;
+  }
+  @media (max-width:480px){                                                         /* edge-safe offset on the narrowest phones */
+    html.ak-cart-page #main-cart-footer .cart__footer{ box-shadow:4px 4px 0 rgba(21,18,11,.22) !important; }
+  }
+  /* purple hover cue (matches the other notebook cards; the section's :hover @96
+     translateY lift is kept — only the border colour is restated). */
+  html.ak-cart-page #main-cart-footer .cart__footer:hover{ border-color:#ff33ff !important; }
+
+  /* (2) kill the dark-base HUD scanline ::before (mix-blend:screen -> invisible
+     on white anyway; remove the dead decorative overlay for a clean panel). */
+  html.ak-cart-page #main-cart-footer .cart__footer::before{ display:none !important; }
+
+  /* (3) RE-INK TOTALS TEXT — white "Estimated total" label + the magenta total
+     value (with its magenta glow) -> ink for guaranteed legibility on the white
+     card; the tax/discount caption + #cart-errors too. The AK Due Date font
+     (TYPO-1A @382-384) is kept — only colour / text-shadow change. The checkout
+     button + dynamic-checkout are deliberately NOT in this list. */
+  html.ak-cart-page #main-cart-footer .totals__total{ color:#15120b !important; opacity:1 !important; }
+  html.ak-cart-page #main-cart-footer .totals__total-value{ color:#15120b !important; text-shadow:none !important; }
+  html.ak-cart-page #main-cart-footer .tax-note{ color:rgba(21,18,11,.7) !important; }
+  html.ak-cart-page #cart-errors{ color:#15120b !important; }                                       /* white error text -> readable ink on paper */
 </style>
