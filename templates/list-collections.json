@@ -29,6 +29,13 @@
     },
     "ak-archive": {
       "type": "ak-archive",
+      "disabled": true,
+      "settings": {
+        "color_scheme": "scheme-4"
+      }
+    },
+    "ak-archive-magazine": {
+      "type": "ak-archive-magazine",
       "settings": {
         "color_scheme": "scheme-4"
       }
@@ -42,6 +49,7 @@
     "main",
     "ak-top",
     "custom_liquid_akArch1",
+    "ak-archive-magazine",
     "ak-archive",
     "ak-footer"
   ]
