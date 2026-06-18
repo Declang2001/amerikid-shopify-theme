@@ -513,4 +513,6 @@
     box-shadow:5px 5px 0 rgba(21,18,11,.26) !important;
   }
   html.ak-cart-page .cart__login-paragraph{ color:#15120b !important; }           /* "Have an account?" prompt copy -> ink */
+  /* NOTEBOOK-MOBILE-RULES-1: hide notebook vertical margin rules on mobile only (push both off-screen via the shared inset var; paper fill, top/bottom bands, and horizontal ruled lines unaffected; desktop unchanged). Revert: delete this @media line. */
+  @media (max-width:749px){ html.ak-cart-page body{ --ak-paper-side-gap:-60px !important; } }
 </style>

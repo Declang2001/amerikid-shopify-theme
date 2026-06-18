@@ -380,6 +380,8 @@
   @media (max-width:1439px){
     .ak-archive-page .ak-ad--star-edge-left{ display:none !important; }
   }
+  /* NOTEBOOK-MOBILE-RULES-1: hide notebook vertical margin rules on mobile only (push both off-screen via the shared inset var; paper fill, top/bottom bands, and horizontal ruled lines unaffected; desktop unchanged). Revert: delete this @media line. */
+  @media (max-width:749px){ html.ak-archive-page body{ --ak-paper-side-gap:-60px !important; } }
 </style>
 
 <div class="ak-archive-doodles" aria-hidden="true">

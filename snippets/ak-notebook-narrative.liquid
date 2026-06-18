@@ -604,4 +604,6 @@
   @media (max-width:1023px){
     .ak-narrative-page .ak-narrative-doodles{ display:none; }
   }
+  /* NOTEBOOK-MOBILE-RULES-1: hide notebook vertical margin rules on mobile only (push both off-screen via the shared inset var; paper fill, top/bottom bands, and horizontal ruled lines unaffected; desktop unchanged). Revert: delete this @media line. */
+  @media (max-width:749px){ html.ak-narrative-page body{ --ak-paper-side-gap:-60px !important; } }
 </style>

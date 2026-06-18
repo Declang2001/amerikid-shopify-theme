@@ -489,6 +489,8 @@
     }
     /* loading spinner stays visible (do NOT touch the `.hidden` toggle) — ink so it reads on the paper button */
     html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__submit .loading__spinner svg{ color:#15120b !important; }
+    /* NOTEBOOK-MOBILE-RULES-1: hide the product notebook vertical margin rules on mobile only (push both off-screen via the section inset var; paper fill + horizontal lines + desktop unchanged; CSS-only, no commerce/markup/JS/gallery/ATC change). Revert: delete this @media line. */
+    @media (max-width:749px){ html.ak-pdp-page #MainProduct-{{ section.id }}{ --ak-pdp-side-gap:-60px !important; } }
   {%- endstyle -%}
 
   <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>

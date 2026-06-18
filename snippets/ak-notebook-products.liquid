@@ -529,4 +529,6 @@
     background-image:url("https://cdn.shopify.com/s/files/1/0930/3267/7656/files/ak-doodle-star.png?v=1780967556");
   }
 
+  /* NOTEBOOK-MOBILE-RULES-1: hide notebook vertical margin rules on mobile only (push both off-screen via the shared inset var; paper fill, top/bottom bands, and horizontal ruled lines unaffected; desktop unchanged). Revert: delete this @media line. */
+  @media (max-width:749px){ .ak-products-page body{ --ak-paper-side-gap:-60px !important; } }
 </style>

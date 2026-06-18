@@ -490,6 +490,8 @@
     .ak-badmusic-2025-page .ak-bm2d--dollar-grid-left-upper,
     .ak-badmusic-2025-page .ak-bm2d--star-grid-left-lower{ display:none !important; }
   }
+  /* NOTEBOOK-MOBILE-RULES-1: hide notebook vertical margin rules on mobile only (push both off-screen via the shared inset var; paper fill, top/bottom bands, and horizontal ruled lines unaffected; desktop unchanged). Revert: delete this @media line. */
+  @media (max-width:749px){ html.ak-badmusic-2025-page body{ --ak-paper-side-gap:-60px !important; } }
 </style>
 
 <div class="ak-badmusic-2025-doodles" aria-hidden="true">
