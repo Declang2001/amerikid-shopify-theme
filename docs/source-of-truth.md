@@ -3,23 +3,24 @@
 ## Repo Purpose
 This repository holds the unpublished working copy of the live Amerikid Shopify theme. It serves as a staging ground for performance optimization and cleanup before pushing updates to the live store.
 
-## Theme Publish State & Live-Readiness (current, 2026-06-18 — verified via `shopify theme list --store iacxyv-w5.myshopify.com`)
-The AmeriKid notebook redesign is built as a **separate Shopify theme**, kept apart from the public storefront. Two themes matter:
+## Theme Publish State & Live-Readiness (current, 2026-06-18 — POST-PUBLISH — verified via `shopify theme list --store iacxyv-w5.myshopify.com`)
+**The notebook redesign is now LIVE.** The owner **manually published** the notebook theme from Shopify Admin (Online Store → Themes → Publish). This was a manual Admin action — **NOT a CLI publish; Claude ran no `shopify theme publish`.** Two themes matter:
 
 | Theme ID | Admin name | Role | Meaning |
 | :--- | :--- | :--- | :--- |
-| **`184615043352`** | **AmeriKid Dark Theme - Preserve** | **currently `[live]`** | The public storefront today. The original dark theme. Preserved as the secondary / rollback variation. |
-| **`186464731416`** | **AmeriKid Notebook Theme - Publish Candidate** | **currently `[unpublished]`** | The notebook redesign (this repo's `experiment/notebook-paper-background` branch). The publish candidate. NOT live. |
+| **`186464731416`** | **AmeriKid Notebook Theme - Publish Candidate** | **currently `[live]`** | **The public storefront now.** The notebook redesign (this repo's `experiment/notebook-paper-background` branch) is live. |
+| **`184615043352`** | **AmeriKid Dark Theme - Preserve** | **currently `[unpublished]`** | The original dark theme. **Preserved rollback / fallback** — sits in the draft theme library, re-publishable to revert. |
 
-(Both were renamed 2026-06-18 for clarity — `184615043352` from `Copy of club amerikid update`; `186464731416` from `Notebook Paper Experiment - DO NOT PUBLISH`. The rename is admin-label only — no files, settings, or publish state changed. Historical change-log entries still reference the old "Notebook Paper Experiment - DO NOT PUBLISH" name and are accurate as-of-their-date; do not rewrite them.)
+(Both were renamed 2026-06-18 — `184615043352` from `Copy of club amerikid update`; `186464731416` from `Notebook Paper Experiment - DO NOT PUBLISH`. Admin-label only — no files/settings changed by the rename. Historical change-log entries still reference the old "Notebook Paper Experiment - DO NOT PUBLISH" name and are accurate as-of-their-date; do not rewrite them. The roles in those old rows ("186464731416 = unpublished experiment") were true then but are now SUPERSEDED by this section.)
 
-**Manual publish strategy (authoritative):** the notebook theme will be **published MANUALLY from Shopify Admin** (Online Store → Themes → *AmeriKid Notebook Theme - Publish Candidate* → Publish) **after** final pre-live QA and explicit owner approval. **Do NOT run `shopify theme publish` (or any CLI publish)** unless the owner explicitly changes this plan. All experiment work continues to push ONLY to `186464731416` via `shopify theme push --theme 186464731416 --nodelete --only …`.
+**Publish status:** manual Shopify Admin publish **COMPLETE**. The notebook theme `186464731416` is the public storefront. The **rollback strategy worked as designed**: publishing the notebook auto-demoted the dark theme `184615043352` to `[unpublished]`, where it remains a one-click rollback (re-publish `184615043352` from Admin to revert the store to the dark theme). No data/files lost on either side.
 
-**Rollback strategy:** publishing the notebook theme from Admin automatically demotes the dark theme `184615043352` to the unpublished/draft theme library — it stays there as a one-click rollback (re-publish `184615043352` to revert the storefront to the dark theme). No data/files are lost on either side.
-
-**Warnings:**
-- **Do NOT push notebook files into theme `184615043352`** (the live dark theme). It must stay byte-unchanged so it remains a faithful rollback.
-- **Do NOT publish** the notebook theme until the final pre-live QA pass (full commerce smoke test + leak battery + Mystery Box integrity across all notebook routes) is complete **and** the owner has explicitly approved going live.
+**⚠️ CRITICAL — the safe dev path has CHANGED now that 186464731416 is live:**
+- **`186464731416` is now the LIVE storefront — do NOT push to it as a sandbox anymore.** `shopify theme push --theme 186464731416 …` now edits the live store directly. The prior "push freely to 186464731416 because it's the unpublished DO-NOT-PUBLISH experiment" model is **no longer valid.**
+- **Future notebook work:** duplicate the live notebook theme into a **fresh unpublished draft** first (Admin → duplicate, or `shopify theme push` to a NEW unpublished theme id), push + QA changes on that draft, then the **owner manually publishes the draft from Admin** once accepted. Never edit the live notebook theme blind.
+- **Future dark-theme work:** the dark fallback `184615043352` must stay **preserved/byte-unchanged** so it remains a faithful rollback. If it ever needs updates, duplicate it into its own **separate dark draft** and work there — do NOT edit the preserved fallback directly.
+- **A fix that must apply to BOTH themes** = treat it as **two separate reviewed/QA'd passes** (one per theme's own draft), never one blind dual-push.
+- **Git:** the GitHub branch `experiment/notebook-paper-background` still holds the notebook code/history. A manual Admin publish does **not** create a Git commit, so this docs update is how the publish is recorded in the repo. The branch stays named `experiment/notebook-paper-background` until intentionally renamed/merged later.
 
 ## High-Level Theme Description
 This theme is based on Shopify Dawn but contains heavy custom aesthetic overrides, most notably a global "Impact" font style, neon elements, and custom interactive "starfield" canvas animations. It also shows traces of multiple page builder apps coexisting.
