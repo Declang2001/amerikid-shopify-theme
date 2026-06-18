@@ -261,7 +261,19 @@
       .ak-mag-toc li{padding:.12em 0;}
       .ak-mag-toc-jump{font-size:1.04rem;white-space:nowrap;}
       .ak-mag-contents-h{font-size:1.4rem;margin-bottom:.3em;}
-      .ak-mag-cover-title{font-size:clamp(3rem,13vw,4.6rem);}
+      /* MOBILE COVER: fill more of the book width so the embossed ARCHIVE never clips (desktop cover unchanged) */
+      .ak-mag-cover{left:6%;width:88%;}
+      .ak-mag-cover-title{font-size:clamp(2.4rem,12vw,4.4rem);}
+      .ak-mag-cover-face{padding:clamp(20px,5vw,34px);}
+      /* MOBILE MASTHEAD: fit all four credits (incl. Ricardo) on the shorter single page — smaller logo, tighter spacing, colophon hidden */
+      .ak-mag-logo{width:min(44%,140px);margin:2px 0 10px;}
+      .ak-mag-kicker{margin-bottom:.25em;}
+      .ak-mag-mast-title{font-size:clamp(1.3rem,5.4vw,1.8rem);margin-bottom:.1em;}
+      .ak-mag-mast-issue{font-size:1rem;margin-bottom:.5em;}
+      .ak-mag-credits{gap:.4em;padding:.5em .7em;}
+      .ak-mag-credits b{font-size:1.1rem;}
+      .ak-mag-credits span{font-size:.92rem;}
+      .ak-mag-colophon{display:none;}
     }
     @media (max-width:420px){.ak-mag.is-enhanced .ak-mag-book{height:min(72vh,580px);}}
 

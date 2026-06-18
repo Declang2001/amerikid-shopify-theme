@@ -343,4 +343,87 @@
   html.ak-pdp-page .ak-top-drawer .ak-top-mobile-image img{
     filter: drop-shadow(0 0 1px rgba(21,18,11,1)) drop-shadow(0 1px 2px rgba(21,18,11,.55)) !important;
   }
+  /* ============================================================
+     STAGE ND-2C — DRAWER BAD MUSIC / CANDYFACTS IMAGE LINKS (mobile)
+     Owner: make the BAD MUSIC + CANDYFACTS logos MUCH bigger; make BAD
+     MUSIC BLACK (its PNG is white — brightness(0) inks it, alpha kept);
+     give both a hover/active "hub" pill so they feel like the text nav
+     buttons. Builds on ND-2B §7 (contour filter) — §7 stays for CANDY,
+     BAD is overridden to black here. PAINT/scale only: markup / JS /
+     hrefs (BAD=/pages/2025, CANDY=/pages/mystery-box) / open-close are
+     untouched; the panel's LEFT RED MARGIN RULE (ND-2B §1) is NOT touched.
+     Page-class-scoped (leak-safe — dark routes carry no notebook class).
+     Revert: delete this block. ============================================================ */
+  /* (a) both logos much bigger (base 120px) — aspect kept, width-capped so no overflow */
+  html.ak-products-page       .ak-top-drawer .ak-top-mobile-image img,
+  html.ak-lifestyle-page      .ak-top-drawer .ak-top-mobile-image img,
+  html.ak-clubhub-page        .ak-top-drawer .ak-top-mobile-image img,
+  html.ak-narrative-page      .ak-top-drawer .ak-top-mobile-image img,
+  html.ak-badmusic-page       .ak-top-drawer .ak-top-mobile-image img,
+  html.ak-badmusic-2025-page  .ak-top-drawer .ak-top-mobile-image img,
+  html.ak-archive-page        .ak-top-drawer .ak-top-mobile-image img,
+  html.ak-cart-page           .ak-top-drawer .ak-top-mobile-image img,
+  html.ak-mysterybox-page     .ak-top-drawer .ak-top-mobile-image img,
+  html.ak-pdp-page            .ak-top-drawer .ak-top-mobile-image img{
+    height:auto !important; width:auto !important;
+    max-height:clamp(150px,42vw,190px) !important; max-width:80% !important;
+  }
+  /* (b) hub pill + keep the existing :active press scale (ak-top.liquid) */
+  html.ak-products-page       .ak-top-drawer .ak-top-mobile-image,
+  html.ak-lifestyle-page      .ak-top-drawer .ak-top-mobile-image,
+  html.ak-clubhub-page        .ak-top-drawer .ak-top-mobile-image,
+  html.ak-narrative-page      .ak-top-drawer .ak-top-mobile-image,
+  html.ak-badmusic-page       .ak-top-drawer .ak-top-mobile-image,
+  html.ak-badmusic-2025-page  .ak-top-drawer .ak-top-mobile-image,
+  html.ak-archive-page        .ak-top-drawer .ak-top-mobile-image,
+  html.ak-cart-page           .ak-top-drawer .ak-top-mobile-image,
+  html.ak-mysterybox-page     .ak-top-drawer .ak-top-mobile-image,
+  html.ak-pdp-page            .ak-top-drawer .ak-top-mobile-image{
+    border-radius:10px !important; transition:background .15s ease !important;
+  }
+  html.ak-products-page       .ak-top-drawer .ak-top-mobile-image:hover,
+  html.ak-products-page       .ak-top-drawer .ak-top-mobile-image:focus-visible,
+  html.ak-products-page       .ak-top-drawer .ak-top-mobile-image.active,
+  html.ak-lifestyle-page      .ak-top-drawer .ak-top-mobile-image:hover,
+  html.ak-lifestyle-page      .ak-top-drawer .ak-top-mobile-image:focus-visible,
+  html.ak-lifestyle-page      .ak-top-drawer .ak-top-mobile-image.active,
+  html.ak-clubhub-page        .ak-top-drawer .ak-top-mobile-image:hover,
+  html.ak-clubhub-page        .ak-top-drawer .ak-top-mobile-image:focus-visible,
+  html.ak-clubhub-page        .ak-top-drawer .ak-top-mobile-image.active,
+  html.ak-narrative-page      .ak-top-drawer .ak-top-mobile-image:hover,
+  html.ak-narrative-page      .ak-top-drawer .ak-top-mobile-image:focus-visible,
+  html.ak-narrative-page      .ak-top-drawer .ak-top-mobile-image.active,
+  html.ak-badmusic-page       .ak-top-drawer .ak-top-mobile-image:hover,
+  html.ak-badmusic-page       .ak-top-drawer .ak-top-mobile-image:focus-visible,
+  html.ak-badmusic-page       .ak-top-drawer .ak-top-mobile-image.active,
+  html.ak-badmusic-2025-page  .ak-top-drawer .ak-top-mobile-image:hover,
+  html.ak-badmusic-2025-page  .ak-top-drawer .ak-top-mobile-image:focus-visible,
+  html.ak-badmusic-2025-page  .ak-top-drawer .ak-top-mobile-image.active,
+  html.ak-archive-page        .ak-top-drawer .ak-top-mobile-image:hover,
+  html.ak-archive-page        .ak-top-drawer .ak-top-mobile-image:focus-visible,
+  html.ak-archive-page        .ak-top-drawer .ak-top-mobile-image.active,
+  html.ak-cart-page           .ak-top-drawer .ak-top-mobile-image:hover,
+  html.ak-cart-page           .ak-top-drawer .ak-top-mobile-image:focus-visible,
+  html.ak-cart-page           .ak-top-drawer .ak-top-mobile-image.active,
+  html.ak-mysterybox-page     .ak-top-drawer .ak-top-mobile-image:hover,
+  html.ak-mysterybox-page     .ak-top-drawer .ak-top-mobile-image:focus-visible,
+  html.ak-mysterybox-page     .ak-top-drawer .ak-top-mobile-image.active,
+  html.ak-pdp-page            .ak-top-drawer .ak-top-mobile-image:hover,
+  html.ak-pdp-page            .ak-top-drawer .ak-top-mobile-image:focus-visible,
+  html.ak-pdp-page            .ak-top-drawer .ak-top-mobile-image.active{
+    background:rgba(255,51,255,.12) !important;
+  }
+  /* (c) BAD MUSIC -> black ink (white PNG); overrides the ND-2B §7 contour for BAD only */
+  html.ak-products-page       .ak-top-drawer .ak-top-mobile-image[aria-label="BAD Music"] img,
+  html.ak-lifestyle-page      .ak-top-drawer .ak-top-mobile-image[aria-label="BAD Music"] img,
+  html.ak-clubhub-page        .ak-top-drawer .ak-top-mobile-image[aria-label="BAD Music"] img,
+  html.ak-narrative-page      .ak-top-drawer .ak-top-mobile-image[aria-label="BAD Music"] img,
+  html.ak-badmusic-page       .ak-top-drawer .ak-top-mobile-image[aria-label="BAD Music"] img,
+  html.ak-badmusic-2025-page  .ak-top-drawer .ak-top-mobile-image[aria-label="BAD Music"] img,
+  html.ak-archive-page        .ak-top-drawer .ak-top-mobile-image[aria-label="BAD Music"] img,
+  html.ak-cart-page           .ak-top-drawer .ak-top-mobile-image[aria-label="BAD Music"] img,
+  html.ak-mysterybox-page     .ak-top-drawer .ak-top-mobile-image[aria-label="BAD Music"] img,
+  html.ak-pdp-page            .ak-top-drawer .ak-top-mobile-image[aria-label="BAD Music"] img{
+    filter:brightness(0) drop-shadow(0 1px 2px rgba(21,18,11,.45)) !important;
+  }
 </style>
