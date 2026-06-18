@@ -2238,6 +2238,93 @@ left: 14px;
 
   }
 
+  /* ============================================================
+     STAGE CARDS-2B — CLUB HUB WHITE MEMBER ID CARD
+     Flips the .ak-id-card from the dark/yellow base to the Narrative /
+     Life-Style notebook card language — AGED OFF-WHITE (#fffef8 -> #f7f4ea) +
+     ink #15120b stroke + hard offset sticker shadow — and RE-INKS every inner
+     element the dark-base styling left white/translucent (so nothing is invisible
+     on paper). CSS-ONLY, page-scoped html.ak-clubhub-page; covers BOTH the
+     logged-out (.ak-id-shell.ak-logged-out @54) and logged-in (.ak-id-shell
+     .ak-logged-in @199) states (same .ak-id-card + shared inner classes).
+     EXTENDS the existing notebook "Part 2" override @810-828 (which already inks
+     the static text + makes the buttons solid dark) — it does NOT duplicate or
+     delete it; deleting THIS block leaves Part 2's yellow card.
+     PRESERVES ALL membership behaviour: form action / input-select-textarea
+     names / profile-submit JS / photo-upload input + proxy / captcha drawer /
+     auth-account-order-logout hrefs / member-data Liquid / the card grid+layout
+     / the logged-in-out state logic. NO markup / JS / doodle / asset change.
+     Revert: delete this block (card returns to the Part-2 yellow paper card).
+     ============================================================ */
+
+  /* (1) CARD SURFACE — aged off-white + ink stroke + sticker shadow. Supersedes
+     the Part-2 yellow fill @810 ((0,2,1) > (0,2,0)) and the base @1113 magenta
+     hairline + dark/magenta bloom (no competing !important). Radius / overflow /
+     isolation inherited -> layout unchanged. */
+  html.ak-clubhub-page .ak-id-card{
+    background:linear-gradient(180deg, #fffef8, #f7f4ea) !important;
+    border:2px solid #15120b !important;
+    box-shadow:6px 6px 0 rgba(21,18,11,.22) !important;
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+  }
+
+  /* (2) SECURITY / HOLO MOTIFS — built for a dark base (brightness-lighten +
+     mix-blend:screen); re-ink so they stay SUBTLE ID details on paper instead of
+     washing out. (.ak-id-card::before kid watermark is gated off — ak_kid_
+     watermark_src is blank @19 — so it is intentionally NOT styled here.) */
+  html.ak-clubhub-page .ak-card-seal{ filter:brightness(0) !important; opacity:.12 !important; }   /* dark-lightened PNG -> faint ink stamp */
+  html.ak-clubhub-page .ak-holo-strip{ mix-blend-mode:multiply !important; opacity:.5 !important; } /* screen->multiply: iridescent ink bar, not invisible */
+  html.ak-clubhub-page .ak-logged-in .ak-id-card::after{                                            /* guilloche security microlines -> ink + purple multiply */
+    mix-blend-mode:multiply !important; opacity:.07 !important;
+    background-image:
+      repeating-linear-gradient(0deg,   transparent 0 2px, rgba(21,18,11,.5) 2px 3px),
+      repeating-linear-gradient(90deg,  transparent 0 2px, rgba(21,18,11,.3) 2px 3px),
+      repeating-linear-gradient(45deg,  transparent 0 8px, rgba(255,51,255,.28) 8px 9px),
+      repeating-linear-gradient(-45deg, transparent 0 8px, rgba(255,51,255,.18) 8px 9px) !important;
+  }
+
+  /* (3) FORM FIELDS — base is white text in a translucent field (invisible on
+     paper). Paper field + ink text + ink hairline + a MANDATORY purple focus
+     RING (border-color alone is not enough on a white card). Field bg is pure
+     #ffffff so it stays distinct from the #fffef8 card. Names/values/behaviour
+     untouched. */
+  html.ak-clubhub-page .ak-input{
+    color:#15120b !important; background:#ffffff !important; border:1px solid rgba(21,18,11,.45) !important;
+  }
+  html.ak-clubhub-page .ak-input:focus{
+    border-color:#ff33ff !important; background:#ffffff !important; box-shadow:0 0 0 2px rgba(255,51,255,.25) !important;
+  }
+  html.ak-clubhub-page .ak-input::placeholder{ color:rgba(21,18,11,.55) !important; }
+  html.ak-clubhub-page .ak-input::-webkit-input-placeholder{ color:rgba(21,18,11,.55) !important; }
+  html.ak-clubhub-page .ak-input option{ background:#fffef8 !important; color:#15120b !important; } /* best-effort; native menus may ignore */
+  /* SMS-consent legal copy: a label>span with NO color of its own -> inherits the
+     card's #fff default -> invisible on paper. The only label>span in the form. */
+  html.ak-clubhub-page .ak-id-form .ak-field label span{ color:#15120b !important; }
+  html.ak-clubhub-page .ak-save-note{ color:rgba(21,18,11,.65) !important; }                        /* 75%-white note -> readable muted ink */
+  html.ak-clubhub-page .ak-id-fields{ border-color:rgba(21,18,11,.18) !important; }                 /* bg already light via @825; ink the invisible white hairline */
+  html.ak-clubhub-page #ak-sms-consent{ accent-color:#ff33ff; }                                     /* checkbox -> house purple (cosmetic) */
+
+  /* (4) CHIPS + MINI-CARDS — dark translucent boxes (rgba(0,0,0,.30-.35)) go
+     muddy on paper, and the EMAIL/PHONE mini text is already forced ink by Part 2
+     (dark-on-dark) -> lighten the boxes to clean paper insets. */
+  html.ak-clubhub-page .ak-chip{ background:rgba(21,18,11,.06) !important; border-color:rgba(21,18,11,.30) !important; color:#15120b !important; }
+  html.ak-clubhub-page .ak-chip strong{ color:#15120b !important; }
+  html.ak-clubhub-page .ak-id-mini{ background:rgba(21,18,11,.04) !important; border-color:rgba(21,18,11,.18) !important; }
+
+  /* (5) PHOTO UPLOAD — white frame/placeholder borders are invisible on paper;
+     the UPLOAD control is a translucent dark slab that goes muddy-grey -> re-ink
+     to a solid ink chip matching the buttons. Input/proxy behaviour untouched. */
+  html.ak-clubhub-page .ak-id-photo-frame{ border-color:rgba(21,18,11,.20) !important; }            /* bg already light via @826 */
+  html.ak-clubhub-page .ak-id-photo-placeholder{ border-color:rgba(21,18,11,.28) !important; background:rgba(21,18,11,.04) !important; }
+  html.ak-clubhub-page .ak-id-photo-upload{ background:#15120b !important; border-color:rgba(21,18,11,.55) !important; color:#fff !important; }
+  html.ak-clubhub-page .ak-id-photo-error{ background:rgba(21,18,11,.9) !important; }                /* keep #ff6b6b text; clean ink toast */
+
+  /* (6) BUTTONS — already solid ink #15120b + white label via Part 2 @827-828
+     (legible on white; KEEP @828 or the base white-6% hover would wash). Only
+     restore the LOG OUT (.ak-warn) edge that was a now-invisible white border;
+     .ak-primary keeps its house-purple border/glow. */
+  html.ak-clubhub-page .ak-id-btn.ak-warn{ border-color:rgba(21,18,11,.45) !important; }
+
 </style>
 
 <script>
