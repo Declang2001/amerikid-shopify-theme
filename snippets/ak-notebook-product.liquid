@@ -274,4 +274,74 @@
   html.ak-pdp-page .related-products .card-wrapper .card__information .full-unstyled-link{
     color:#15120b !important;
   }
+
+  /* ============================================================
+     STAGE PDP-CORR-2C — PRODUCT MEDIA MODAL NOTEBOOK PREVIEW
+     The Dawn product image modal (<product-modal class="product-media-modal">,
+     opened from the gallery) is a full-screen BLACK overlay whose close X is
+     buried under the fixed top-right cart button. This block (CSS-ONLY, page-
+     scoped html.ak-pdp-page) (1) raises the OPEN modal above the header/cart so
+     the close X wins the top-right corner, (2) repaints the black layers to a
+     dim legal-pad paper backdrop, (3) puts each media item on a white paper
+     stage, and (4) re-inks the close X into a visible notebook chip.
+     KEY MECHANIC: ModalDialog (assets/global.js) moves <product-modal> to
+     <body> (leaves #MainContent), so these selectors are authored as
+     html.ak-pdp-page .product-media-modal* — the host's #MainContent
+     transparency rules @153-155 do NOT reach the relocated modal. NO edit to
+     the modal markup (product-media-modal.liquid), the modal JS (product-
+     modal.js / global.js — open/close/ESC/click-outside/focus-trap/scroll-lock
+     all preserved), assets/section-main-product.css, or sections/ak-top.liquid
+     (the cart button is untouched — just covered by the raised modal while
+     open, and restored on close). NO doodles, NO JS, NO assets, NO commerce
+     change. Revert: delete this block (modal returns to black + the z conflict).
+     ============================================================ */
+
+  /* (1) Z-INDEX — raise the OPEN modal above .ak-top-wrap (z 999), the fixed
+     .ak-top-cart-container (z 9999) and the mobile drawer (z 99999) so the
+     modal + its close X own the top-right corner. (0,3,1)+!important beats the
+     section's .product-media-modal[open]{z-index:101} (section-main-product.css
+     @618). */
+  html.ak-pdp-page .product-media-modal[open]{ z-index:100000 !important; }
+
+  /* (2) BACKDROP — black -> dim legal-pad paper. OPAQUE base (no scrim) so the
+     inked-black cart/header behind the modal cannot bleed through. The dark
+     layers are the .color-{scheme}.gradient on __dialog/__content; neutralise
+     them and paint the wrapper. */
+  html.ak-pdp-page .product-media-modal{
+    background-color:#e7d24c !important;                               /* dim legal-pad yellow */
+    background-image:repeating-linear-gradient(180deg, transparent 0 31px, rgba(44,120,180,.30) 31px 32px) !important; /* subtle blue ruled lines */
+  }
+  html.ak-pdp-page .product-media-modal__dialog,
+  html.ak-pdp-page .product-media-modal__content{
+    background-color:transparent !important; background-image:none !important; /* let the wrapper paper show through */
+  }
+
+  /* (3) WHITE IMAGE STAGE — each media item on a warm-white paper card + ink
+     stroke + offset shadow (gives transparent-PNG products an opaque stage and
+     frames opaque photos). PAINT-ONLY: width / max-width / margin / aspect from
+     section-main-product.css are NOT restated -> media dimensions + zoom usefulness
+     preserved. Applies to every media child wrapper (img/video/model/iframe);
+     the white card frames each consistently. */
+  html.ak-pdp-page .product-media-modal__content > *{
+    background:#fffef8 !important;
+    border:2px solid #15120b !important;
+    box-shadow:6px 6px 0 rgba(21,18,11,.22) !important;
+  }
+
+  /* (4) CLOSE X — a visible ink-on-paper notebook chip (its base bg was the dark
+     scheme colour -> invisible on paper). Sits above the media (its own
+     z-index:2 @698 unchanged) and now above the cart (modal raised). Purple
+     hover/focus; markup + JS untouched. */
+  html.ak-pdp-page .product-media-modal__toggle{
+    color:#15120b !important;
+    background:#fffef8 !important;
+    border:2px solid #15120b !important;
+    box-shadow:4px 4px 0 rgba(21,18,11,.22) !important;
+  }
+  html.ak-pdp-page .product-media-modal__toggle svg,
+  html.ak-pdp-page .product-media-modal__toggle .icon{ color:#15120b !important; }
+  html.ak-pdp-page .product-media-modal__toggle:hover,
+  html.ak-pdp-page .product-media-modal__toggle:focus-visible{
+    color:#ff33ff !important; border-color:#ff33ff !important;
+  }
 </style>
