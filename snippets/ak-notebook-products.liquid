@@ -248,6 +248,44 @@
   }
 
   /* ============================================================
+     PRODUCTS-TITLE-LAYOUT-1 — product-title WRAPPING polish
+     (2026-06-18, scoped to .ak-products-page; CSS-only; cards/grid/
+     badges/links/images/shadows untouched).
+     PROBLEM: the new "Kid Coaster (2-Pack)" title (uppercased to
+     "KID COASTER (2-PACK)") split badly as "KID COASTER (2-" then
+     "PACK)". The literal hyphen-minus (U+002D) inside "(2-PACK)" is a
+     Unicode line-break opportunity, so the greedy line-breaker fit
+     "(2-" at the end of line 1 and orphaned "PACK)" onto line 2.
+       - `hyphens:none` does NOT fix it — it only stops AUTOMATIC
+         hyphenation, never breaks at a REAL hyphen character.
+       - `word-break:keep-all` does NOT fix it either (verified
+         in-browser: the hyphen still breaks).
+     FIX: `text-wrap:balance`. Balance minimises the maximum line
+     width, so it always prefers the word-boundary break
+     ("KID COASTER" / "(2-PACK)") over the hyphen break — keeping
+     hyphenated / parenthetical tokens like "(2-PACK)" and "T-Shirt"
+     intact at EVERY width. Runtime-verified on the dev preview with
+     real product data: ZERO hyphen-splits and NO horizontal overflow
+     at 1440/1366/1280/1024/768/390/375/320; "(2-PACK)" lands cleanly
+     on its own line at all of them. Accepted side effect: balance
+     also de-orphans a few existing long titles (e.g. "BAD Music" /
+     "Rock Tee", "LIBERTY" / "Bucket Hat") onto more even lines —
+     clean word-boundary breaks only, no clipping, line counts about
+     the same. `overflow-wrap:break-word` is a forward-looking guard
+     so any FUTURE single word longer than the card breaks instead of
+     clipping/overflowing. `hyphens:none` keeps the stencil titles
+     from ever auto-hyphenating. (Legacy browsers without `text-wrap`
+     support simply fall back to today's wrap — no regression.)
+     Revert: delete this block. */
+  .ak-products-page .card-wrapper .card__heading,
+  .ak-products-page .card-wrapper .card__heading a,
+  .ak-products-page .card-wrapper .full-unstyled-link{
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    hyphens: none;
+  }
+
+  /* ============================================================
      PRODUCT CUTOUT SHADOW v3 — open the real remaining clipping ancestor.
      v1 clipped because the filter lived on .media (overflow:hidden).
      v2 moved the filter to the img and opened .media, but Dawn's
