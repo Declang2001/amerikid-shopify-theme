@@ -59,7 +59,32 @@
     if ak_card_tags_lower contains 'new'
       assign ak_card_is_new_tag = true
     endif
+
+    # AK-COASTER-CARD-TITLE-1 (2026-06-19) — DETERMINISTIC grid-title wrap, display-only,
+    # HANDLE-GATED to 'kid-coaster-2-packs'. The product title "KiD Coaster (2-Pack)"
+    # (uppercased by the Products grid to "KID COASTER (2-PACK)") could wrap as
+    # "KID COASTER (2-" / "PACK)" because the hyphen-minus (U+002D) inside "(2-Pack)" is a
+    # Unicode break opportunity. PRODUCTS-TITLE-LAYOUT-1's text-wrap:balance fixes it on
+    # master-collection but is NOT guaranteed across browsers/caches/fallback fonts/
+    # text-wrap-unsupported engines. Here the parenthetical is wrapped in a
+    # white-space:nowrap span (CSS Level 1 — universal) so "(2-Pack)" can NEVER split,
+    # regardless of text-wrap support. The Shopify Admin title is NOT changed: the EXACT
+    # text is preserved (escape first, then a targeted replace — a safe no-op if the title
+    # ever changes). Non-coaster products get the identical escaped title as before.
+    assign ak_card_title = card_product.title | escape
+    if card_product.handle == 'kid-coaster-2-packs'
+      assign ak_card_title = ak_card_title | replace: '(2-Pack)', '<span class="ak-card-title-nowrap">(2-Pack)</span>'
+    endif
   -%}
+
+  {%- if card_product.handle == 'kid-coaster-2-packs' -%}
+    {%- comment -%}
+      AK-COASTER-CARD-TITLE-1 — class-scoped nowrap guard. Harmless: `.ak-card-title-nowrap`
+      only exists on this one product's title, so this affects nothing else. Co-located so the
+      whole fix lives in one file and works wherever the coaster card renders.
+    {%- endcomment -%}
+    <style>.ak-card-title-nowrap{white-space:nowrap;}</style>
+  {%- endif -%}
 
   <div
     class="card-wrapper product-card-wrapper underline-links-hover{% if ak_transparent %} ak-transparent-cards{% endif %}"
@@ -147,7 +172,7 @@
                 class="full-unstyled-link"
                 aria-labelledby="StandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }} NoMediaStandardBadge-{{ section_id }}-{{ card_product.id }}"
               >
-                {{ card_product.title | escape }}
+                {{ ak_card_title }}
               </a>
             </h3>
           </div>
@@ -193,7 +218,7 @@
               class="full-unstyled-link"
               aria-labelledby="CardLink-{{ section_id }}-{{ card_product.id }} Badge-{{ section_id }}-{{ card_product.id }}"
             >
-              {{ card_product.title | escape }}
+              {{ ak_card_title }}
             </a>
           </h3>
 
