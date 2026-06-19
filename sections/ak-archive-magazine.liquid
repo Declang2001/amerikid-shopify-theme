@@ -270,9 +270,11 @@
       .ak-mag-kicker{margin-bottom:.25em;}
       .ak-mag-mast-title{font-size:clamp(1.3rem,5.4vw,1.8rem);margin-bottom:.1em;}
       .ak-mag-mast-issue{font-size:1rem;margin-bottom:.5em;}
-      .ak-mag-credits{gap:.4em;padding:.5em .7em;}
-      .ak-mag-credits b{font-size:1.1rem;}
-      .ak-mag-credits span{font-size:.92rem;}
+      /* PDP-COASTER-TITLE-MASTHEAD-1: the longer "Founder, …" roles wrap to 3-4 lines on the short mobile page — tighten the credits block (smaller role text + line-height + gap) so all four credits incl. Ricardo keep comfortable margin. Mobile-only; desktop unchanged. */
+      .ak-mag-credits{gap:.3em;padding:.4em .6em;}
+      .ak-mag-credits li{line-height:1.1;}
+      .ak-mag-credits b{font-size:1rem;line-height:1.12;}
+      .ak-mag-credits span{font-size:.8rem;letter-spacing:.04em;}
       .ak-mag-colophon{display:none;}
     }
     @media (max-width:420px){.ak-mag.is-enhanced .ak-mag-book{height:min(72vh,580px);}}
@@ -337,10 +339,10 @@
           <h2 class="ak-mag-mast-title">AmeriKid Archive</h2>
           <p class="ak-mag-mast-issue">No. 01</p>
           <ul class="ak-mag-credits">
-            <li><b>William Coleman</b><span>Creative Director &amp; Garment Artist</span></li>
-            <li><b>Cruz Centeno</b><span>Social Content Creative Lead</span></li>
-            <li><b>Declan Gainey</b><span>Web Experience Designer &amp; Developer</span></li>
-            <li><b>Ricardo Garay</b><span>Community &amp; Social Outreach</span></li>
+            <li><b>William Coleman</b><span>Founder, Narrative Director &amp; Garment Artist</span></li>
+            <li><b>Cruz Centeno</b><span>Founder, Social Content Creative Lead</span></li>
+            <li><b>Declan Gainey</b><span>Founder, Web Experience Designer &amp; Developer</span></li>
+            <li><b>Ricardo Garay</b><span>Founder, Community &amp; Social Outreach</span></li>
           </ul>
           <p class="ak-mag-colophon">AmeriKid — The Archive, in print.</p>
         </div>

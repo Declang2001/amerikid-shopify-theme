@@ -491,6 +491,30 @@
     html.ak-pdp-page #MainProduct-{{ section.id }} .product-form__submit .loading__spinner svg{ color:#15120b !important; }
     /* NOTEBOOK-MOBILE-RULES-1: hide the product notebook vertical margin rules on mobile only (push both off-screen via the section inset var; paper fill + horizontal lines + desktop unchanged; CSS-only, no commerce/markup/JS/gallery/ATC change). Revert: delete this @media line. */
     @media (max-width:749px){ html.ak-pdp-page #MainProduct-{{ section.id }}{ --ak-pdp-side-gap:-60px !important; } }
+
+    /* ============================================================
+       STAGE PDP-COASTER-TITLE-1 — Kid Coaster (2-Pack) title WRAP
+       (2026-06-18, additive, CSS-only, HANDLE-GATED). The product title
+       "Kid Coaster (2-Pack)" (uppercased to "KID COASTER (2-PACK)") wrapped
+       badly as "KID COASTER (2-" then "PACK)" — the literal hyphen-minus
+       (U+002D) inside "(2-PACK)" is a Unicode line-break opportunity, so the
+       greedy line-breaker placed "(2-" at line-end and orphaned "PACK)".
+       text-wrap:balance minimises the max line width, so it prefers the
+       word-boundary break ("KID COASTER" / "(2-PACK)") over the hyphen break,
+       keeping "(2-PACK)" whole. WRAP-ONLY: the title font / size / color /
+       line-height / margin / markup / heading level / SEO / schema and ALL
+       commerce (price / variants / quantity / Add to Cart / Shop Pay / media /
+       description / preview-hat / form) are untouched. The Liquid gate emits
+       this rule ONLY on the Kid Coaster product page (handle kid-coaster-2-packs)
+       so it can never reach another product. Runtime-verified 1440/390/375/320:
+       "(2-PACK)" lands on its own line, no horizontal overflow.
+       Revert: delete this handle-gated block. */
+    {%- if product.handle == 'kid-coaster-2-packs' -%}
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product__title,
+    html.ak-pdp-page #MainProduct-{{ section.id }} .product__title *{
+      text-wrap:balance;
+    }
+    {%- endif -%}
   {%- endstyle -%}
 
   <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
