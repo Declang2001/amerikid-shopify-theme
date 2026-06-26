@@ -178,19 +178,28 @@
           </div>
 
           <div class="card__badge {{ settings.badge_position }}" style="{% if ak_transparent %}background: transparent !important;{% endif %}">
-            {%- if card_product.available == false -%}
-              <span
-                id="NoMediaStandardBadge-{{ section_id }}-{{ card_product.id }}"
-                class="badge badge--bottom-left color-{{ settings.sold_out_badge_color_scheme }}"
-              >
-                {{- 'products.product.sold_out' | t -}}
-              </span>
-            {%- elsif ak_card_is_new_tag and card_product.available -%}
+            {%- comment -%}
+              AK-NEW-BADGE-PRIORITY-1 (PRODUCT-BADGE-FIX-1, 2026-06-25): badge priority is NEW > SOLD-OUT > SALE.
+              Source of truth for the comic NEW burst = the Shopify Admin product tag `new` (case-insensitive;
+              `ak_card_is_new_tag`, set ~L57-61). NEW intentionally WINS over sold-out so a `new`-tagged product
+              keeps the .ak-badge-new burst even when sold out (owner decision — the black sold-out pill must NOT
+              replace it). Sold-out + sale still render for products that are NOT tagged `new`.
+              Revert: make sold-out the leading `if` again and re-add `and card_product.available` to the NEW
+              branch (i.e. `{%- elsif ak_card_is_new_tag and card_product.available -%}`).
+            {%- endcomment -%}
+            {%- if ak_card_is_new_tag -%}
               <span
                 id="NoMediaStandardBadge-{{ section_id }}-{{ card_product.id }}"
                 class="badge badge--bottom-left badge--new ak-badge-new"
               >
                 NEW
+              </span>
+            {%- elsif card_product.available == false -%}
+              <span
+                id="NoMediaStandardBadge-{{ section_id }}-{{ card_product.id }}"
+                class="badge badge--bottom-left color-{{ settings.sold_out_badge_color_scheme }}"
+              >
+                {{- 'products.product.sold_out' | t -}}
               </span>
             {%- elsif card_product.compare_at_price > card_product.price and card_product.available -%}
               <span
@@ -608,19 +617,28 @@
         {% endif %}
 
         <div class="card__badge {{ settings.badge_position }}" style="{% if ak_transparent %}background: transparent !important;{% endif %}">
-          {%- if card_product.available == false -%}
-            <span
-              id="Badge-{{ section_id }}-{{ card_product.id }}"
-              class="badge badge--bottom-left color-{{ settings.sold_out_badge_color_scheme }}"
-            >
-              {{- 'products.product.sold_out' | t -}}
-            </span>
-          {%- elsif ak_card_is_new_tag and card_product.available -%}
+          {%- comment -%}
+            AK-NEW-BADGE-PRIORITY-1 (PRODUCT-BADGE-FIX-1, 2026-06-25): badge priority is NEW > SOLD-OUT > SALE.
+            Source of truth for the comic NEW burst = the Shopify Admin product tag `new` (case-insensitive;
+            `ak_card_is_new_tag`, set ~L57-61). NEW intentionally WINS over sold-out so a `new`-tagged product
+            keeps the .ak-badge-new burst even when sold out (owner decision — the black sold-out pill must NOT
+            replace it). Sold-out + sale still render for products that are NOT tagged `new`.
+            Revert: make sold-out the leading `if` again and re-add `and card_product.available` to the NEW
+            branch (i.e. `{%- elsif ak_card_is_new_tag and card_product.available -%}`).
+          {%- endcomment -%}
+          {%- if ak_card_is_new_tag -%}
             <span
               id="Badge-{{ section_id }}-{{ card_product.id }}"
               class="badge badge--bottom-left badge--new ak-badge-new"
             >
               NEW
+            </span>
+          {%- elsif card_product.available == false -%}
+            <span
+              id="Badge-{{ section_id }}-{{ card_product.id }}"
+              class="badge badge--bottom-left color-{{ settings.sold_out_badge_color_scheme }}"
+            >
+              {{- 'products.product.sold_out' | t -}}
             </span>
           {%- elsif card_product.compare_at_price > card_product.price and card_product.available -%}
             <span
