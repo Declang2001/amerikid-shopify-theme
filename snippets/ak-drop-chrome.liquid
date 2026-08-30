@@ -1,0 +1,54 @@
+{% doc %}
+  Strips the top chrome on drop pages: hides the AmeriKid logo and all seven nav
+  tiles, keeps the fixed cart button.
+
+  sections/ak-top.liquid is NOT edited. docs/known-fragile-areas.md:209 mandates
+  restyling it "ONLY from page-scoped CSS (never edit sections/ak-top.liquid or
+  its JS)", and every ak-notebook-* snippet header carries that same promise.
+
+  Selectors verified against sections/ak-top.liquid:
+    :312 a.header__heading-link  — the logo link
+    :314 .ak-top-dock            — the logo dock inside it
+    :340 .ak-top-nav-area        — wraps .ak-top-nav-panel (:342) and the
+                                   7 tiles at :345-358 plus the drawer at :360-368
+    :85  .ak-top-cart-container  — position:fixed, z-index:9999. KEPT.
+  The drawer is relocated to a direct child of <body> by ak-top.liquid:481-483,
+  so an html-rooted selector still reaches it.
+
+  @example
+    {% render 'ak-drop-chrome' %}
+{% enddoc %}
+
+{%- style -%}
+  html.ak-drop-page a.header__heading-link,
+  html.ak-drop-page .ak-top-dock,
+  html.ak-drop-page .ak-top-nav-area,
+  html.ak-drop-page .ak-top-drawer,
+  html.ak-pdp-drop a.header__heading-link,
+  html.ak-pdp-drop .ak-top-dock,
+  html.ak-pdp-drop .ak-top-nav-area,
+  html.ak-pdp-drop .ak-top-drawer,
+  html.ak-cart-drop a.header__heading-link,
+  html.ak-cart-drop .ak-top-dock,
+  html.ak-cart-drop .ak-top-nav-area,
+  html.ak-cart-drop .ak-top-drawer{
+    display:none !important;
+  }
+
+  /* the cart bubble stays — it is position:fixed so it does not need the header */
+  html.ak-drop-page .ak-top-cart-container,
+  html.ak-pdp-drop .ak-top-cart-container,
+  html.ak-cart-drop .ak-top-cart-container{
+    display:block !important;
+  }
+
+  /* collapse the space the emptied header used to hold, so the banner and the
+     wall start at the top of the page instead of below a blank band */
+  html.ak-drop-page .ak-top-header,
+  html.ak-pdp-drop .ak-top-header,
+  html.ak-cart-drop .ak-top-header{
+    min-height:0 !important;
+    padding-top:0 !important;
+    padding-bottom:0 !important;
+  }
+{%- endstyle -%}

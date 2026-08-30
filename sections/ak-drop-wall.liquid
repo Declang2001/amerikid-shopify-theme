@@ -22,6 +22,13 @@
   S, M, L, XL (§17.4). The order is therefore hard-coded below and resolved by
   handle, never by collection sort order.
 
+  NOTE (verified 2026-08-29 by inspecting the live artwork): the 20 pieces are
+  each UNIQUE, one of one — SL-S-01, SL-M-01, SL-L-01 and SL-XL-01 are four
+  different garments, and SL-L-01 is a long sleeve. A column is therefore NOT
+  "one design in four sizes". What the grid guarantees is that each ROW is a
+  size: row 1 is the five S pieces, row 2 the five M, and so on. That is the
+  original brief — 4 size rows x 5 pieces.
+
   PRODUCT RESOLUTION: all_products[handle] first, because UNLISTED products are
   returned in Liquid "only when referenced individually by handle" (§17.5) — that
   is what lets the wall be QA'd with real products that stay out of collections
@@ -37,6 +44,7 @@
 {%- endcomment -%}
 
 <script>document.documentElement.classList.add('ak-drop-page');</script>
+{% render 'ak-drop-chrome' %}
 
 {%- assign size_list = section.settings.size_order | split: ',' -%}
 {%- assign design_list = section.settings.design_order | split: ',' -%}
