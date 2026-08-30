@@ -135,6 +135,14 @@ Always `--only`. Never `--allow-live`. Never `--path .`.
 
 ## 7. WHAT IS LEFT
 
+### The red band — final copy (2026-08-30)
+Line 1: `최고 지도자 티셔츠` = **"Supreme Leader T-shirt"**. Travels LEFT TO RIGHT on a
+26s loop, pauses on hover/focus. Do not change the wording.
+Line 2: `AMERIKID 지금 구매 가능` = **AMERIKID / "available for purchase now"**.
+AMERIKID is deliberately the only English word on the band.
+All decoration was removed at the owner's request: the diagonal mis-registration
+field, the chevron rail, and the stars flanking line 2. Do not reintroduce them.
+
 ### Waiting on media (the owner is handling this)
 1. **Final banner image** for the wall. Currently the landing postcard as a
    placeholder, set via `banner_url` in `templates/collection.json`. When real art

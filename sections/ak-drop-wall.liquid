@@ -83,7 +83,14 @@
   {%- if section.settings.band_ko != blank or section.settings.band_en != blank -%}
     <a class="akdw-band" href="{{ section.settings.band_url | default: '/' }}">
       {%- if section.settings.band_ko != blank -%}
-        <span class="akdw-band__ko" lang="ko">{{ section.settings.band_ko }}</span>
+        <span class="akdw-band__ko" lang="ko">
+          <span class="akdw-band__kotrack">
+            <span class="akdw-band__kocopy">{{ section.settings.band_ko }}</span>
+            <span class="akdw-band__kocopy" aria-hidden="true">{{ section.settings.band_ko }}</span>
+            <span class="akdw-band__kocopy" aria-hidden="true">{{ section.settings.band_ko }}</span>
+            <span class="akdw-band__kocopy" aria-hidden="true">{{ section.settings.band_ko }}</span>
+          </span>
+        </span>
       {%- endif -%}
       {%- if section.settings.band_en != blank -%}
         <span class="akdw-band__en">{{ section.settings.band_en }}</span>
@@ -222,15 +229,19 @@
      same lang="ko". No Liquid edit, no schema edit, no duplicated copies, no
      aria-hidden scaffolding. The whole band remains exactly one click target.
 
-     WHAT MOVES: two things, and only one of them forever.
-       1. akdw-slam — the headline is stamped once on load, 4 discrete frames.
-       2. akdw-ratchet — a 12px chevron rail at the bottom edge, marching one
-          notch every 0.75s (30s / steps(40)), transform only.
-     The rail PAUSES on hover and on keyboard focus. That is deliberate and it
-     is load-bearing: it satisfies WCAG 2.2 SC 2.2.2 (Pause/Stop/Hide), which a
-     prefers-reduced-motion query does NOT satisfy on its own; and unlike
-     re-timing animation-duration it cannot snap, because play-state freezes
-     progress instead of re-mapping it. The plate holds still to be read.
+     WHAT MOVES: one thing. The Korean headline travels LEFT TO RIGHT on a
+     26s linear loop — four copies in a max-content track, translating -25% to 0
+     so the wrap is seamless whatever the merchant types.
+     It PAUSES on hover and on keyboard focus. That is load-bearing: it satisfies
+     WCAG 2.2 SC 2.2.2 (Pause/Stop/Hide), which a prefers-reduced-motion query
+     does NOT satisfy on its own, and play-state freezes progress rather than
+     re-mapping it, so there is no snap in either direction.
+     The headline is clipped with overflow:clip, NOT hidden: hidden would make it
+     a scroll container that find-in-page could offset permanently.
+
+     DELIBERATELY REMOVED at the owner's request (2026-08-30): the diagonal
+     mis-registration field behind the type, the chevron rail along the bottom
+     edge, and the stars flanking the second line.
 
      WHAT DOES NOT MOVE: the English. A looping text crawl is a Level A
      accessibility failure without a pause control, is corrupted permanently by
@@ -246,9 +257,7 @@
      ========================================================================== */
   html.ak-drop-page #akdw-{{ section.id }} .akdw-band{
     --akdw-red:#e31300;
-    --akdw-red-2:#d61200;              /* the same red 7% down = second ink pass */
     --akdw-ink:#000;
-    --akdw-rail:clamp(8px,.9vw,12px);
     --akdw-ko-pt:clamp(10px,1.4vh,24px);
     --akdw-ko-pb:clamp(7px,1vh,16px);
     --akdw-en-py:clamp(6px,1vh,13px);
@@ -266,40 +275,12 @@
     border-bottom:3px solid var(--akdw-ink);
   }
 
-  /* SECOND INK PASS — static. Hard 115deg bands only 7% apart, so it reads as a
-     mis-registered second pass on a poster rather than as stripes. Painted once
-     at first paint: no animation, no will-change, no promoted layer, no cost. */
-  html.ak-drop-page #akdw-{{ section.id }} .akdw-band::before{
-    content:"";position:absolute;z-index:0;inset:0;
-    pointer-events:none;
-    background:repeating-linear-gradient(115deg,
-      var(--akdw-red-2) 0 19.5px,
-      var(--akdw-red)  19.5px 39px);
-  }
-
-  /* THE METRONOME — a chevron rail on the bottom edge. 12px tall, peripheral,
-     and stepped, so it is completely static between the 40 events in its cycle.
-     Geometry: a 24px period along a 115deg gradient axis has a horizontal
-     period of 24 / sin(115deg) = 26.4813px, so travel is 40 x 26.4813 =
-     1059.25px — exactly a whole number of periods, and the loop restart is
-     invisible. Transform only, on its own ~1440x12 layer. */
-  html.ak-drop-page #akdw-{{ section.id }} .akdw-band::after{
-    content:"";position:absolute;z-index:2;
-    left:0;bottom:0;height:var(--akdw-rail);
-    width:calc(100% + 1100px);
-    pointer-events:none;
-    background:repeating-linear-gradient(115deg,
-      var(--akdw-ink) 0 7px,
-      rgba(0,0,0,0)   7px 24px);
-    animation:akdw-ratchet 30s steps(40) infinite;
-    will-change:transform;
-  }
-
-  /* Approach the loudspeaker and it holds still for you. play-state freezes
-     progress rather than re-mapping it, so there is no snap in either
-     direction — and it is the pause mechanism SC 2.2.2 requires. */
-  html.ak-drop-page #akdw-{{ section.id }} .akdw-band:hover::after,
-  html.ak-drop-page #akdw-{{ section.id }} .akdw-band:focus-visible::after{
+  /* Approach it and the headline holds still so you can read it. play-state
+     freezes progress rather than re-mapping it, so there is no snap in either
+     direction — and it is the pause mechanism WCAG SC 2.2.2 requires of any
+     automatically-moving content. */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band:hover .akdw-band__kotrack,
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band:focus-visible .akdw-band__kotrack{
     animation-play-state:paused;
   }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-band:focus-visible{
@@ -319,21 +300,37 @@
      on laptops without giving up size on a desktop. */
   html.ak-drop-page #akdw-{{ section.id }} .akdw-band__ko{
     position:relative;z-index:1;display:block;
-    padding:var(--akdw-ko-pt) var(--akdw-gut) var(--akdw-ko-pb);
+    padding:var(--akdw-ko-pt) 0 var(--akdw-ko-pb);
+    /* clip, not hidden — overflow:hidden would make this a scroll container,
+       and find-in-page could then offset the marquee permanently */
+    overflow:hidden;overflow:clip;
     text-align:center;
     font-family:"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic","\B9D1\C740 \ACE0\B515",
                 "Nanum Gothic",system-ui,-apple-system,"Segoe UI",sans-serif;
-    font-size:clamp(30px,min(6.4vw,10.5vh),104px);
+    font-size:clamp(34px,min(8.2vw,12vh),132px);
     font-weight:800;line-height:1.12;letter-spacing:0;
     word-break:keep-all;overflow-wrap:break-word;
     text-shadow:.03em .03em 0 var(--akdw-ink);
-    transform-origin:50% 100%;
-    animation:akdw-slam .2s steps(3,end) .06s both;
+  }
+
+  /* LEFT-TO-RIGHT MARQUEE. Four copies in a max-content track; translating from
+     -25% to 0 advances the track rightward by exactly one copy, so the loop is
+     seamless whatever the merchant types into band_ko. Only the three clones are
+     aria-hidden, so the accessible name is still the phrase once. */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band__kotrack{
+    display:flex;width:max-content;
+    animation:akdw-ko-marquee 26s linear infinite;
+    will-change:transform;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band__kocopy{
+    display:block;padding-right:.5em;white-space:nowrap;
+  }
+  @keyframes akdw-ko-marquee{
+    from{ transform:translate3d(-25%,0,0); }
+    to  { transform:translate3d(0,0,0); }
   }
   /* if the merchant leaves the English blank, keep the rail off the descenders */
-  html.ak-drop-page #akdw-{{ section.id }} .akdw-band__ko:last-child{
-    padding-bottom:calc(var(--akdw-ko-pb) + var(--akdw-rail));
-  }
+
 
   /* ---- DECK 2: THE ANNOUNCEMENT --------------------------------------------
      Full bleed, struck once, cut hard at the plate edge. A flex row of
@@ -346,7 +343,7 @@
     position:relative;z-index:1;
     display:flex;align-items:center;justify-content:center;gap:1.15em;
     padding:var(--akdw-en-py) var(--akdw-gut)
-            calc(var(--akdw-en-py) + var(--akdw-rail));
+            var(--akdw-en-py);
     background:rgba(0,0,0,.18);
     font-family:var(--font-body-family);
     font-size:clamp(15px,min(2.15vw,3.2vh),32px);
@@ -361,17 +358,6 @@
   html.ak-drop-page #akdw-{{ section.id }} .akdw-band__ko + .akdw-band__en{
     border-top:3px solid var(--akdw-ink);
   }
-  /* stars drawn as clipped boxes, never glyphs — no font dependency, no
-     emoji-presentation risk on Windows, and nothing announced by a reader. */
-  html.ak-drop-page #akdw-{{ section.id }} .akdw-band__en::before,
-  html.ak-drop-page #akdw-{{ section.id }} .akdw-band__en::after{
-    content:"";flex:0 0 auto;
-    width:.62em;height:.62em;
-    background:var(--akdw-ink);
-    clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,
-                      50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
-  }
-
   /* ---- MOBILE ---------------------------------------------------------------
      The rail stops entirely below 749px. Lines 351-371 already run five infinite
      the four size tracks already scroll on their own and the script fires a
@@ -379,9 +365,8 @@
      screen where it and the merchandise are stacked in the same frame. It still reads
      as printed — the mis-registration field and the rail are both drawn, held. */
   @media screen and (max-width:749px){
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-band::after{ animation:none; }
     html.ak-drop-page #akdw-{{ section.id }} .akdw-band__ko{
-      font-size:clamp(26px,min(9.5vw,6.5vh),56px);
+      font-size:clamp(28px,min(11vw,7vh),68px);
       line-height:1.14;
     }
     html.ak-drop-page #akdw-{{ section.id }} .akdw-band__en{
@@ -390,18 +375,8 @@
     }
   }
   @media screen and (max-width:479px){
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-band__en::before,
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-band__en::after{ display:none; }
   }
 
-  @keyframes akdw-ratchet{
-    from{ transform:translate3d(0,0,0); }
-    to  { transform:translate3d(-1059.25px,0,0); }   /* 40 x 26.4813px */
-  }
-  @keyframes akdw-slam{
-    from{ transform:scale(1.06); text-shadow:.075em .075em 0 #000; }
-    to  { transform:scale(1);    text-shadow:.03em  .03em  0 #000; }
-  }
 
   /* ---- FOLD BUDGET ----------------------------------------------------------
      THIS BLOCK MUST SIT AFTER the existing max-height:780px rule at lines
@@ -432,7 +407,7 @@
      chevron rail freezes at phase 0 as a printed rule. What is left is the
      poster the moving version was animating. */
   @media (prefers-reduced-motion:reduce){
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-band::after,
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-band__kotrack,
     html.ak-drop-page #akdw-{{ section.id }} .akdw-band__ko{
       animation:none !important;
       will-change:auto;
@@ -771,8 +746,8 @@
     {
       "type": "text",
       "id": "band_en",
-      "label": "Red band \u2014 English line",
-      "default": "AMERIKID AVAILABLE FOR PURCHASE NOW"
+      "label": "Red band \u2014 second line",
+      "default": "AMERIKID \uc9c0\uae08 \uad6c\ub9e4 \uac00\ub2a5"
     },
     {
       "type": "text",
