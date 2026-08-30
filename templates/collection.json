@@ -118,11 +118,22 @@
     "ak-footer": {
       "type": "ak-footer",
       "settings": {}
+    },
+    "ak-drop-wall": {
+      "type": "ak-drop-wall",
+      "settings": {
+        "collection_handle": "supreme-leader",
+        "banner_alt": "Supreme Leader",
+        "handle_prefix": "sl",
+        "size_order": "S,M,L,XL",
+        "design_order": "01,02,03,04,05"
+      }
     }
   },
   "order": [
     "banner",
     "ak-top",
+    "ak-drop-wall",
     "custom_liquid_Jdbfj4",
     "custom_liquid_pDkziB",
     "custom_liquid_pKDQXf",

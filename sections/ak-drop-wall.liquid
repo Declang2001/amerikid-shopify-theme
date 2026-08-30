@@ -43,6 +43,9 @@
   ============================================================================
 {%- endcomment -%}
 
+{%- assign drop_handle = section.settings.collection_handle | strip | downcase -%}
+{%- if collection.handle == drop_handle -%}
+
 <script>document.documentElement.classList.add('ak-drop-page');</script>
 {% render 'ak-drop-chrome' %}
 
@@ -165,6 +168,14 @@
   /* layout/theme.liquid:270-282 forces html,body{background:#000!important}.
      On a black drop that rule works FOR us — we only need the content wells
      transparent so nothing paints a lighter plate behind the wall. */
+  /* the wall REPLACES the stock Dawn grid on this collection */
+  html.ak-drop-page .glowing-product-box,
+  html.ak-drop-page #product-grid,
+  html.ak-drop-page .collection__title,
+  html.ak-drop-page .facets-container{
+    display:none !important;
+  }
+
   html.ak-drop-page #MainContent{ background:transparent !important; }
   html.ak-drop-page #MainContent .gradient{
     background:transparent !important;
@@ -354,6 +365,8 @@
   })();
 </script>
 
+{%- endif -%}
+
 {% schema %}
 {
   "name": "AK Drop Wall",
@@ -370,6 +383,13 @@
       "id": "banner_alt",
       "label": "Banner alt text",
       "default": "Supreme Leader"
+    },
+    {
+      "type": "text",
+      "id": "collection_handle",
+      "label": "Only render on this collection",
+      "info": "The section outputs nothing on any other collection, so it is safe in the default collection template.",
+      "default": "supreme-leader"
     },
     {
       "type": "text",
