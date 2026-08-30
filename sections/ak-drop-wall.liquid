@@ -93,11 +93,11 @@
 
   <div class="akdw-wall">
     <div class="akdw-grid">
-      {%- for design in design_list -%}
-        {%- assign design = design | strip -%}
-        <div class="akdw-col">
-          {%- for size in size_list -%}
-            {%- assign size = size | strip -%}
+      {%- for size in size_list -%}
+        {%- assign size = size | strip -%}
+        <div class="akdw-row" data-akdw-row="{{ size | downcase }}">
+          {%- for design in design_list -%}
+            {%- assign design = design | strip -%}
 
             {%- comment -%} handle: sl-s-01 {%- endcomment -%}
             {%- assign handle = prefix | append: '-' | append: size | append: '-' | append: design | downcase -%}
@@ -374,9 +374,9 @@
 
   /* ---- MOBILE ---------------------------------------------------------------
      The rail stops entirely below 749px. Lines 351-371 already run five infinite
-     akdw-drift loops on the wall columns and the script at 402-409 fires a 700ms
-     auto-flip; the band must not become the seventh moving thing on a screen
-     where it and the merchandise are stacked in the same frame. It still reads
+     the four size tracks already scroll on their own and the script fires a
+     700ms auto-dissolve; the band must not become another moving thing on a
+     screen where it and the merchandise are stacked in the same frame. It still reads
      as printed — the mis-registration field and the rail are both drawn, held. */
   @media screen and (max-width:749px){
     html.ak-drop-page #akdw-{{ section.id }} .akdw-band::after{ animation:none; }
@@ -443,19 +443,16 @@
     padding:clamp(30px,4.5vw,66px) var(--akdw-gut) clamp(48px,7vw,110px);
   }
 
-  /* .akdw-col is display:contents on desktop, so the grid must fill
-     COLUMN-major or each design's four sizes land across a row instead of
-     down a column. Verified in-browser; this exact bug shipped twice in the
-     prototypes before being caught. */
+  /* DOM is row-major (outer loop = size), so the grid needs no auto-flow
+     override — default row flow places each .akdw-row's five items across one
+     row. Each ROW IS A SIZE, on desktop and on mobile alike. */
   html.ak-drop-page #akdw-{{ section.id }} .akdw-grid{
     max-width:1600px;margin-inline:auto;
     display:grid;
-    grid-template-columns:repeat(5,minmax(0,1fr));
-    grid-template-rows:repeat({{ size_list.size }},auto);
-    grid-auto-flow:column;
+    grid-template-columns:repeat({{ design_list.size }},minmax(0,1fr));
     gap:clamp(14px,2.1vw,34px) clamp(12px,1.7vw,28px);
   }
-  html.ak-drop-page #akdw-{{ section.id }} .akdw-col{ display:contents; }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-row{ display:contents; }
 
   html.ak-drop-page #akdw-{{ section.id }} .akdw-item{
     display:flex;flex-direction:column;gap:11px;
@@ -535,36 +532,50 @@
     opacity:.5;
   }
 
-  /* MOBILE: columns become vertical stacks that drift on their own.
-     Adapted from the only translate-loop recipe in the repo,
-     templates/collection.election.json:16-21, turned vertical. */
+  /* ==========================================================================
+     MOBILE — each SIZE becomes its own horizontal track that drifts right to
+     left and can also be swiped by hand. A track's drift stops while you are
+     swiping THAT track and resumes when you let go; the other three keep going.
+     Auto-scroll is driven from JS via scrollLeft, not a CSS animation, because
+     a transform-based marquee cannot coexist with real touch scrolling.
+     ========================================================================== */
   @media screen and (max-width:749px){
     html.ak-drop-page #akdw-{{ section.id }} .akdw-grid{
-      display:flex;gap:6px;align-items:flex-start;max-width:none;
+      display:flex;flex-direction:column;
+      gap:clamp(16px,4vw,26px);
+      max-width:none;
     }
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-col{
-      display:flex;flex-direction:column;gap:6px;flex:1 1 0;min-width:0;
-      animation:akdw-drift 9s linear infinite alternate;
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-row{
+      display:flex;
+      gap:clamp(10px,3vw,18px);
+      overflow-x:auto;
+      overscroll-behavior-x:contain;
+      -webkit-overflow-scrolling:touch;
+      /* NO scroll-snap. Snap points fight a continuous drift: each sub-pixel
+         increment is re-snapped to the nearest item boundary, so the track
+         stalls. A marquee wants free scrolling. */
+      scrollbar-width:none;
+      padding-bottom:2px;
     }
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-col:nth-child(2){ animation-duration:11s;animation-direction:alternate-reverse; }
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-col:nth-child(3){ animation-duration:10s; }
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-col:nth-child(4){ animation-duration:12.5s;animation-direction:alternate-reverse; }
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-col:nth-child(5){ animation-duration:8.5s; }
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-item{ gap:6px; }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-row::-webkit-scrollbar{ display:none; }
+
+    /* much larger — roughly 2.4 per screen instead of 5 squeezed across */
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-item{
+      flex:0 0 auto;
+      width:min(41vw,220px);
+      gap:8px;
+    }
     html.ak-drop-page #akdw-{{ section.id }} .akdw-name{
-      font-size:12px;letter-spacing:.02em;
+      font-size:clamp(11px,3.1vw,15px);letter-spacing:.03em;
     }
   }
-  @keyframes akdw-drift{
-    from{ transform:translateY(-14px); }
-    to{ transform:translateY(14px); }
   }
 
   /* reduced motion — same kill-switch shape as ak-archive-magazine.liquid:284-287 */
   @media (prefers-reduced-motion:reduce){
     html.ak-drop-page #akdw-{{ section.id }} .akdw-face,
     html.ak-drop-page #akdw-{{ section.id }} .akdw-shot{ transition:none !important; }
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-col{ animation:none !important; }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-row{ scroll-behavior:auto !important; }
   }
 {%- endstyle -%}
 
@@ -573,9 +584,95 @@
     var root = document.getElementById('akdw-{{ section.id }}');
     if (!root) return;
 
-    /* Hover does not exist on touch. On mobile the cells auto-flip on a
+    /* ---- MOBILE SIZE TRACKS -------------------------------------------
+       Each .akdw-row is a real horizontal scroller. We drive scrollLeft from
+       rAF rather than animating a transform, because a transform marquee
+       cannot coexist with genuine touch scrolling — the user would be fighting
+       the animation. Children are cloned once so the wrap is seamless; clones
+       are aria-hidden and taken out of the tab order so the 20 real product
+       links are still the only 20 the page exposes.
+       A track pauses while it is being touched or actively scrolled, and only
+       that track — the other three keep moving. */
+    var tracks = [];
+
+    function setupTracks() {
+      if (!mqTouch.matches || tracks.length) return;
+      var rows = root.querySelectorAll('.akdw-row');
+      for (var i = 0; i < rows.length; i++) {
+        (function (row, idx) {
+          var originals = Array.prototype.slice.call(row.children);
+          if (!originals.length) return;
+          for (var k = 0; k < originals.length; k++) {
+            var c = originals[k].cloneNode(true);
+            c.setAttribute('aria-hidden', 'true');
+            c.setAttribute('tabindex', '-1');
+            if (c.removeAttribute) c.removeAttribute('href');
+            row.appendChild(c);
+          }
+          /* pos is a FLOAT we own. Writing sub-pixel increments straight into
+             scrollLeft does not work: the browser rounds the value on read-back,
+             so a 0.4px/frame drift is rounded to 0 every frame and the track
+             never moves. Accumulate here, assign from here. */
+          /* speed is PX PER SECOND, not per frame. A per-frame constant is
+             frame-rate dependent: it runs at double speed on a 120Hz phone and
+             far faster still on an unthrottled headless browser. */
+          var t = { el: row, held: false, idle: 0, pos: 0, last: 0,
+                    speed: 24 + idx * 4 };
+          function hold() { t.held = true; t.idle = 0; }
+          function release() { t.idle = 0; }
+          row.addEventListener('pointerdown', hold);
+          row.addEventListener('touchstart', hold, { passive: true });
+          window.addEventListener('pointerup', release);
+          row.addEventListener('touchend', release, { passive: true });
+          tracks.push(t);
+        })(rows[i], i);
+      }
+    }
+
+    var lastT = 0;
+    function tick(now) {
+      /* seconds since the previous frame, clamped so a background tab that
+         wakes after 10s does not fling every track across its whole width */
+      var dt = lastT ? Math.min((now - lastT) / 1000, 0.05) : 0;
+      lastT = now;
+
+      for (var i = 0; i < tracks.length; i++) {
+        var t = tracks[i];
+
+        /* held while the finger is down, and for ~1.8s after release so a
+           flick can coast to a stop before we take the track back */
+        if (t.held) {
+          t.idle += dt;
+          if (t.idle > 1.8) { t.held = false; t.pos = t.el.scrollLeft; }
+          continue;
+        }
+
+        var half = t.el.scrollWidth / 2;
+        if (half <= 0) continue;
+
+        /* if the value moved by more than our own last write, the user did it —
+           adopt their position instead of fighting them */
+        if (Math.abs(t.el.scrollLeft - t.last) > 2) { t.pos = t.el.scrollLeft; }
+
+        t.pos += t.speed * dt;
+        if (t.pos >= half) t.pos -= half;   /* seamless: the second half is clones */
+        t.el.scrollLeft = t.pos;
+        t.last = t.el.scrollLeft;
+      }
+      raf = requestAnimationFrame(tick);
+    }
+
+    var raf = null;
+    function startTracks() {
+      if (raf || mqMotion.matches || !mqTouch.matches) return;
+      setupTracks();
+      if (tracks.length) raf = requestAnimationFrame(tick);
+    }
+    function stopTracks() { if (raf) { cancelAnimationFrame(raf); raf = null; lastT = 0; } }
+
+    /* Hover does not exist on touch. On mobile the cells auto-dissolve on a
        staggered timer so every back print is seen without interaction.
-       Stepping by 7 keeps consecutive flips in different columns. */
+       Stepping by 7 keeps consecutive reveals in different tracks. */
     var mqTouch = window.matchMedia('(max-width: 749px)');
     var mqMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     var timer = null, i = 0;
@@ -603,15 +700,19 @@
        this theme (docs/theme-architecture.md, offscreen rAF cancellation). */
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) { e.isIntersecting ? start() : stop(); });
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { start(); startTracks(); }
+          else { stop(); stopTracks(); }
+        });
       }, { threshold: 0 }).observe(root);
     } else {
       start();
+      startTracks();
     }
 
     if (mqTouch.addEventListener) {
-      mqTouch.addEventListener('change', start);
-      mqMotion.addEventListener('change', start);
+      mqTouch.addEventListener('change', function () { start(); startTracks(); });
+      mqMotion.addEventListener('change', function () { start(); stopTracks(); startTracks(); });
     }
   })();
 </script>

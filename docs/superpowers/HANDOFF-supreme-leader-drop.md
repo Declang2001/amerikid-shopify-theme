@@ -102,6 +102,18 @@ Always `--only`. Never `--allow-live`. Never `--path .`.
   drawer into a full-screen z-99999 overlay of seven notebook links.
 - Products are **1 in stock each**, so sold-out is the state the wall will spend most
   of its life in. Each description's first line is the size.
+- **Mobile is 4 horizontal size-tracks**, not a grid. Each row (= one size) is a real
+  `overflow-x:auto` scroller that drifts right-to-left AND can be swiped. Three
+  non-obvious things there, all of which cost time:
+  1. **Never animate a marquee by writing sub-pixel values into `scrollLeft`.** The
+     browser rounds on read-back, so a 0.4px/frame drift rounds to 0 every frame and
+     the track never moves. Keep a float accumulator you own.
+  2. **Speed must be px-per-SECOND, not per frame.** A per-frame constant runs at
+     double speed on a 120Hz phone.
+  3. **`scroll-snap-type` fights a continuous drift** — each increment is re-snapped to
+     the nearest item boundary and the track stalls. No snap on these tracks.
+  The DOM is row-major (outer Liquid loop = size), which is also why the desktop grid
+  needs no `grid-auto-flow` override.
 
 ---
 
