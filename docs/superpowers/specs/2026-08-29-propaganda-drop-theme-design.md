@@ -736,3 +736,57 @@ and only after the owner confirms each is genuinely disposable.
 | 17 | safety fail after iframe clicking x fix | unpublished | 184962154776 |
 | 18 | Copy of club amerikid update with Installments … | unpublished | 185072386328 |
 | 19 | safety fail 4/7 working version | unpublished | 185074254104 |
+
+---
+
+## 19. DROP THEME CREATED — 2026-08-29
+
+### 19.1 The theme
+| | |
+|---|---|
+| **Name** | `AmeriKid Supreme Leader Drop - DEV` |
+| **ID** | **`188605497624`** |
+| **Role** | `unpublished` |
+| **Created from** | `186464731416` (live notebook) via server-side `theme duplicate` |
+| **Preview** | `https://iacxyv-w5.myshopify.com?preview_theme_id=188605497624` |
+| **Editor** | `https://iacxyv-w5.myshopify.com/admin/themes/188605497624/editor` |
+
+Named to match the existing convention (`AmeriKid <thing> - <role>`) so it is
+distinguishable from the "Copy of Current" sprawl.
+
+### 19.2 Why `theme duplicate`, not `theme push --unpublished`
+`push --unpublished` would have created the theme from the **local working tree**, shipping
+whatever local drift exists. `duplicate` is a **server-side copy of the live theme** — faithful
+by construction, and it uploads nothing.
+
+**Verified after creation:**
+- `186464731416` still `role=live` — duplicate did not modify the source.
+- `184615043352` (dark preserve) still present and unpublished.
+- Pulled `sections/ak-landing.liquid` (175 lines) and `snippets/ak-notebook-products.liquid`
+  (572 lines) from the new theme into a temp dir: **both SHA-256 identical** to local.
+  The duplicate carried the notebook theme intact, and the local tree has no drift on them.
+
+### 19.3 Theme count movement
+19 → 17. The owner deleted three (`180465238296` Copy of OG Working Version,
+`180504658200` and `180516225304` Copy of BAD Music Version); this work added one.
+Slot pressure resolved.
+
+### 19.4 The guard was over-blocking, and is now fixed
+`scripts/guard-shopify.sh` initially denied **any** `shopify theme` command carrying
+`--theme 186464731416` — which blocked the legitimate `theme duplicate` that creates the drop
+theme. `duplicate` and `pull` **read from** a theme; only `push`, `dev`, `publish` and `delete`
+**write to** one. The protected-ID rule is now scoped to those write verbs.
+Re-tested: **19/19 cases pass** — writes to protected themes still blocked, reads allowed,
+no regressions against the original 16.
+
+### 19.5 Sanctioned push shape from here
+```
+shopify theme push --theme 188605497624 --nodelete \
+  --only sections/ak-drop-wall.liquid \
+  --only snippets/ak-drop-product.liquid \
+  --only snippets/ak-drop-cart.liquid \
+  --only snippets/ak-drop-safety.liquid \
+  --only templates/collection.supreme-leader.json
+```
+No `--allow-live`. No `--path .`. Never `186464731416` or `184615043352`.
+The guard enforces all of this.

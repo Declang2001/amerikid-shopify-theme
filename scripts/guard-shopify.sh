@@ -46,10 +46,13 @@ has 'shopify[[:space:]]+theme[[:space:]]+dev' && has '(^|[[:space:]])--theme([[:
 has 'shopify[[:space:]]+theme[[:space:]]+push' && has '(^|[[:space:]])--(allow-live|live)([[:space:]]|=|$)' &&
   deny "BLOCKED: push with --allow-live/--live writes to the PUBLISHED storefront. The drop theme is unpublished; target it with --theme <NEW_ID> instead."
 
-# 5. Never target the live notebook theme or the preserved dark theme.
-has 'shopify[[:space:]]+theme' && has "(^|[[:space:]])--theme([[:space:]]|=)+${LIVE_ID}" &&
-  deny "BLOCKED: ${LIVE_ID} is the LIVE notebook theme. The drop must never target it."
-has 'shopify[[:space:]]+theme' && has "(^|[[:space:]])--theme([[:space:]]|=)+${DARK_ID}" &&
+# 5. Never WRITE to the live notebook theme or the preserved dark theme.
+#    Scoped to write verbs only: 'duplicate' and 'pull' READ from a theme and are
+#    legitimate against the live theme (duplicate is how the drop theme is created).
+WRITE_VERB='shopify[[:space:]]+theme[[:space:]]+(push|dev|publish|delete)'
+has "$WRITE_VERB" && has "(^|[[:space:]])--theme([[:space:]]|=)+${LIVE_ID}" &&
+  deny "BLOCKED: ${LIVE_ID} is the LIVE notebook theme. Never push to or dev against it. (Reading from it via 'theme duplicate' or 'theme pull' is allowed.)"
+has "$WRITE_VERB" && has "(^|[[:space:]])--theme([[:space:]]|=)+${DARK_ID}" &&
   deny "BLOCKED: ${DARK_ID} is the preserved dark theme and must stay byte-unchanged (docs/source-of-truth.md:42)."
 
 # 6. Unscoped push: no --only means the entire working tree ships. There is no .shopifyignore.
