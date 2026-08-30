@@ -69,6 +69,15 @@
              alt: section.settings.banner_alt,
              class: 'akdw-banner-img' }}
     </div>
+  {%- elsif section.settings.banner_url != blank -%}
+    {%- comment -%} URL fallback so a placeholder can be set without uploading to Files {%- endcomment -%}
+    <div class="akdw-banner">
+      <img class="akdw-banner-img"
+           src="{{ section.settings.banner_url }}"
+           alt="{{ section.settings.banner_alt | escape }}"
+           width="1500" height="900"
+           loading="eager" fetchpriority="high">
+    </div>
   {%- endif -%}
 
   {%- if section.settings.band_ko != blank or section.settings.band_en != blank -%}
@@ -429,6 +438,12 @@
       "type": "image_picker",
       "id": "banner_image",
       "label": "Banner image"
+    },
+    {
+      "type": "text",
+      "id": "banner_url",
+      "label": "Banner image URL",
+      "info": "Used when no image is picked above. Currently the landing postcard, as a placeholder."
     },
     {
       "type": "text",
