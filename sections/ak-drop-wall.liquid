@@ -615,9 +615,12 @@
              never moves. Accumulate here, assign from here. */
           /* speed is PX PER SECOND, not per frame. A per-frame constant is
              frame-rate dependent: it runs at double speed on a 120Hz phone and
-             far faster still on an unthrottled headless browser. */
-          var t = { el: row, held: false, idle: 0, pos: 0, last: 0,
-                    speed: 24 + idx * 4 };
+             far faster still on an unthrottled headless browser.
+             SIGN ALTERNATES BY ROW: row 0 travels right-to-left, row 1
+             left-to-right, and so on down the wall. */
+          var dir = (idx % 2 === 0) ? 1 : -1;
+          var t = { el: row, held: false, idle: 0, pos: 0, last: 0, init: false,
+                    speed: (24 + idx * 4) * dir };
           function hold() { t.held = true; t.idle = 0; }
           function release() { t.idle = 0; }
           row.addEventListener('pointerdown', hold);
@@ -650,12 +653,22 @@
         var half = t.el.scrollWidth / 2;
         if (half <= 0) continue;
 
+        /* a left-to-right track starts at the midpoint so it has a full set of
+           clones to its left to travel into. Deferred to the first tick because
+           scrollWidth is not known until after the clones have laid out. */
+        if (!t.init) {
+          t.init = true;
+          if (t.speed < 0) { t.pos = half; t.el.scrollLeft = half; t.last = t.el.scrollLeft; }
+        }
+
         /* if the value moved by more than our own last write, the user did it —
            adopt their position instead of fighting them */
         if (Math.abs(t.el.scrollLeft - t.last) > 2) { t.pos = t.el.scrollLeft; }
 
         t.pos += t.speed * dt;
-        if (t.pos >= half) t.pos -= half;   /* seamless: the second half is clones */
+        /* seamless both ways: the second half of each track is clones */
+        if (t.pos >= half) t.pos -= half;
+        else if (t.pos < 0) t.pos += half;
         t.el.scrollLeft = t.pos;
         t.last = t.el.scrollLeft;
       }
