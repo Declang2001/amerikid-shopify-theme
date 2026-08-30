@@ -214,33 +214,229 @@
     max-height:34vh;object-fit:cover;
   }
 
-  /* RED BAND — #e31300 is sampled from the postcard's own bottom banner, so the
-     band reads as a continuation of the artwork rather than a new element. */
+  /* ==========================================================================
+     RED BAND — "ONE BEAT" (revised for ship)
+     Replaces the old flex-row band at lines 219-244.
+
+     MARKUP AT LINES 83-92 IS UNCHANGED. Same <a>, same href, same two spans,
+     same lang="ko". No Liquid edit, no schema edit, no duplicated copies, no
+     aria-hidden scaffolding. The whole band remains exactly one click target.
+
+     WHAT MOVES: two things, and only one of them forever.
+       1. akdw-slam — the headline is stamped once on load, 4 discrete frames.
+       2. akdw-ratchet — a 12px chevron rail at the bottom edge, marching one
+          notch every 0.75s (30s / steps(40)), transform only.
+     The rail PAUSES on hover and on keyboard focus. That is deliberate and it
+     is load-bearing: it satisfies WCAG 2.2 SC 2.2.2 (Pause/Stop/Hide), which a
+     prefers-reduced-motion query does NOT satisfy on its own; and unlike
+     re-timing animation-duration it cannot snap, because play-state freezes
+     progress instead of re-mapping it. The plate holds still to be read.
+
+     WHAT DOES NOT MOVE: the English. A looping text crawl is a Level A
+     accessibility failure without a pause control, is corrupted permanently by
+     Ctrl+F (an overflow:hidden box holding six copies gets scrolled to a match
+     and never resets), forces a saccade per step, and is the one device on this
+     band that reads as a template rather than as a design. The announcement is
+     struck once, centred, between two stars.
+
+     COLOUR: #e31300 is sampled from the postcard's own bottom banner and is
+     HELD IN EVERY STATE. White on it measures 4.817:1 (AA). Lightening it to
+     #ff1a05 on hover drops that to 3.89:1 — below AA — so hover strikes the
+     English plate to solid black (21:1) instead of raising the red.
+     ========================================================================== */
   html.ak-drop-page #akdw-{{ section.id }} .akdw-band{
-    display:flex;align-items:center;justify-content:center;
-    flex-wrap:wrap;gap:.35em 1.1em;
-    width:100%;
-    padding:clamp(10px,1.5vw,20px) var(--akdw-gut);
-    background:#e31300;
-    color:#fff;text-decoration:none;text-align:center;
-    border-top:2px solid rgba(0,0,0,.35);
-    border-bottom:2px solid rgba(0,0,0,.35);
-    transition:background .18s ease;
+    --akdw-red:#e31300;
+    --akdw-red-2:#d61200;              /* the same red 7% down = second ink pass */
+    --akdw-ink:#000;
+    --akdw-rail:clamp(8px,.9vw,12px);
+    --akdw-ko-pt:clamp(10px,1.4vh,24px);
+    --akdw-ko-pb:clamp(7px,1vh,16px);
+    --akdw-en-py:clamp(6px,1vh,13px);
+
+    position:relative;isolation:isolate;
+    /* clip, not hidden: overflow:clip creates NO scroll container, so nothing
+       (find-in-page, focus, scrollIntoView) can ever offset the band's contents,
+       and it can never contribute to document scrollWidth. Older engines take
+       the hidden declaration. */
+    overflow:hidden;overflow:clip;
+    display:block;width:100%;padding:0;
+    background:var(--akdw-red);
+    color:#fff;text-decoration:none;
+    border-top:3px solid var(--akdw-ink);
+    border-bottom:3px solid var(--akdw-ink);
   }
-  html.ak-drop-page #akdw-{{ section.id }} .akdw-band:hover{ background:#ff1a05; }
+
+  /* SECOND INK PASS — static. Hard 115deg bands only 7% apart, so it reads as a
+     mis-registered second pass on a poster rather than as stripes. Painted once
+     at first paint: no animation, no will-change, no promoted layer, no cost. */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band::before{
+    content:"";position:absolute;z-index:0;inset:0;
+    pointer-events:none;
+    background:repeating-linear-gradient(115deg,
+      var(--akdw-red-2) 0 19.5px,
+      var(--akdw-red)  19.5px 39px);
+  }
+
+  /* THE METRONOME — a chevron rail on the bottom edge. 12px tall, peripheral,
+     and stepped, so it is completely static between the 40 events in its cycle.
+     Geometry: a 24px period along a 115deg gradient axis has a horizontal
+     period of 24 / sin(115deg) = 26.4813px, so travel is 40 x 26.4813 =
+     1059.25px — exactly a whole number of periods, and the loop restart is
+     invisible. Transform only, on its own ~1440x12 layer. */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band::after{
+    content:"";position:absolute;z-index:2;
+    left:0;bottom:0;height:var(--akdw-rail);
+    width:calc(100% + 1100px);
+    pointer-events:none;
+    background:repeating-linear-gradient(115deg,
+      var(--akdw-ink) 0 7px,
+      rgba(0,0,0,0)   7px 24px);
+    animation:akdw-ratchet 30s steps(40) infinite;
+    will-change:transform;
+  }
+
+  /* Approach the loudspeaker and it holds still for you. play-state freezes
+     progress rather than re-mapping it, so there is no snap in either
+     direction — and it is the pause mechanism SC 2.2.2 requires. */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band:hover::after,
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band:focus-visible::after{
+    animation-play-state:paused;
+  }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-band:focus-visible{
-    outline:3px solid #fff;outline-offset:-6px;
+    outline:4px solid #fff;outline-offset:-8px;
   }
+
+  /* ---- DECK 1: THE MONUMENT -------------------------------------------------
+     Korean falls to the system stack by design — neither Bevan nor Fjalla One
+     carries Hangul and no Korean webfont is loaded or assumed. The stack ends in
+     a generic so Android, where none of these family names resolve, gets Noto
+     Sans CJK KR through per-script fallback.
+     line-height is 1.12, NOT below 1.0: these faces carry ~1.16em ascent and
+     ~0.29em descent, and Hangul ink spans ~1.10em, so tighter leading makes
+     line 1's jongseong collide with line 2 the moment the headline wraps —
+     guaranteed at 320px and on any viewport if the merchant edits band_ko.
+     The upper bound is height-aware, which is what keeps the band off the fold
+     on laptops without giving up size on a desktop. */
   html.ak-drop-page #akdw-{{ section.id }} .akdw-band__ko{
-    font-size:clamp(16px,1.9vw,34px);font-weight:700;line-height:1.15;
-    letter-spacing:.01em;
+    position:relative;z-index:1;display:block;
+    padding:var(--akdw-ko-pt) var(--akdw-gut) var(--akdw-ko-pb);
+    text-align:center;
+    font-family:"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic","\B9D1\C740 \ACE0\B515",
+                "Nanum Gothic",system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-size:clamp(30px,min(6.4vw,10.5vh),104px);
+    font-weight:800;line-height:1.12;letter-spacing:0;
+    word-break:keep-all;overflow-wrap:break-word;
+    text-shadow:.03em .03em 0 var(--akdw-ink);
+    transform-origin:50% 100%;
+    animation:akdw-slam .2s steps(3,end) .06s both;
   }
+  /* if the merchant leaves the English blank, keep the rail off the descenders */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band__ko:last-child{
+    padding-bottom:calc(var(--akdw-ko-pb) + var(--akdw-rail));
+  }
+
+  /* ---- DECK 2: THE ANNOUNCEMENT --------------------------------------------
+     Full bleed, struck once, cut hard at the plate edge. A flex row of
+     star / text / star; the text is an anonymous flex item, so it wraps
+     internally to two centred lines at 320px instead of being clipped —
+     which is exactly what white-space:nowrap would have done there.
+     The .18 plate takes this line to 6.64:1, so it clears AA at the 14px
+     mobile size as well as at 32px. */
   html.ak-drop-page #akdw-{{ section.id }} .akdw-band__en{
-    font-size:clamp(12px,1.25vw,22px);font-weight:700;line-height:1.2;
-    letter-spacing:.11em;text-transform:uppercase;
+    position:relative;z-index:1;
+    display:flex;align-items:center;justify-content:center;gap:1.15em;
+    padding:var(--akdw-en-py) var(--akdw-gut)
+            calc(var(--akdw-en-py) + var(--akdw-rail));
+    background:rgba(0,0,0,.18);
+    font-family:var(--font-body-family);
+    font-size:clamp(15px,min(2.15vw,3.2vh),32px);
+    font-weight:700;line-height:1.15;
+    letter-spacing:.18em;
+    /* .18em of trailing space after the last letter drags centred text left by
+       half a tracking unit; indent it back. */
+    text-indent:.18em;
+    text-transform:uppercase;text-align:center;
   }
+  /* draw the dividing rule only when there is a headline above it */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band__ko + .akdw-band__en{
+    border-top:3px solid var(--akdw-ink);
+  }
+  /* stars drawn as clipped boxes, never glyphs — no font dependency, no
+     emoji-presentation risk on Windows, and nothing announced by a reader. */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band__en::before,
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band__en::after{
+    content:"";flex:0 0 auto;
+    width:.62em;height:.62em;
+    background:var(--akdw-ink);
+    clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,
+                      50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+  }
+
+  /* ---- MOBILE ---------------------------------------------------------------
+     The rail stops entirely below 749px. Lines 351-371 already run five infinite
+     akdw-drift loops on the wall columns and the script at 402-409 fires a 700ms
+     auto-flip; the band must not become the seventh moving thing on a screen
+     where it and the merchandise are stacked in the same frame. It still reads
+     as printed — the mis-registration field and the rail are both drawn, held. */
   @media screen and (max-width:749px){
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-band{ flex-direction:column;gap:.25em; }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-band::after{ animation:none; }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-band__ko{
+      font-size:clamp(26px,min(9.5vw,6.5vh),56px);
+      line-height:1.14;
+    }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-band__en{
+      font-size:clamp(14px,3.6vw,20px);letter-spacing:.15em;text-indent:.15em;
+      gap:.9em;
+    }
+  }
+  @media screen and (max-width:479px){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-band__en::before,
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-band__en::after{ display:none; }
+  }
+
+  @keyframes akdw-ratchet{
+    from{ transform:translate3d(0,0,0); }
+    to  { transform:translate3d(-1059.25px,0,0); }   /* 40 x 26.4813px */
+  }
+  @keyframes akdw-slam{
+    from{ transform:scale(1.06); text-shadow:.075em .075em 0 #000; }
+    to  { transform:scale(1);    text-shadow:.03em  .03em  0 #000; }
+  }
+
+  /* ---- FOLD BUDGET ----------------------------------------------------------
+     THIS BLOCK MUST SIT AFTER the existing max-height:780px rule at lines
+     343-346; it supersedes it and that block can be deleted outright.
+     It covers the whole laptop band, not only sub-780px machines — 1440x800 is
+     the most common laptop viewport and it falls in the gap the 780px query
+     leaves open.
+     Measured at 1440x800: banner 192 + band 176 + wall pad 31.7 + tile 250 +
+     gap 11 + title 56.2 = 717px against an 800px fold. 83px of headroom, with
+     an 84px Korean headline — 3.1x the current 27.4px. At 1440x900: 757px.
+     At 1440x1000 (no query): 921px. At 1920x1080: 1029px. Row 1's images AND
+     titles are above the fold at every one of them. */
+  @media screen and (max-height:900px){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-banner-img{ max-height:24vh; }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-wall{
+      padding-top:clamp(16px,2.2vw,32px);
+    }
+  }
+  @media screen and (max-height:740px){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-banner-img{ max-height:21vh; }
+  }
+
+  /* ---- REDUCED MOTION -------------------------------------------------------
+     AMENDS the existing block at lines 374-378, same kill-switch shape as
+     ak-archive-magazine.liquid:284-287. Nothing is hidden and nothing is left
+     mid-cycle: the headline sits at its final stamped size with the letterpress
+     offset intact, the mis-registration field stays (it never moved), and the
+     chevron rail freezes at phase 0 as a printed rule. What is left is the
+     poster the moving version was animating. */
+  @media (prefers-reduced-motion:reduce){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-band::after,
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-band__ko{
+      animation:none !important;
+      will-change:auto;
+    }
   }
 
   html.ak-drop-page #akdw-{{ section.id }} .akdw-wall{
@@ -337,12 +533,6 @@
       transparent calc(50% - 1.5px),var(--akdw-fg) calc(50% - 1.5px),
       var(--akdw-fg) calc(50% + 1.5px),transparent calc(50% + 1.5px));
     opacity:.5;
-  }
-
-  /* short viewports: keep the first row's product titles above the fold */
-  @media screen and (max-height:780px){
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-banner-img{ max-height:26vh; }
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-wall{ padding-top:clamp(16px,2.2vw,32px); }
   }
 
   /* MOBILE: columns become vertical stacks that drift on their own.
