@@ -129,6 +129,8 @@ Always `--only`. Never `--allow-live`. Never `--path .`.
 | Remove | Works → empty cart, **all 4 escapes hidden**, back link present |
 | Band | KO 92px@1440x900 / 84px@1440x800 / 37px@390, rail off on mobile, no overflow anywhere |
 | Fold | Row-1 titles above the fold at 1440x900 (103px), 1440x800 (44px), 1920x600 |
+| PDP @390 | One H1, full-width ATC, nav + club launcher hidden, cart button visible, 0 off-journey links, no overflow |
+| Cart @390 | All 4 escapes hidden, back link present, 0 off-journey links, no overflow |
 | **Self-containment** | A shopper with NO preview cookie gets the **notebook theme** on `/`, `/collections/supreme-leader`, `/products/sl-s-01`, `/cart` — zero drop markup. Live templates contain **0** `ak-drop` references. |
 
 ---
@@ -164,9 +166,7 @@ field, the chevron rail, and the stars flanking line 2. Do not reintroduce them.
    wanted — one field change. Worth a native-speaker check either way.
 
 ### Never done, worth doing
-6. **Nobody has QA'd the cart or PDP at mobile widths.** The wall was checked at 390;
-   the other surfaces were not.
-7. The third product image (`-D.jpg`, a detail shot) is unused. A natural PDP addition.
+6. The third product image (`-D.jpg`, a detail shot) is unused. A natural PDP addition.
 
 ### At launch — OWNER ONLY
 8. Publish `188605497624` in Shopify Admin. **No agent runs `shopify theme publish`.**
