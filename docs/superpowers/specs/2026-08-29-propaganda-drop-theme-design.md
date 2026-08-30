@@ -399,3 +399,114 @@ cards a background and border by default. Either render bare `<img>`/`<a>` marku
 the new section, or scope overrides under the drop's own page class. Per
 `docs/known-fragile-areas.md:40`, `card-product.liquid` itself may only take
 handle-gated additions, never restyling.
+
+---
+
+## 14. v6 — first-row title readability (2026-08-29)
+
+Owner: "you must be able to view the first row product titles from full view on any screen."
+Measured at 1920x1080 before the fix: title font stuck at **13px** (the `clamp(...,13px)`
+ceiling never let type scale) under a 340px shirt, and the banner consumed **507px**, leaving
+the row-1 title bottom at y=1020 in a 1080px viewport — 60px of headroom.
+
+Fixes: title `clamp(12px,1vw,18px)`; banner `max-height:34vh` (26vh under 780px tall); wall
+`max-width:1600px`; top padding tightens on short viewports; mobile title 8.5px -> 10px.
+
+Verified in-browser (production figures exclude the prototype's 62px review bar):
+| viewport | title px | banner px | row-1 title bottom | production headroom |
+|---|---|---|---|---|
+| 1920x1080 | 18 | 367 | 852 | 290px |
+| 1440x700 | 14.4 | 238 | 664 | 98px |
+| 1920x600 | 18 | 170 (floor) | 621 | 41px |
+
+---
+
+## 15. PRESSURE TEST — 2-agent design + adversarial attack (2026-08-29)
+
+Owner asked for a pressure-tested design analysis, max 2 agents: one to design the full
+drop-theme page set, one to adversarially verify. **Verdict: SOUND_WITH_FIXES.**
+
+### 15.1 CHECKOUT — settled, verified against shopify.dev
+
+**Checkout is not a theme route.** `checkout.liquid` is **Shopify Plus only**; non-Plus stores
+customise checkout through theme-editor branding settings, not Liquid. The `checkout` object is
+deprecated. Thank-you / Order-status page customisation sunset **2025-08-28**; script tags for
+non-Plus sunset **2026-08-26**.
+Source: shopify.dev/docs/storefronts/themes/architecture/layouts/checkout-liquid, /api/liquid/objects/checkout.
+
+**So the drop theme owns exactly four surfaces:** landing -> wall -> PDP -> cart. Everything from
+the checkout button onward is Shopify's UI regardless of what we build.
+
+### 15.2 BROKEN — found by the adversary, must fix before implementation
+
+1. **The proposed PDP insertion point is inside a CSS comment.** "Append after
+   `main-product.liquid:497`" lands inside the comment running **:495-511**. The style block ends
+   at **:518**, not :560. Shipping that = every drop rule silently commented out.
+2. **`:nth-child(2)` is NOT reliably the back image.** `snippets/product-media-gallery.liquid:64-87`
+   emits `product.selected_or_first_available_variant.featured_media` as the FIRST `<li>` when
+   non-null, and :97 skips it in the main loop. Any product with a variant-attached image makes
+   li#2 the FRONT — a silent front-to-front cross-fade. `templates/product.json:82` has
+   `hide_variants:false`, so nothing suppresses it. **Key off `product.media[0]/[1]` via a
+   Liquid-emitted class, never DOM order.**
+3. **The "no box around shirts" state was misattributed.** It is NOT `card-product.liquid`'s inline
+   `ak_clear` (which never touches `.card__media` at :112-113). It comes from
+   `main-collection-product-grid.liquid:189-193`, a **section-scoped** rule. Disable that section
+   and the box returns.
+4. **`/404` and every `customers/*` route are BLACK ON BLACK, not "white on black — leave them."**
+   `layout/theme.liquid:67-71` puts scheme-1 on `:root` with `--color-foreground: 0,0,0`; :108 sets
+   `body{color:rgba(var(--color-foreground),.75)}`; `main-404.liquid`, `main-login.liquid` and
+   `main-account.liquid` emit **zero** colour-scheme classes. Against the forced `#000` ground they
+   render invisible. **The empty cart's "LOG IN" link at `main-cart-items.liquid:366` walks a
+   shopper straight into one.** Fix with a colour *scheme*, not a colour.
+
+### 15.3 MISSED — gaps that will bite during implementation
+
+- **`.ak-badge-new` is a landmine.** `assets/base.css:2939-3004` defines a 9.6rem **red spiky
+  comic starburst** reading "NEW", emitted by `card-product.liquid:190-196` for any product
+  carrying the Shopify tag `new`, and it deliberately outranks sold-out. Twenty brand-new products
+  are exactly what an owner tags `new`. It is conditionally **emitted**, not merely styled, so CSS
+  cannot remove it — **this is an Admin tagging decision the owner must make.**
+- **`templates/collection.json:50-53` carries a `custom_css` array** forcing
+  `margin-bottom:4rem` and `max-width:480px` on every grid item. It lives in template JSON, survives
+  every CSS change, and per shopify.dev is a merchant-owned setting — clearable only in Customize.
+- **`columns_mobile` is `"1"`** and the schema allows only 1 or 2. The mobile drift-and-stagger
+  design assumes 5 columns. Incompatible with the stock grid section.
+- **`.glowing-product-box` is `width:100vw`** (`main-collection-product-grid.liquid:91-104`) with
+  **no `overflow-x:hidden` anywhere in the theme** — horizontal scrollbar on any desktop with a
+  classic scrollbar.
+- **Impact 3rem `!important` on card titles** (`:36-43`) against a ~220px cell. Since the size
+  lives in the product NAME, a 2-line clamp would truncate the size — the one datum with no other
+  home on the wall.
+- **The description block is conditional** (`main-product.liquid:674-679`). If a product has no
+  description, the PDP's size line vanishes with no fallback.
+- **The banner host (0-byte `main-collection-banner.liquid`) has no colour scheme** — same
+  black-on-black failure as 404.
+- **990px cliff**: grid jumps 1 column -> 5 columns in a single pixel of viewport.
+- `enable_sticky_info:true` (`product.json:73`) unaccounted for; `/cart` has no `ak-footer` so
+  footer rules specified for it can never match.
+
+### 15.4 CONFIRMED — the good news
+
+- **Add-to-cart WORKS on the PDP.** The null-cart trace is correct end to end: `product-form.js:11`
+  finds neither `cart-notification` nor `cart-drawer` (nothing renders them; `header.liquid` is
+  0 bytes; `settings_data.json:126` is `"notification"`), so :64-66 navigates to `/cart`.
+  `window.routes` IS defined (`theme.liquid:351-355`). **This is the intended flow, not a bug.**
+- **`sections/ak-landing.liquid` is already the brief.** Only two CDN URLs change (`:4` mp4,
+  `:9` jpg). `DEST` at `:131` already points at the wall.
+- The PDP already carries a **duplicate title** (`main-product.liquid:580-587` emits both `<h1>`
+  and a linked `<h2 class="h1">`) — a real catch worth fixing.
+- `#MainProduct-{id}{background:#000!important}` and the Dawn media-plate kills at `:90-148`
+  already suit a black PDP.
+
+### 15.5 STRATEGIC CONCLUSION
+
+The designer assumed the wall would be built by **restyling the stock product-grid section**. The
+attack shows that path is mined: `.ak-badge-new`, the template `custom_css`, `columns_mobile`
+capped at 2, Impact 3rem `!important`, the 100vw overflow, and the 990px flip gate are all
+properties of that section and its settings.
+
+**Recommendation: build the wall as a self-contained new section**, the way
+`sections/ak-archive-magazine.liquid` was built — own markup, own CSS, own JS, page-scoped. That
+sidesteps every item above except `.ak-badge-new` (Admin tagging) and gives full control of the
+mobile column count the drift design needs. The PDP and cart remain restyle-in-place, since the
+attack confirmed their hosts are sound.

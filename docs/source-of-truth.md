@@ -284,8 +284,18 @@ The Mystery Crate is currently implemented as an iframe embed pointing to an ext
 
 ## Shopify CLI Push Info
 
+> ## ⚠️ STALE AND DANGEROUS — DO NOT RUN ANYTHING IN THIS SECTION
+> Superseded by the theme table at lines 6-18 of this file, which is authoritative.
+> **`184615043352` is NOT the live theme.** It is the preserved dark theme and must
+> stay byte-unchanged. The live theme is `186464731416`.
+> The push command previously printed below was **unscoped** (`--path .`, no `--only`,
+> no `--nodelete`) and aimed at that preserved theme. There is no `.shopifyignore`, so
+> running it would have shipped the entire working tree over it.
+> It has been removed. See `AGENTS.md` > Deploy Guardrails for the only sanctioned
+> push shape. `scripts/guard-shopify.sh` now blocks these commands at the tool layer.
+
 - **Store domain:** `iacxyv-w5.myshopify.com`
-- **Live theme ID:** `184615043352` (`Copy of club amerikid update`)
+- ~~**Live theme ID:** `184615043352` (`Copy of club amerikid update`)~~ — **WRONG, see banner above**
 - **Development theme ID (active, used by this workflow):** `185910067480` — all particle-removal batches push here. (A separate older dev theme `184629133592` (`Development (cff5cd-Declans-MacBook-Pro)`) also exists but is NOT the target for this workflow.)
 
 **Commands:**
@@ -293,8 +303,9 @@ The Mystery Crate is currently implemented as an iframe embed pointing to an ext
 # List all themes
 shopify theme list --store iacxyv-w5.myshopify.com
 
-# Push to live theme (CAUTION — this is the live storefront)
-shopify theme push --theme 184615043352 --path . --store iacxyv-w5.myshopify.com
+# REMOVED 2026-08-29 — this was an UNSCOPED whole-tree push at the PRESERVED dark theme.
+# Never restore it. Sanctioned shape only:
+#   shopify theme push --theme <ID> --nodelete --only <file> [--only <file>...]
 
 # Push to development theme (safe for testing) — active workflow dev theme
 shopify theme push --theme 185910067480 --nodelete --store iacxyv-w5.myshopify.com
