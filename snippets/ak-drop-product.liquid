@@ -102,7 +102,14 @@
   html.ak-pdp-drop .product__info-container{
     color:#fff;
   }
-  html.ak-pdp-drop .product__info-container a{ color:#ff33ff; }
+  /* NOT a blanket rule: sections/main-product.liquid:611-612 emits an off-site
+     shipping-policy link inside this container, and painting it brand magenta
+     advertised the one anchor that leaves the drop from its highest-intent page. */
+  html.ak-pdp-drop .product__info-container .product__description a{ color:#ff33ff; }
+  html.ak-pdp-drop .product__info-container a[href^="/policies/"]{
+    color:rgba(255,255,255,.45);
+    text-decoration:underline;
+  }
 
   @media (prefers-reduced-motion: reduce){
     html.ak-pdp-drop .product-form__submit{ transition:none !important; }

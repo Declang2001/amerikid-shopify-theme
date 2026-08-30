@@ -72,7 +72,13 @@
   }
   .ak-drop-landing__media{
     position:absolute;inset:0;width:100%;height:100%;
-    object-fit:cover;pointer-events:none;
+    /* CONTAIN, not cover. The postcard carries content in all four corners —
+       the stamp, the SUPREME LEADER mark, the Korean banner — so a cover crop
+       destroys the design. contain fits the whole card to any viewport; the
+       surrounding black is not dead space because the rays, grain and vignette
+       layers span the full frame. */
+    object-fit:contain;object-position:center;
+    pointer-events:none;
   }
   .ak-drop-landing__video{ opacity:0;transition:opacity 200ms ease; }
   .ak-drop-video-ready .ak-drop-landing__video{ opacity:1; }
@@ -86,6 +92,10 @@
      scanlines and a vignette. Every layer is pointer-events:none so the whole
      frame stays one click target, and all motion dies under prefers-reduced-motion.
      ========================================================================== */
+  /* the landing renders no chrome snippet, so it hides the global club launcher
+     itself — layout/theme.liquid:427 puts it on every page */
+  #club-amerikid-launcher{ display:none !important; }
+
   .ak-drop-fx{ display:block;position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden; }
   .ak-drop-fx > *{ display:block;position:absolute;pointer-events:none; }
 

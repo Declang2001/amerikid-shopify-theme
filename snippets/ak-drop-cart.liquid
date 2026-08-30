@@ -17,8 +17,10 @@
   /cart has NO ak-footer (templates/cart.json:68-74 order), so there are no
   footer rules here on purpose.
 
+  @param {string} [drop_url] - Where the "Back to the drop" link points.
+                               Defaults to /collections/supreme-leader.
   @example
-    {% render 'ak-drop-cart' %}
+    {% render 'ak-drop-cart', drop_url: '/collections/supreme-leader' %}
 {% enddoc %}
 
 <script>document.documentElement.classList.add('ak-cart-drop');</script>
@@ -73,11 +75,29 @@
     color:#12000f;
   }
 
-  /* the empty cart's LOG IN link (main-cart-items.liquid:366) leads to a
-     customer-account route that renders black-on-black without ak-drop-safety */
-  html.ak-cart-drop .cart__login-paragraph a{
-    color:#ff33ff;
-    text-underline-offset:3px;
+  /* Every escape out of the drop, severed. All three live in
+     sections/main-cart-items.liquid, which must not be edited, and none of them
+     is Liquid-guarded — .cart__warnings has no cart-empty Liquid guard at :358,
+     so these anchors sit in the served HTML of EVERY cart view and are merely
+     CSS-hidden by assets/component-cart.css:9-16. Hiding them here is therefore
+     the fix; the JS repoint in ak-drop-chrome is only a backstop. */
+  html.ak-cart-drop .cart-title-bar a.underlined-link,          /* :355 */
+  html.ak-cart-drop .cart__warnings .custom-continue-button,    /* :360 */
+  html.ak-cart-drop .cart__login-title,                         /* :365 */
+  html.ak-cart-drop .cart__login-paragraph{                     /* :366 */
+    display:none !important;
   }
-  html.ak-cart-drop .cart__login-paragraph a:hover{ color:#fff; }
+
+  /* the drop's own way back, emitted from this snippet so it survives the
+     Section Rendering API re-render that replaces <cart-items> on quantity change */
+  html.ak-cart-drop .akdc-back{
+    display:inline-block;margin:0 0 1.4rem;
+    font-size:clamp(12px,1.05vw,17px);font-weight:600;
+    letter-spacing:.11em;text-transform:uppercase;
+    color:#fff;text-decoration:none;
+    border-bottom:2px solid #e31300;padding-bottom:3px;
+  }
+  html.ak-cart-drop .akdc-back:hover{ color:#e31300; }
 {%- endstyle -%}
+
+<a class="akdc-back" href="{{ drop_url | default: '/collections/supreme-leader' }}">&larr; Back to the drop</a>

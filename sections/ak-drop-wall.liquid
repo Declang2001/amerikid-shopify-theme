@@ -71,6 +71,17 @@
     </div>
   {%- endif -%}
 
+  {%- if section.settings.band_ko != blank or section.settings.band_en != blank -%}
+    <a class="akdw-band" href="{{ section.settings.band_url | default: '/' }}">
+      {%- if section.settings.band_ko != blank -%}
+        <span class="akdw-band__ko" lang="ko">{{ section.settings.band_ko }}</span>
+      {%- endif -%}
+      {%- if section.settings.band_en != blank -%}
+        <span class="akdw-band__en">{{ section.settings.band_en }}</span>
+      {%- endif -%}
+    </a>
+  {%- endif -%}
+
   <div class="akdw-wall">
     <div class="akdw-grid">
       {%- for design in design_list -%}
@@ -194,6 +205,35 @@
     max-height:34vh;object-fit:cover;
   }
 
+  /* RED BAND — #e31300 is sampled from the postcard's own bottom banner, so the
+     band reads as a continuation of the artwork rather than a new element. */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band{
+    display:flex;align-items:center;justify-content:center;
+    flex-wrap:wrap;gap:.35em 1.1em;
+    width:100%;
+    padding:clamp(10px,1.5vw,20px) var(--akdw-gut);
+    background:#e31300;
+    color:#fff;text-decoration:none;text-align:center;
+    border-top:2px solid rgba(0,0,0,.35);
+    border-bottom:2px solid rgba(0,0,0,.35);
+    transition:background .18s ease;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band:hover{ background:#ff1a05; }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band:focus-visible{
+    outline:3px solid #fff;outline-offset:-6px;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band__ko{
+    font-size:clamp(16px,1.9vw,34px);font-weight:700;line-height:1.15;
+    letter-spacing:.01em;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band__en{
+    font-size:clamp(12px,1.25vw,22px);font-weight:700;line-height:1.2;
+    letter-spacing:.11em;text-transform:uppercase;
+  }
+  @media screen and (max-width:749px){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-band{ flex-direction:column;gap:.25em; }
+  }
+
   html.ak-drop-page #akdw-{{ section.id }} .akdw-wall{
     padding:clamp(30px,4.5vw,66px) var(--akdw-gut) clamp(48px,7vw,110px);
   }
@@ -265,10 +305,11 @@
   /* Two-line clamp keeps all 20 cells aligned regardless of title length.
      cf. commit 123add7 "products: lock coaster grid title wrap". */
   html.ak-drop-page #akdw-{{ section.id }} .akdw-name{
-    font-size:clamp(12px,1vw,18px);line-height:1.35;font-weight:500;
-    letter-spacing:.055em;text-transform:uppercase;color:var(--akdw-fg);
+    font-size:clamp(15px,1.5vw,27px);line-height:1.3;font-weight:600;
+    letter-spacing:.05em;text-transform:uppercase;color:var(--akdw-fg);
+    text-align:center;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
-    overflow:hidden;min-height:2.7em;
+    overflow:hidden;min-height:2.6em;
   }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-item:hover .akdw-name{ color:var(--akdw-accent); }
 
@@ -312,7 +353,7 @@
     html.ak-drop-page #akdw-{{ section.id }} .akdw-col:nth-child(5){ animation-duration:8.5s; }
     html.ak-drop-page #akdw-{{ section.id }} .akdw-item{ gap:6px; }
     html.ak-drop-page #akdw-{{ section.id }} .akdw-name{
-      font-size:10px;letter-spacing:.02em;
+      font-size:12px;letter-spacing:.02em;
     }
   }
   @keyframes akdw-drift{
@@ -401,6 +442,24 @@
       "label": "Only render on this collection",
       "info": "The section outputs nothing on any other collection, so it is safe in the default collection template.",
       "default": "supreme-leader"
+    },
+    {
+      "type": "text",
+      "id": "band_ko",
+      "label": "Red band \u2014 Korean line",
+      "default": "\ucd5c\uace0 \uc9c0\ub3c4\uc790 \ud2f0\uc154\uce20"
+    },
+    {
+      "type": "text",
+      "id": "band_en",
+      "label": "Red band \u2014 English line",
+      "default": "AMERIKID AVAILABLE FOR PURCHASE NOW"
+    },
+    {
+      "type": "text",
+      "id": "band_url",
+      "label": "Red band destination",
+      "default": "/"
     },
     {
       "type": "text",

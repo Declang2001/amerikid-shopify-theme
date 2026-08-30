@@ -45,6 +45,22 @@
     display:none !important;
   }
 
+  /* LOAD-BEARING: the leading `html` type selector is the ONLY reason these win.
+     sections/ak-top.liquid:261 declares display:flex!important on
+     .ak-top-drawer[data-ak-top-drawer] at (0,2,0). The rules above are (0,2,1).
+     Rewriting them as `.ak-drop-page .ak-top-drawer` drops to (0,2,0), loses the
+     tie on source order, and turns the drawer into a full-screen z-99999 overlay
+     of seven notebook links. Do not "tidy" the html prefix away. */
+
+  /* the Club AmeriKid launcher is rendered globally from layout/theme.liquid:427,
+     so it appears on every drop surface and links out to /pages/club-hub and
+     /account/register (club-amerikid-launcher.liquid:54,61) */
+  html.ak-drop-page #club-amerikid-launcher,
+  html.ak-pdp-drop #club-amerikid-launcher,
+  html.ak-cart-drop #club-amerikid-launcher{
+    display:none !important;
+  }
+
   /* the cart bubble stays — it is position:fixed so it does not need the header */
   html.ak-drop-page .ak-top-cart-container,
   html.ak-pdp-drop .ak-top-cart-container,
@@ -78,6 +94,15 @@
 
     function boot() {
       repoint(document);
+
+      /* Make the hidden notebook nav inert as well as invisible. The hiding CSS
+         is emitted AFTER ak-top in the section order, so on a slow response its
+         anchors are briefly parsed and clickable before display:none lands. */
+      var dead = document.querySelectorAll('.ak-top-nav-area, .ak-top-drawer, #club-amerikid-launcher, a.header__heading-link');
+      for (var j = 0; j < dead.length; j++) {
+        dead[j].setAttribute('aria-hidden', 'true');
+        try { dead[j].inert = true; } catch (e) {}
+      }
 
       /* Cart quantity changes re-render sections via the Section Rendering API,
          which REPLACES DOM, so anchors repointed on load come back pointing at

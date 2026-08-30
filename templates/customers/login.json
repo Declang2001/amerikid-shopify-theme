@@ -20,7 +20,7 @@
     "ak_drop_safety": {
       "type": "custom-liquid",
       "settings": {
-        "custom_liquid": "{% render 'ak-drop-safety' %}"
+        "custom_liquid": "{% render 'ak-drop-safety', drop_url: '/collections/supreme-leader' %}"
       }
     }
   },

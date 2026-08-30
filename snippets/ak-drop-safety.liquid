@@ -16,8 +16,10 @@
   --color-foreground inherits correctly. scheme-4 is the theme's own
   white-on-black scheme (text #ffffff / background #000000).
 
+  @param {string} [drop_url] - Where the "Back to the drop" link points.
+                               Defaults to /collections/supreme-leader.
   @example
-    {% render 'ak-drop-safety' %}
+    {% render 'ak-drop-safety', drop_url: '/collections/supreme-leader' %}
 {% enddoc %}
 
 {%- style -%}
@@ -60,6 +62,31 @@
   html.ak-drop-safe select{
     background:#0d0d0d;color:#fff;border:1px solid rgba(255,255,255,.3);
   }
+{%- endstyle -%}
+
+{%- comment -%}
+  These eight routes contain ZERO links back into the drop journey. The 404's own
+  CTA points at the old site, so it is replaced rather than restyled. The .button
+  rule is deliberately gated on template.name — unscoped, it would hide the login,
+  register and save buttons on the seven customers/* templates this also renders on.
+{%- endcomment -%}
+{%- if template.name == '404' -%}
+  {%- style -%}
+    html.ak-drop-safe .template-404 a.button,
+    html.ak-drop-safe main a.button{ display:none !important; }
+  {%- endstyle -%}
+{%- endif -%}
+
+<a class="akds-back" href="{{ drop_url | default: '/collections/supreme-leader' }}">&larr; Back to the drop</a>
+
+{%- style -%}
+  html.ak-drop-safe .akds-back{
+    display:inline-block;margin:1.6rem auto;
+    font-size:15px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;
+    color:#fff;text-decoration:none;
+    border-bottom:2px solid #e31300;padding-bottom:3px;
+  }
+  html.ak-drop-safe .akds-back:hover{ color:#e31300; }
 {%- endstyle -%}
 
 <script>document.documentElement.classList.add('ak-drop-safe');</script>
