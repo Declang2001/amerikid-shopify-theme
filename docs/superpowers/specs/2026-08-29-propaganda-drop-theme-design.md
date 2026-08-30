@@ -510,3 +510,229 @@ properties of that section and its settings.
 sidesteps every item above except `.ak-badge-new` (Admin tagging) and gives full control of the
 mobile column count the drift design needs. The PDP and cart remain restyle-in-place, since the
 attack confirmed their hosts are sound.
+
+---
+
+## 16. PRODUCT MANIFEST — confirmed complete 2026-08-29
+
+**Collection:** `supreme-leader` — Admin id `520911880472`,
+storefront `https://amerikid.ca/collections/supreme-leader`.
+The drop name is **Supreme Leader** ("SL"), which fits the propaganda direction.
+
+**All 20 products exist.** Titles are strictly `SL-<SIZE>-<NN>`, sizes S/M/L/XL,
+designs 01-05. Product type "T-Shirts", vendor AMERIKID, **1 in stock each**,
+**all status Draft**, 6 channels / 1 catalog shown in Admin.
+
+| design | S | M | L | XL |
+|---|---|---|---|---|
+| 01 | 10390296068376 | 10390298525976 | 10390300360984 | 10390301737240 |
+| 02 | 10390297280792 | 10390298657048 | 10390300590360 | 10390301933848 |
+| 03 | 10390297575704 | 10390298788120 | 10390300819736 | 10390302163224 |
+| 04 | 10390297772312 | **10390299640088** | 10390301049112 | 10390302425368 |
+| 05 | 10390298165528 | 10390299836696 | 10390301376792 | 10390302621976 |
+
+`10390299640088` (SL-M-04) was the product missing from the owner's first list of links —
+that list contained 19 unique ids because `10390298165528` (SL-S-05) was pasted twice.
+Supplied by the owner 2026-08-29 and confirmed against the Admin listing.
+
+### 16.1 The titles restore the matrix
+
+`SL-<SIZE>-<NN>` makes the wall fully deterministic from data:
+**column = design 01..05, row = size S,M,L,XL.** The size axis the owner removed from the
+page as *visible labels* still exists in the *data*, so the 5x4 layout is not arbitrary —
+each column is one design in ascending size.
+
+### 16.2 Ordering hazard
+
+**Alphabetical sorting of these titles gives the WRONG size order.**
+`SL-L-01 < SL-M-01 < SL-S-01 < SL-XL-01` sorts as **L, M, S, XL**, not S, M, L, XL.
+So `alpha-asc` on the collection would render every column mis-ordered.
+The wall section must therefore either (a) render from an explicit size order defined in the
+section, matching on title, or (b) require the collection be set to Manual sort in the exact
+order. Option (a) is preferred: it is immune to anyone re-sorting the collection in Admin.
+
+### 16.3 Blocking issue — every product is Draft
+
+Draft products are not visible on the storefront, so the wall would render **empty** until
+they are set Active. But product visibility is store-level, not per-theme, which means making
+them visible for QA also makes them reachable on the currently-live notebook theme.
+Platform behaviour and the correct QA sequence are being verified against shopify.dev
+(see §17). **Do not flip them Active before that answer lands.**
+
+### 16.4 Inventory note
+Each product is **1 in stock**. This is a true one-of-one drop: every cell can sell out
+permanently after a single purchase, so per-cell sold-out rendering is not decorative —
+it is the primary state the wall will spend most of its life displaying.
+
+---
+
+## 17. PLATFORM FACTS — draft visibility, ordering, QA sequence (2026-08-29)
+
+2-agent research + adversarial pass against shopify.dev. **Verdict: SOUND_WITH_FIXES.**
+The adversary overturned the researcher's central conclusion. Everything below is cited.
+
+### 17.1 The blunt truth
+**Product visibility is purely store-level.** Every gate — status, product publication,
+variant publication, market-catalog membership — lives on the product/variant/collection
+record, never on the theme. The Liquid `request` object exposes only
+`design_mode, host, locale, origin, page_type, path` — **a theme cannot even detect which
+theme is rendering**. So `?preview_theme_id=` and the theme editor show identical product
+data to the live storefront. *The unpublished theme protects the LAYOUT, not the PRODUCTS.*
+`?preview_theme_id=` is undocumented on shopify.dev entirely.
+
+### 17.2 Draft renders an empty wall
+`ProductStatus.DRAFT` — *"The product isn't ready to sell and is unavailable to customers on
+sales channels and apps."* With all 20 at Draft the wall renders **zero tiles**.
+*Evidence caveat from the adversary:* the researcher over-read the UNLISTED changelog to
+support this; that changelog is scoped to UNLISTED only. The Draft conclusion rests on the
+single weaker ProductStatus line. Correct, but the evidence is thinner than first claimed.
+
+### 17.3 There are FOUR gates, not two
+`https://shopify.dev/docs/apps/build/sales-channels/product-publishing` —
+*"A variant is visible to buyers … when the following are all true: The product has an Active
+status (or Unlisted on supported channels). The product is published to that channel or
+catalog. The variant is published to that channel or catalog."*
+1. **Product status** (Active / Draft / Archived / Unlisted)
+2. **Product publication** to the Online Store channel
+3. **Variant publication** — *independent and persistent*: *"Variant publishing state persists
+   across product publishing changes."* An unpublished variant survives a status flip silently.
+4. **Market catalog** — the Admin "1 catalog" chip. Exclusion makes a product behave
+   *"just like it was archived or deleted … omitted from lists and not found when queried by
+   handle or ID."* **This would also defeat the handle-lookup path in §17.5.** Verify first.
+
+The "6 channels" chip is publication, not status, and reads 6 before *and* after the flip —
+so it gives **no signal** that anything changed. `autoPublish` created those records.
+
+### 17.4 Ordering — no platform sort can help
+`sort_by` accepts only: `manual, best-selling, title-ascending, title-descending,
+price-ascending, price-descending, created-ascending, created-descending`.
+**None produces S, M, L, XL** — `title-ascending` gives L, M, S, XL.
+So the size order **must be hard-coded in the section**. This is a confirmed absence, not an
+unknown. Also: **never wrap the wall in `{% paginate %}`** — shopify.dev:
+*"a section that's wrapped in one renders different items, or none at all, on ?page=2."*
+Use `limit`. `collection.products` defaults to 50 per page.
+
+### 17.5 THE FIX — QA with real products and zero leak
+The researcher concluded you must choose between a public leak and QA-ing on dummy products.
+**That is wrong.** The adversary found the documented path:
+
+**Set the 20 products to UNLISTED, not Active.**
+`ProductStatus.UNLISTED` — *"The product doesn't show up in search, collections, or product
+recommendations. It will be returned in Storefront API and Liquid only when referenced
+individually by handle, id, or metafield reference."*
+
+`all_products['sl-s-01']` **is** a handle reference. And `all_products` has a documented limit
+of **20 unique handles per page** — the wall needs *exactly* 20. It fits precisely.
+
+Two hard constraints this imposes: **no other section on that page may touch `all_products`**
+(the 20-handle budget is per page), and the section still must not be paginated.
+
+This also composes with the hard-coded size/design order §17.4 already requires — the section
+loops `SL-<SIZE>-<NN>` and looks each up by handle. One mechanism solves both problems.
+
+### 17.6 Pre-arm noindex before anything leaves Draft
+Metafield **namespace `seo`, key `hidden`, value `1`, type `number_integer`** on each product
+*and* on collection `520911880472`. shopify.dev: this adds `noindex`/`nofollow`, **removes the
+resource from the sitemap**, and *"they won't appear in search results when customers use
+storefront search."* Deleting the metafield restores indexing. Set this FIRST so an indexable
+page never exists.
+
+### 17.7 Launch timing is a platform feature
+`publishablePublish` accepts a future `publishDate` against the Online Store publication —
+shopify.dev names the use case: *"product drops and timed sales."* No human flipping 20
+switches at launch. Note it does **not** help QA: a future-dated product is still invisible.
+
+### 17.8 The sequence
+- **Phase 0 — verify the gates** (API-checkable, zero exposure): each product's variant is
+  published; none excluded from the market catalog; collection `520911880472` is itself
+  published (**collections are unpublished by default**).
+- **Phase 1 — pre-arm** `seo/hidden = 1` on all 20 products + the collection.
+- **Phase 2 — QA**: set the 20 to **UNLISTED**; wall reads them via `all_products[handle]`;
+  QA the unpublished theme against real images, titles and front/back order.
+- **Phase 3 — publish the theme.** Layout already proven.
+- **Phase 4 — launch**: Unlisted → Active (or scheduled `publishDate`), delete the
+  `seo/hidden` metafields, add the nav entry.
+
+**The exposure window collapses to the instant of the Phase 4 flip — which is the launch.**
+
+### 17.9 Not determined — test, don't assume
+- HTTP status for an unpublished-collection or draft-product URL (404 / redirect / 200).
+- `Product.onlineStorePreviewUrl` exists on the Admin API but **no doc describes whether it
+  renders drafts**. Not a draft-preview escape hatch until proven.
+- Whether `where`/`find` title matching is case- or whitespace-sensitive; assume exact equality.
+- The Admin **CSV export click-path and column schema are not on shopify.dev at all** (it is
+  help-centre material). Image `position` is documented as 1-based with position 1 = featured.
+
+### 17.10 Rejected, with reasons
+- **Storefront password protection** — the only gate that hides fully-live products, but it is
+  **store-wide**: it would take the trading notebook storefront offline for the whole QA window.
+- **`{% paginate %}`** on the wall — see §17.4.
+
+---
+
+## 18. LIVE THEME INVENTORY — read from Admin 2026-08-29
+
+`shopify theme list --store iacxyv-w5.myshopify.com`, run by the owner. **19 themes.**
+
+### 18.1 Confirmed against the stale docs table
+- ✅ **`186464731416` "AmeriKid Notebook Theme - Publish Candidate" is still `[live]`.**
+  The docs table dated 2026-06-18 is accurate after ~2 months. Plans built on it hold.
+- ✅ **`184615043352` "AmeriKid Dark Theme - Preserve"** present and `[unpublished]`.
+- ❌ **`185910067480` IS GONE.** `docs/source-of-truth.md:289` calls it the *"Development
+  theme ID (active, used by this workflow) — all particle-removal batches push here."*
+  It no longer exists. `184629133592` (the older dev theme) is also absent.
+  **There is currently NO development theme.** That doc line is stale and must not be trusted.
+
+### 18.2 THEME SLOT CEILING — the new hard blocker
+19 themes exist. A per-store ceiling is real (`shopify theme duplicate` fails with
+*"Maximum number of themes reached"*) but **shopify.dev never states the number**; it is
+commonly 20. On that basis the store has roughly **one free slot**, and creating the drop
+theme consumes it. `shopify theme share` would consume one too.
+
+**This must be resolved before Phase 1.** Otherwise theme creation fails outright.
+
+### 18.3 Obvious cleanup candidates (OWNER DECISION ONLY)
+Visibly disposable duplicates — 10 of the 19:
+
+| name | id |
+|---|---|
+| Copy of Current | 180532052248 |
+| Copy of Current | 180643660056 |
+| Copy of Current | 181749154072 |
+| Copy of Current | 182691201304 |
+| Copy of BAD Music Version | 180504658200 |
+| Copy of BAD Music Version | 180516225304 |
+| Copy of BAD Music Version | 180517536024 |
+| Safety Fail | 184961499416 |
+| safety fail after iframe clicking x fix | 184962154776 |
+| safety fail 4/7 working version | 185074254104 |
+
+**Do NOT delete any of these programmatically.** `AGENTS.md` forbids deleting apparent
+duplicates without proving they are unused, and `scripts/guard-shopify.sh` blocks
+`shopify theme delete` at the tool layer by design. Deletion is an owner action in Admin,
+and only after the owner confirms each is genuinely disposable.
+
+**Never delete:** `186464731416` (live) or `184615043352` (dark preserve).
+
+### 18.4 Full inventory
+| # | name | role | id |
+|---|---|---|---|
+| 1 | AmeriKid Notebook Theme - Publish Candidate | **live** | 186464731416 |
+| 2 | Current | unpublished | 180465172760 |
+| 3 | Copy of OG Working Version | unpublished | 180465238296 |
+| 4 | Copy of BAD Music Version | unpublished | 180504658200 |
+| 5 | Copy of BAD Music Version | unpublished | 180516225304 |
+| 6 | Copy of BAD Music Version | unpublished | 180517536024 |
+| 7 | Version I like | unpublished | 180518748440 |
+| 8 | Copy of Current | unpublished | 180532052248 |
+| 9 | Copy of Current | unpublished | 180643660056 |
+| 10 | Copy of Current | unpublished | 181749154072 |
+| 11 | Copy of Current | unpublished | 182691201304 |
+| 12 | club amerikid update | unpublished | 182835740952 |
+| 13 | Dev Mystery Box save pre upload image fix | unpublished | 183151952152 |
+| 14 | pre dev mystery box working v | unpublished | 183151984920 |
+| 15 | AmeriKid Dark Theme - Preserve | unpublished | 184615043352 |
+| 16 | Safety Fail | unpublished | 184961499416 |
+| 17 | safety fail after iframe clicking x fix | unpublished | 184962154776 |
+| 18 | Copy of club amerikid update with Installments … | unpublished | 185072386328 |
+| 19 | safety fail 4/7 working version | unpublished | 185074254104 |

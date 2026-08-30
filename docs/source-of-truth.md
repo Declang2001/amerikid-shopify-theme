@@ -296,7 +296,7 @@ The Mystery Crate is currently implemented as an iframe embed pointing to an ext
 
 - **Store domain:** `iacxyv-w5.myshopify.com`
 - ~~**Live theme ID:** `184615043352` (`Copy of club amerikid update`)~~ — **WRONG, see banner above**
-- **Development theme ID (active, used by this workflow):** `185910067480` — all particle-removal batches push here. (A separate older dev theme `184629133592` (`Development (cff5cd-Declans-MacBook-Pro)`) also exists but is NOT the target for this workflow.)
+- ~~**Development theme ID (active, used by this workflow):** `185910067480`~~ — **GONE. Verified absent from `shopify theme list` on 2026-08-29. There is currently no development theme.** — all particle-removal batches push here. (A separate older dev theme `184629133592` (`Development (cff5cd-Declans-MacBook-Pro)`) also exists but is NOT the target for this workflow.)
 
 **Commands:**
 ```bash
