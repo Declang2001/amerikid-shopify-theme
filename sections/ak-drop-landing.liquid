@@ -1,0 +1,157 @@
+{%- comment -%}
+  AK DROP LANDING — Supreme Leader (2026-08-29)
+
+  A copy of sections/ak-landing.liquid's BEHAVIOUR with the destination and media
+  moved into section settings. ak-landing.liquid itself is left byte-identical to
+  the live theme and is NOT edited.
+
+  Behaviour reproduced verbatim from ak-landing.liquid:
+    :23-40  position:fixed inset:0, #000, 350ms transition, whole frame clickable
+    :43-47  .ak-drop-landing--exiting = scale(1.04) + opacity:0
+    :49-51  prefers-reduced-motion kills the transition
+    :53-97  media object-fit:cover, pointer-events:none, desktop video / mobile image
+    :100-127 autoplay with failure fallback to the still
+    :129-166 350ms exit, double-nav guard, window.__akPortalExit
+
+  There is deliberately NO text and NO button — the live landing has none.
+  Revert: swap 'ak-drop-landing' back to 'ak-landing' in templates/index.json.
+{%- endcomment -%}
+
+{%- assign dest = section.settings.destination | default: '/collections/supreme-leader' -%}
+
+<a class="ak-drop-landing" href="{{ dest }}" aria-label="{{ section.settings.aria_label }}">
+  {%- if section.settings.video_url != blank -%}
+    <video id="akDropLandingVideo" class="ak-drop-landing__media ak-drop-landing__video"
+      autoplay muted loop playsinline webkit-playsinline preload="auto">
+      <source src="{{ section.settings.video_url }}" type="video/mp4">
+    </video>
+  {%- endif -%}
+
+  {%- if section.settings.still_image != blank -%}
+    {{ section.settings.still_image
+       | image_url: width: 2400
+       | image_tag:
+           loading: 'eager',
+           fetchpriority: 'high',
+           widths: '600,900,1200,1600,2000,2400',
+           sizes: '100vw',
+           alt: section.settings.aria_label,
+           class: 'ak-drop-landing__media ak-drop-landing__img' }}
+  {%- endif -%}
+</a>
+
+{%- style -%}
+  html.ak-drop-page .ak-drop-landing,
+  .ak-drop-landing{
+    position:fixed;inset:0;width:100vw;
+    height:100svh;height:100dvh;height:100vh;
+    display:block;overflow:hidden;background:#000;z-index:1;
+    cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+    transition:transform 350ms ease-in,opacity 350ms ease-in;
+  }
+  .ak-drop-landing--exiting{
+    transform:scale(1.04);opacity:0;pointer-events:none;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .ak-drop-landing{ transition:none; }
+  }
+  .ak-drop-landing__media{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;pointer-events:none;
+  }
+  .ak-drop-landing__video{ opacity:0;transition:opacity 200ms ease; }
+  .ak-drop-video-ready .ak-drop-landing__video{ opacity:1; }
+  .ak-drop-landing__img{ display:none !important; }
+  .ak-drop-video-failed .ak-drop-landing__video{ display:none !important; }
+  .ak-drop-video-failed .ak-drop-landing__img{ display:block !important; }
+  @media (max-width: 767px){
+    .ak-drop-landing__video{ display:none !important; }
+    .ak-drop-landing__img{ display:block !important;opacity:1 !important; }
+  }
+{%- endstyle -%}
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var v = document.getElementById('akDropLandingVideo');
+    if (!v) { root.classList.add('ak-drop-video-failed'); return; }
+    if (!window.matchMedia('(min-width: 768px)').matches) return;
+
+    function fail() { root.classList.add('ak-drop-video-failed'); }
+    function ready() { root.classList.add('ak-drop-video-ready'); }
+
+    v.muted = true;
+    v.playsInline = true;
+    v.addEventListener('error', fail, { once: true });
+    v.addEventListener('playing', ready, { once: true });
+    v.addEventListener('canplay', ready, { once: true });
+
+    function tryPlay() {
+      var p = v.play();
+      if (p && typeof p.catch === 'function') p.catch(fail);
+    }
+    if (v.readyState >= 2) tryPlay();
+    else v.addEventListener('loadeddata', tryPlay, { once: true });
+  })();
+
+  (function () {
+    var DEST = {{ dest | json }};
+    var DURATION = 350;
+    var navigating = false;
+    var prm = false;
+    try { prm = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+
+    function doTransition() {
+      if (navigating) return;
+      navigating = true;
+      if (prm) { window.location.href = DEST; return; }
+      var splash = document.querySelector('.ak-drop-landing');
+      if (splash) splash.classList.add('ak-drop-landing--exiting');
+      setTimeout(function () { window.location.href = DEST; }, DURATION);
+    }
+
+    window.__akPortalExit = doTransition;
+
+    var link = document.querySelector('.ak-drop-landing');
+    if (link) {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        doTransition();
+      });
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "AK Drop Landing",
+  "tag": "div",
+  "class": "ak-drop-landing-wrapper",
+  "settings": [
+    {
+      "type": "text",
+      "id": "destination",
+      "label": "Destination",
+      "default": "/collections/supreme-leader"
+    },
+    {
+      "type": "text",
+      "id": "aria_label",
+      "label": "Accessible label",
+      "default": "Enter the drop"
+    },
+    {
+      "type": "text",
+      "id": "video_url",
+      "label": "Desktop video URL (mp4)",
+      "info": "Leave blank to use the still image everywhere."
+    },
+    {
+      "type": "image_picker",
+      "id": "still_image",
+      "label": "Still image (mobile, and desktop fallback)"
+    }
+  ],
+  "presets": [{ "name": "AK Drop Landing" }]
+}
+{% endschema %}

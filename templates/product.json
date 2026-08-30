@@ -163,7 +163,7 @@
       "type": "custom-liquid",
       "name": "PDP notebook host (PDP-2A)",
       "settings": {
-        "custom_liquid": "{% render 'ak-notebook-product' %}",
+        "custom_liquid": "{% render 'ak-drop-product' %}",
         "color_scheme": "scheme-4",
         "padding_top": 0,
         "padding_bottom": 0

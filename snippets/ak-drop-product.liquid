@@ -1,0 +1,111 @@
+{% doc %}
+  Black product page for the Supreme Leader drop.
+
+  HANDLE-GATED. Only products whose handle starts with the drop prefix get drop
+  styling; everything else falls through to 'ak-notebook-product' unchanged. That
+  matters because templates/product.json is shared by EVERY product, so if this
+  theme is ever published the notebook-era catalogue must keep its own page.
+
+  Page-scoped under html.ak-pdp-drop #MainProduct-*, following the CORRECT
+  precedent at sections/main-product.liquid:311-436 — never the globally-scoped
+  !important pattern forbidden by docs/known-fragile-areas.md:40 and :213.
+  sections/main-product.liquid is NOT edited.
+
+  @example
+    {% render 'ak-drop-product' %}
+{% enddoc %}
+
+{%- assign drop_prefix = 'sl-' -%}
+{%- assign hp = product.handle | slice: 0, 3 -%}
+
+{%- if hp != drop_prefix -%}
+  {%- comment -%} not a drop product — preserve existing behaviour exactly {%- endcomment -%}
+  {% render 'ak-notebook-product' %}
+{%- else -%}
+
+<script>document.documentElement.classList.add('ak-pdp-drop');</script>
+
+{%- style -%}
+  /* main-product.liquid:59-64 already sets #MainProduct-*{background:#000!important}
+     and :90-148 already kills every Dawn media plate to transparent. On a black
+     drop both work FOR us, so this block is colour + hierarchy only. */
+
+  html.ak-pdp-drop #MainContent,
+  html.ak-pdp-drop #MainContent .gradient{
+    background:transparent !important;
+    background-image:none !important;
+  }
+
+  /* main-product.liquid:580-587 emits the title TWICE inside one .product__title:
+     an <h1>, and a linked <h2 class="h1">. Hide the anchor copy, keep the h1 so
+     the heading level and SEO are unchanged. */
+  html.ak-pdp-drop .product__title > a.product__title,
+  html.ak-pdp-drop .product__title a.product__title{
+    display:none !important;
+  }
+
+  html.ak-pdp-drop .product__title,
+  html.ak-pdp-drop .product__title h1{
+    color:#fff;
+    text-wrap:balance;
+  }
+
+  /* the description's FIRST line is the size — give it its own voice */
+  html.ak-pdp-drop .product__description{
+    color:rgba(255,255,255,.82);
+  }
+  html.ak-pdp-drop .product__description > *:first-child{
+    display:block;
+    font-weight:700;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:#fff;
+    padding-bottom:.55em;
+    margin-bottom:.85em;
+    border-bottom:1px solid rgba(255,255,255,.16);
+  }
+
+  html.ak-pdp-drop .price,
+  html.ak-pdp-drop .price__container,
+  html.ak-pdp-drop .price-item{
+    color:#fff;
+  }
+  html.ak-pdp-drop .price--on-sale .price-item--regular{
+    color:rgba(255,255,255,.45);
+  }
+
+  /* main-product.liquid:168-181 already gives the CTA #fff on #121212 — keep the
+     shape, sharpen the hover to the brand magenta used across the drop. */
+  html.ak-pdp-drop .product-form__submit:hover:not([disabled]){
+    background:#ff33ff !important;
+    color:#12000f !important;
+  }
+  html.ak-pdp-drop .product-form__submit[disabled]{
+    opacity:.4;
+  }
+
+  html.ak-pdp-drop .product__media-wrapper .media,
+  html.ak-pdp-drop .product__media-item .media{
+    background:transparent !important;
+  }
+
+  /* ak-notebook-product.liquid:299-304 documents that global.js relocates the
+     media modal to <body>, under ak-top's z-9999 fixed cart. Same fix here. */
+  html.ak-pdp-drop .product-media-modal[open]{
+    z-index:100000;
+    background:#000;
+  }
+
+  html.ak-pdp-drop .product__accordion,
+  html.ak-pdp-drop .product__accordion summary,
+  html.ak-pdp-drop .product__info-container{
+    color:#fff;
+  }
+  html.ak-pdp-drop .product__info-container a{ color:#ff33ff; }
+
+  @media (prefers-reduced-motion: reduce){
+    html.ak-pdp-drop .product-form__submit{ transition:none !important; }
+  }
+{%- endstyle -%}
+
+{%- endif -%}

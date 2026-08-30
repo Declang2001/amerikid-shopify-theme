@@ -1,0 +1,82 @@
+{% doc %}
+  Black cart for the Supreme Leader drop.
+
+  Deliberately LIGHT. sections/main-cart-items.liquid is already a dark custom
+  card stack (:140-183 rgba(0,0,0,.78) cards, magenta hover at :179-183) and
+  main-cart-footer.liquid already uses #fff labels with an #ff33ff total. The
+  notebook cart snippet's job was to paint PAPER over that; the drop simply does
+  not, so most of the work is already done by not rendering it.
+
+  SPECIFICITY TRAP, documented at ak-notebook-cart.liquid:305-308 and :319-320:
+  `.cart-item-card` (0,1,0) at main-cart-items.liquid:148 is followed later by
+  `.cart-item-card:hover` (0,2,0) at :179. This snippet is rendered from
+  templates/cart.json:16, which sits BEFORE cart-items in the order, so a
+  same-specificity rest override loses the tie on hover. Every hover state below
+  is therefore matched at html.ak-cart-drop .x:hover (0,3,0), which wins outright.
+
+  /cart has NO ak-footer (templates/cart.json:68-74 order), so there are no
+  footer rules here on purpose.
+
+  @example
+    {% render 'ak-drop-cart' %}
+{% enddoc %}
+
+<script>document.documentElement.classList.add('ak-cart-drop');</script>
+
+{%- style -%}
+  html.ak-cart-drop #MainContent,
+  html.ak-cart-drop #MainContent .gradient{
+    background:transparent !important;
+    background-image:none !important;
+  }
+
+  html.ak-cart-drop .cart-item-card{
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.12);
+  }
+  /* (0,3,0) — beats .cart-item-card:hover (0,2,0) declared later */
+  html.ak-cart-drop .cart-item-card:hover{
+    border-color:#ff33ff;
+    background:rgba(255,51,255,.06);
+  }
+
+  html.ak-cart-drop .cart-title-bar,
+  html.ak-cart-drop .cart__empty-text,
+  html.ak-cart-drop .cart__login-title,
+  html.ak-cart-drop .cart-item__name,
+  html.ak-cart-drop .totals__total{
+    color:#fff;
+  }
+  html.ak-cart-drop .cart-meta-label{
+    color:rgba(255,255,255,.55);
+  }
+  html.ak-cart-drop .totals__total-value{
+    color:#ff33ff;
+  }
+
+  html.ak-cart-drop .quantity,
+  html.ak-cart-drop .quantity__input{
+    background:#0d0d0d;
+    color:#fff;
+    border-color:rgba(255,255,255,.22);
+  }
+
+  html.ak-cart-drop .cart__checkout-button{
+    background:#fff;
+    color:#000;
+    border:2px solid #fff;
+  }
+  html.ak-cart-drop .cart__checkout-button:hover{
+    background:#ff33ff;
+    border-color:#ff33ff;
+    color:#12000f;
+  }
+
+  /* the empty cart's LOG IN link (main-cart-items.liquid:366) leads to a
+     customer-account route that renders black-on-black without ak-drop-safety */
+  html.ak-cart-drop .cart__login-paragraph a{
+    color:#ff33ff;
+    text-underline-offset:3px;
+  }
+  html.ak-cart-drop .cart__login-paragraph a:hover{ color:#fff; }
+{%- endstyle -%}

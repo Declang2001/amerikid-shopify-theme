@@ -1,0 +1,65 @@
+{% doc %}
+  Restores readable text on routes that emit NO colour-scheme class.
+
+  layout/theme.liquid:67-71 puts the FIRST colour scheme on :root, and scheme-1
+  in config/settings_data.json has text #000000, so :root carries
+  --color-foreground: 0,0,0. theme.liquid:108 then paints
+  body { color: rgba(var(--color-foreground), 0.75) }.
+
+  sections/main-404.liquid, main-login.liquid and main-account.liquid emit ZERO
+  `color-` classes (grep -c returns 0 for all three), so against the forced
+  html,body{background:#000!important} at theme.liquid:275 they render BLACK ON
+  BLACK — functionally blank. The empty cart's LOG IN link
+  (sections/main-cart-items.liquid:366) leads straight into one.
+
+  Fixed by overriding the TOKEN, not a colour, so every descendant that reads
+  --color-foreground inherits correctly. scheme-4 is the theme's own
+  white-on-black scheme (text #ffffff / background #000000).
+
+  @example
+    {% render 'ak-drop-safety' %}
+{% enddoc %}
+
+{%- style -%}
+  html.ak-drop-safe,
+  html.ak-drop-safe body{
+    --color-foreground: 255,255,255;
+  }
+  html.ak-drop-safe body{
+    color: rgba(255,255,255,.86);
+  }
+  html.ak-drop-safe #MainContent,
+  html.ak-drop-safe #MainContent .gradient{
+    background: transparent !important;
+    background-image: none !important;
+  }
+  html.ak-drop-safe h1,
+  html.ak-drop-safe h2,
+  html.ak-drop-safe h3,
+  html.ak-drop-safe .title,
+  html.ak-drop-safe legend,
+  html.ak-drop-safe label{
+    color:#fff;
+  }
+  html.ak-drop-safe a{ color:#ff33ff; }
+  html.ak-drop-safe a:hover{ color:#fff; }
+
+  /* the 404 CTA takes background #121212 / text #fff from :root's scheme-1,
+     which is near-invisible on the forced #000 ground */
+  html.ak-drop-safe .button,
+  html.ak-drop-safe a.button{
+    background:#fff;color:#000;border:2px solid #fff;
+  }
+  html.ak-drop-safe .button:hover,
+  html.ak-drop-safe a.button:hover{
+    background:#ff33ff;border-color:#ff33ff;color:#12000f;
+  }
+
+  html.ak-drop-safe input,
+  html.ak-drop-safe textarea,
+  html.ak-drop-safe select{
+    background:#0d0d0d;color:#fff;border:1px solid rgba(255,255,255,.3);
+  }
+{%- endstyle -%}
+
+<script>document.documentElement.classList.add('ak-drop-safe');</script>

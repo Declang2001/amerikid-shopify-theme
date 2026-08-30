@@ -12,9 +12,16 @@
     "main": {
       "type": "main-404",
       "settings": {}
+    },
+    "ak_drop_safety": {
+      "type": "custom-liquid",
+      "settings": {
+        "custom_liquid": "{% render 'ak-drop-safety' %}"
+      }
     }
   },
   "order": [
+    "ak_drop_safety",
     "main"
   ]
 }
