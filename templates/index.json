@@ -18,7 +18,9 @@
       "type": "ak-drop-landing",
       "settings": {
         "destination": "/collections/supreme-leader",
-        "aria_label": "Enter the drop"
+        "aria_label": "Enter the drop",
+        "video_url": "https://cdn.shopify.com/videos/c/o/v/20c113f89b284acbb173345229f4f5c5.mp4",
+        "still_url": "https://cdn.shopify.com/s/files/1/0930/3267/7656/files/LANDING_PAGE_ec94c533-64a8-47ea-8520-f75e0a3397db.jpg?v=1751343507"
       }
     },
     "custom_liquid_xPURQD": {
