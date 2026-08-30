@@ -1,0 +1,394 @@
+{%- comment -%}
+  ============================================================================
+  AK DROP WALL — "Supreme Leader" drop  (created 2026-08-29)
+
+  SELF-CONTAINED. All markup, CSS and JS live in this file, in the manner of
+  sections/ak-archive-magazine.liquid. It deliberately does NOT render
+  snippets/card-product.liquid and is NOT hosted by main-collection-product-grid.
+
+  That single decision neutralises six hazards documented in
+  docs/superpowers/specs/2026-08-29-propaganda-drop-theme-design.md §13.4:
+    - assets/base.css:2939-3004 .ak-badge-new (red starburst on any product
+      tagged `new`) is emitted by card-product.liquid:190-196 — never rendered here
+    - templates/collection.json:50-53 custom_css (4rem margins) — not this template
+    - columns_mobile capped at 2 by the grid schema — own markup, own columns
+    - .glowing-product-box width:100vw overflow — not rendered
+    - main-collection-product-grid.liquid:36-43 Impact 3rem !important on card
+      titles — different class names entirely
+    - component-card.css:383 gates the hover swap to >=990px — own flip
+
+  ORDERING: products are titled SL-<SIZE>-<NN>. title-ascending sorts these
+  L, M, S, XL — the WRONG size order — and no Shopify sort_by value can produce
+  S, M, L, XL (§17.4). The order is therefore hard-coded below and resolved by
+  handle, never by collection sort order.
+
+  PRODUCT RESOLUTION: all_products[handle] first, because UNLISTED products are
+  returned in Liquid "only when referenced individually by handle" (§17.5) — that
+  is what lets the wall be QA'd with real products that stay out of collections
+  and search. all_products allows exactly 20 unique handles per page and this
+  wall uses exactly 20, so NO other section on this template may use all_products.
+  Falls back to a title match within collection.products when a handle misses.
+
+  NEVER wrap this section in {% paginate %} — a paginated section renders
+  different items, or none, on ?page=2 (§17.4).
+
+  Revert: remove 'ak-drop-wall' from the template's order array.
+  ============================================================================
+{%- endcomment -%}
+
+<script>document.documentElement.classList.add('ak-drop-page');</script>
+
+{%- assign size_list = section.settings.size_order | split: ',' -%}
+{%- assign design_list = section.settings.design_order | split: ',' -%}
+{%- assign prefix = section.settings.handle_prefix | strip | downcase -%}
+
+<div class="akdw" id="akdw-{{ section.id }}">
+
+  {%- if section.settings.banner_image != blank -%}
+    <div class="akdw-banner">
+      {{ section.settings.banner_image
+         | image_url: width: 2400
+         | image_tag:
+             loading: 'eager',
+             fetchpriority: 'high',
+             widths: '600,900,1200,1600,2000,2400',
+             sizes: '100vw',
+             alt: section.settings.banner_alt,
+             class: 'akdw-banner-img' }}
+    </div>
+  {%- endif -%}
+
+  <div class="akdw-wall">
+    <div class="akdw-grid">
+      {%- for design in design_list -%}
+        {%- assign design = design | strip -%}
+        <div class="akdw-col">
+          {%- for size in size_list -%}
+            {%- assign size = size | strip -%}
+
+            {%- comment -%} handle: sl-s-01 {%- endcomment -%}
+            {%- assign handle = prefix | append: '-' | append: size | append: '-' | append: design | downcase -%}
+            {%- assign p = all_products[handle] -%}
+
+            {%- comment -%} fallback: exact title match inside the collection {%- endcomment -%}
+            {%- if p.title == blank -%}
+              {%- assign want = prefix | upcase | append: '-' | append: size | upcase | append: '-' | append: design -%}
+              {%- for cp in collection.products -%}
+                {%- if cp.title == want -%}
+                  {%- assign p = cp -%}
+                  {%- break -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
+
+            {%- if p.title == blank -%}
+              {%- comment -%} keep the cell so the 5x4 grid never collapses {%- endcomment -%}
+              <span class="akdw-item akdw-item--empty" aria-hidden="true">
+                <span class="akdw-shot"></span>
+                <span class="akdw-name"></span>
+              </span>
+            {%- else -%}
+              {%- assign front = p.images[0] -%}
+              {%- assign back = p.images[1] -%}
+              <a
+                class="akdw-item{% unless p.available %} akdw-item--sold{% endunless %}"
+                href="{{ p.url }}"
+                {% unless p.available %}aria-disabled="true"{% endunless %}
+              >
+                <span class="akdw-shot">
+                  <span class="akdw-flip">
+                    <span class="akdw-face akdw-face--front">
+                      {%- if front != blank -%}
+                        {{ front | image_url: width: 900
+                                 | image_tag:
+                                     loading: 'lazy',
+                                     widths: '200,300,400,600,900',
+                                     sizes: '(min-width: 750px) 18vw, 40vw',
+                                     alt: p.title,
+                                     class: 'akdw-img' }}
+                      {%- endif -%}
+                    </span>
+                    <span class="akdw-face akdw-face--back">
+                      {%- if back != blank -%}
+                        {{ back | image_url: width: 900
+                                | image_tag:
+                                    loading: 'lazy',
+                                    widths: '200,300,400,600,900',
+                                    sizes: '(min-width: 750px) 18vw, 40vw',
+                                    alt: '',
+                                    class: 'akdw-img' }}
+                      {%- elsif front != blank -%}
+                        {{ front | image_url: width: 900
+                                 | image_tag: loading: 'lazy', alt: '', class: 'akdw-img' }}
+                      {%- endif -%}
+                    </span>
+                  </span>
+                </span>
+                <span class="akdw-name">{{ p.title }}</span>
+              </a>
+            {%- endif -%}
+
+          {%- endfor -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{%- style -%}
+  /* ==========================================================================
+     Page-scoped under html.ak-drop-page and the section id, following the
+     CORRECT precedent at sections/main-product.liquid:311-436. Deliberately NOT
+     the globally-scoped !important pattern at
+     main-collection-product-grid.liquid:27-89, which
+     docs/known-fragile-areas.md:40 and :213 forbid.
+     ========================================================================== */
+
+  html.ak-drop-page #akdw-{{ section.id }}{
+    --akdw-bg:#000;
+    --akdw-fg:#fff;
+    --akdw-dim:rgba(255,255,255,.52);
+    --akdw-accent:#ff33ff;            /* brand literal, 109 uses in the notebook system */
+    --akdw-gut:clamp(18px,3.2vw,54px);
+    background:var(--akdw-bg);
+    color:var(--akdw-fg);
+  }
+
+  /* layout/theme.liquid:270-282 forces html,body{background:#000!important}.
+     On a black drop that rule works FOR us — we only need the content wells
+     transparent so nothing paints a lighter plate behind the wall. */
+  html.ak-drop-page #MainContent{ background:transparent !important; }
+  html.ak-drop-page #MainContent .gradient{
+    background:transparent !important;
+    background-image:none !important;
+  }
+
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-banner{
+    position:relative;width:100%;line-height:0;
+    background:#0a0a0a;
+    border-bottom:1px solid rgba(255,255,255,.13);
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-banner-img{
+    display:block;width:100%;height:auto;
+    max-height:34vh;object-fit:cover;
+  }
+
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-wall{
+    padding:clamp(30px,4.5vw,66px) var(--akdw-gut) clamp(48px,7vw,110px);
+  }
+
+  /* .akdw-col is display:contents on desktop, so the grid must fill
+     COLUMN-major or each design's four sizes land across a row instead of
+     down a column. Verified in-browser; this exact bug shipped twice in the
+     prototypes before being caught. */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-grid{
+    max-width:1600px;margin-inline:auto;
+    display:grid;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    grid-template-rows:repeat({{ size_list.size }},auto);
+    grid-auto-flow:column;
+    gap:clamp(14px,2.1vw,34px) clamp(12px,1.7vw,28px);
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-col{ display:contents; }
+
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item{
+    display:flex;flex-direction:column;gap:11px;
+    text-decoration:none;color:inherit;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--empty{ visibility:hidden; }
+
+  /* no frame, no fill — the shirt sits directly on the ground */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-shot{
+    position:relative;display:block;aspect-ratio:1/1;
+    perspective:1100px;overflow:visible;
+    transition:transform .22s cubic-bezier(.36,.05,.2,1);
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item:hover .akdw-shot{ transform:translateY(-4px); }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item:focus-visible{ outline:none; }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item:focus-visible .akdw-shot{
+    outline:2px solid var(--akdw-accent);outline-offset:6px;
+  }
+
+  /* flip idiom copied from sections/ak-archive-magazine.liquid:150-178.
+     .akdw-flip MUST be display:block — it is a <span>, and an inline box
+     ignores width/height:100%, collapsing every absolutely-positioned face
+     to 0x0. That bug shipped once in the prototype. */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-flip{
+    display:block;position:relative;width:100%;height:100%;
+    transform-style:preserve-3d;
+    transition:transform .52s cubic-bezier(.36,.05,.2,1);
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item:hover .akdw-flip,
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item:focus-visible .akdw-flip,
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item.is-flipped .akdw-flip{
+    transform:rotateY(180deg);
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-face{
+    position:absolute;inset:0;
+    backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    display:flex;align-items:center;justify-content:center;padding:4%;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-face--back{ transform:rotateY(180deg); }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-img{
+    display:block;width:100%;height:100%;object-fit:contain;
+  }
+
+  /* Two-line clamp keeps all 20 cells aligned regardless of title length.
+     cf. commit 123add7 "products: lock coaster grid title wrap". */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-name{
+    font-size:clamp(12px,1vw,18px);line-height:1.35;font-weight:500;
+    letter-spacing:.055em;text-transform:uppercase;color:var(--akdw-fg);
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+    overflow:hidden;min-height:2.7em;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item:hover .akdw-name{ color:var(--akdw-accent); }
+
+  /* sold out — greyscale and struck, no wording */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold{ cursor:not-allowed; }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold:hover .akdw-shot{ transform:none; }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold .akdw-flip{ filter:grayscale(1);opacity:.26; }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold:hover .akdw-flip{ transform:none; }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold .akdw-name{
+    color:var(--akdw-dim);text-decoration:line-through;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold .akdw-shot::before{
+    content:"";position:absolute;inset:14%;z-index:3;pointer-events:none;
+    background:linear-gradient(to top left,
+      transparent calc(50% - 1.5px),var(--akdw-fg) calc(50% - 1.5px),
+      var(--akdw-fg) calc(50% + 1.5px),transparent calc(50% + 1.5px));
+    opacity:.5;
+  }
+
+  /* short viewports: keep the first row's product titles above the fold */
+  @media screen and (max-height:780px){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-banner-img{ max-height:26vh; }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-wall{ padding-top:clamp(16px,2.2vw,32px); }
+  }
+
+  /* MOBILE: columns become vertical stacks that drift on their own.
+     Adapted from the only translate-loop recipe in the repo,
+     templates/collection.election.json:16-21, turned vertical. */
+  @media screen and (max-width:749px){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-grid{
+      display:flex;gap:6px;align-items:flex-start;max-width:none;
+    }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-col{
+      display:flex;flex-direction:column;gap:6px;flex:1 1 0;min-width:0;
+      animation:akdw-drift 9s linear infinite alternate;
+    }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-col:nth-child(2){ animation-duration:11s;animation-direction:alternate-reverse; }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-col:nth-child(3){ animation-duration:10s; }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-col:nth-child(4){ animation-duration:12.5s;animation-direction:alternate-reverse; }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-col:nth-child(5){ animation-duration:8.5s; }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-item{ gap:6px; }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-name{
+      font-size:10px;letter-spacing:.02em;
+    }
+  }
+  @keyframes akdw-drift{
+    from{ transform:translateY(-14px); }
+    to{ transform:translateY(14px); }
+  }
+
+  /* reduced motion — same kill-switch shape as ak-archive-magazine.liquid:284-287 */
+  @media (prefers-reduced-motion:reduce){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-flip,
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-shot{ transition:none !important; }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-col{ animation:none !important; }
+  }
+{%- endstyle -%}
+
+<script>
+  (function () {
+    var root = document.getElementById('akdw-{{ section.id }}');
+    if (!root) return;
+
+    /* Hover does not exist on touch. On mobile the cells auto-flip on a
+       staggered timer so every back print is seen without interaction.
+       Stepping by 7 keeps consecutive flips in different columns. */
+    var mqTouch = window.matchMedia('(max-width: 749px)');
+    var mqMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var timer = null, i = 0;
+
+    function stop() {
+      if (timer) { clearInterval(timer); timer = null; }
+      var on = root.querySelectorAll('.akdw-item.is-flipped');
+      for (var n = 0; n < on.length; n++) on[n].classList.remove('is-flipped');
+    }
+
+    function start() {
+      stop();
+      if (!mqTouch.matches || mqMotion.matches) return;
+      timer = setInterval(function () {
+        var items = root.querySelectorAll('.akdw-item:not(.akdw-item--sold):not(.akdw-item--empty)');
+        if (!items.length) return;
+        var el = items[i % items.length];
+        el.classList.add('is-flipped');
+        setTimeout(function () { el.classList.remove('is-flipped'); }, 2600);
+        i += 7;
+      }, 700);
+    }
+
+    /* Pause when offscreen — the house pattern for every animated system in
+       this theme (docs/theme-architecture.md, offscreen rAF cancellation). */
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { e.isIntersecting ? start() : stop(); });
+      }, { threshold: 0 }).observe(root);
+    } else {
+      start();
+    }
+
+    if (mqTouch.addEventListener) {
+      mqTouch.addEventListener('change', start);
+      mqMotion.addEventListener('change', start);
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "AK Drop Wall",
+  "tag": "section",
+  "class": "ak-drop-wall-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "banner_image",
+      "label": "Banner image"
+    },
+    {
+      "type": "text",
+      "id": "banner_alt",
+      "label": "Banner alt text",
+      "default": "Supreme Leader"
+    },
+    {
+      "type": "text",
+      "id": "handle_prefix",
+      "label": "Product handle prefix",
+      "info": "Products resolve as <prefix>-<size>-<design>, e.g. sl-s-01",
+      "default": "sl"
+    },
+    {
+      "type": "text",
+      "id": "size_order",
+      "label": "Row order (sizes)",
+      "info": "Comma separated. Hard-coded because no Shopify sort produces S,M,L,XL.",
+      "default": "S,M,L,XL"
+    },
+    {
+      "type": "text",
+      "id": "design_order",
+      "label": "Column order (designs)",
+      "info": "Comma separated, one column per entry.",
+      "default": "01,02,03,04,05"
+    }
+  ],
+  "presets": [
+    {
+      "name": "AK Drop Wall"
+    }
+  ]
+}
+{% endschema %}

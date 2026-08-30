@@ -1,0 +1,31 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "ak-top": {
+      "type": "ak-top",
+      "settings": {}
+    },
+    "ak-drop-wall": {
+      "type": "ak-drop-wall",
+      "settings": {
+        "banner_alt": "Supreme Leader",
+        "handle_prefix": "sl",
+        "size_order": "S,M,L,XL",
+        "design_order": "01,02,03,04,05"
+      }
+    },
+    "ak-footer": {
+      "type": "ak-footer",
+      "settings": {}
+    }
+  },
+  "order": ["ak-top", "ak-drop-wall", "ak-footer"]
+}
