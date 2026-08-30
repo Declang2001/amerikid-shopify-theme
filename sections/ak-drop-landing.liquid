@@ -41,8 +41,17 @@
     <img class="ak-drop-landing__media ak-drop-landing__img"
          src="{{ section.settings.still_url }}"
          alt="{{ section.settings.aria_label | escape }}"
-         width="3024" height="1964"
+         width="1500" height="900"
          loading="eager" fetchpriority="high">
+  {%- endif -%}
+
+  {%- if section.settings.propaganda_effect -%}
+    <span class="ak-drop-fx" aria-hidden="true">
+      <span class="ak-drop-fx__rays"></span>
+      <span class="ak-drop-fx__grain"></span>
+      <span class="ak-drop-fx__scan"></span>
+      <span class="ak-drop-fx__vignette"></span>
+    </span>
   {%- endif -%}
 </a>
 
@@ -67,7 +76,82 @@
   }
   .ak-drop-landing__video{ opacity:0;transition:opacity 200ms ease; }
   .ak-drop-video-ready .ak-drop-landing__video{ opacity:1; }
-  .ak-drop-landing__img{ display:none !important; }
+  .ak-drop-landing__img{ display:block !important; }
+
+  /* ==========================================================================
+     PROPAGANDA PRINT TREATMENT
+     The supplied postcard is already posterised, halftoned and red-dominant, so
+     this layers PRINT BEHAVIOUR on top rather than more colour: a slow radiating
+     sunburst (the signature device of the genre), a slow push, press grain,
+     scanlines and a vignette. Every layer is pointer-events:none so the whole
+     frame stays one click target, and all motion dies under prefers-reduced-motion.
+     ========================================================================== */
+  .ak-drop-fx{ display:block;position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden; }
+  .ak-drop-fx > *{ display:block;position:absolute;pointer-events:none; }
+
+  /* slow push on the artwork itself */
+  .ak-drop-landing__media{
+    animation: akDropPush 44s ease-in-out infinite;
+    will-change: transform;
+  }
+  @keyframes akDropPush{
+    0%   { transform:scale(1.015) translate3d(0,0,0); }
+    50%  { transform:scale(1.075) translate3d(-1.2%,-1%,0); }
+    100% { transform:scale(1.015) translate3d(0,0,0); }
+  }
+
+  /* radiating rays, masked to fade off the centre so the figures stay readable */
+  .ak-drop-fx__rays{
+    inset:-30%;
+    background:repeating-conic-gradient(from 0deg at 50% 42%,
+      rgba(255,238,214,.22) 0deg 2.2deg,
+      rgba(255,255,255,0)  2.2deg 9deg);
+    mix-blend-mode:soft-light;
+    -webkit-mask-image:radial-gradient(ellipse 62% 58% at 50% 44%, transparent 34%, #000 78%);
+            mask-image:radial-gradient(ellipse 62% 58% at 50% 44%, transparent 34%, #000 78%);
+    animation: akDropRays 120s linear infinite;
+    will-change: transform;
+  }
+  @keyframes akDropRays{ to{ transform:rotate(360deg); } }
+
+  /* press grain — fractal noise, jittered so it reads as moving ink */
+  .ak-drop-fx__grain{
+    inset:-12%;
+    opacity:.16;
+    mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:220px 220px;
+    animation: akDropGrain 900ms steps(4) infinite;
+  }
+  @keyframes akDropGrain{
+    0%  { transform:translate3d(0,0,0); }
+    25% { transform:translate3d(-3%,2%,0); }
+    50% { transform:translate3d(2%,-3%,0); }
+    75% { transform:translate3d(-2%,-2%,0); }
+    100%{ transform:translate3d(0,0,0); }
+  }
+
+  /* offset-press scanlines */
+  .ak-drop-fx__scan{
+    inset:0;
+    background:repeating-linear-gradient(180deg,
+      rgba(0,0,0,.17) 0 1px,
+      rgba(0,0,0,0)   1px 3px);
+    mix-blend-mode:multiply;
+    opacity:.55;
+  }
+
+  .ak-drop-fx__vignette{
+    inset:0;
+    background:radial-gradient(ellipse 78% 74% at 50% 46%,
+      rgba(0,0,0,0) 40%, rgba(0,0,0,.30) 78%, rgba(0,0,0,.62) 100%);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .ak-drop-landing__media,
+    .ak-drop-fx__rays,
+    .ak-drop-fx__grain{ animation:none !important; }
+  }
   .ak-drop-video-failed .ak-drop-landing__video{ display:none !important; }
   .ak-drop-video-failed .ak-drop-landing__img{ display:block !important; }
   @media (max-width: 767px){
@@ -158,6 +242,13 @@
       "id": "still_image",
       "label": "Still image (mobile, and desktop fallback)",
       "info": "Overrides the URL below when set."
+    },
+    {
+      "type": "checkbox",
+      "id": "propaganda_effect",
+      "label": "Propaganda print effect",
+      "info": "Radiating sunburst, slow push, press grain, scanlines and vignette.",
+      "default": true
     },
     {
       "type": "text",

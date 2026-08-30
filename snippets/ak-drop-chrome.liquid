@@ -15,9 +15,19 @@
   The drawer is relocated to a direct child of <body> by ak-top.liquid:481-483,
   so an html-rooted selector still reaches it.
 
+  Also repoints every stray link to the OLD main collection at the drop wall.
+  sections/main-cart-items.liquid:355 and :360 hardcode "Continue shopping" to
+  /collections/master-collection, and ak-top.liquid:346/:363 do the same for the
+  PRODUCTS tile. None of those files may be edited
+  (docs/known-fragile-areas.md:209), so the repoint happens here, page-scoped.
+
+  @param {string} [drop_url] - Where old-collection links should go instead.
+                               Defaults to /collections/supreme-leader.
   @example
-    {% render 'ak-drop-chrome' %}
+    {% render 'ak-drop-chrome', drop_url: '/collections/supreme-leader' %}
 {% enddoc %}
+
+{%- assign ak_drop_url = drop_url | default: '/collections/supreme-leader' -%}
 
 {%- style -%}
   html.ak-drop-page a.header__heading-link,
@@ -52,3 +62,48 @@
     padding-bottom:0 !important;
   }
 {%- endstyle -%}
+
+
+<script>
+  (function () {
+    var DROP = {{ ak_drop_url | json }};
+    var OLD  = '/collections/master-collection';
+
+    function repoint(root) {
+      var as = (root || document).querySelectorAll('a[href*="' + OLD + '"]');
+      for (var i = 0; i < as.length; i++) {
+        as[i].setAttribute('href', DROP);
+      }
+    }
+
+    function boot() {
+      repoint(document);
+
+      /* Cart quantity changes re-render sections via the Section Rendering API,
+         which REPLACES DOM, so anchors repointed on load come back pointing at
+         the old collection. Re-run on any subtree replacement, debounced. */
+      if ('MutationObserver' in window) {
+        var t = null;
+        new MutationObserver(function () {
+          clearTimeout(t);
+          t = setTimeout(function () { repoint(document); }, 60);
+        }).observe(document.body, { childList: true, subtree: true });
+      }
+    }
+
+    /* Belt and braces: a delegated click catches any anchor inserted between a
+       mutation and the debounce firing. */
+    document.addEventListener('click', function (e) {
+      var a = e.target && e.target.closest ? e.target.closest('a[href*="' + OLD + '"]') : null;
+      if (!a) return;
+      e.preventDefault();
+      window.location.href = DROP;
+    }, true);
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot);
+    } else {
+      boot();
+    }
+  })();
+</script>

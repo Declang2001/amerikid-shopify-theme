@@ -49,7 +49,7 @@
 {%- if collection.handle == drop_handle -%}
 
 <script>document.documentElement.classList.add('ak-drop-page');</script>
-{% render 'ak-drop-chrome' %}
+{% render 'ak-drop-chrome', drop_url: '/collections/supreme-leader' %}
 
 {%- assign size_list = section.settings.size_order | split: ',' -%}
 {%- assign design_list = section.settings.design_order | split: ',' -%}
