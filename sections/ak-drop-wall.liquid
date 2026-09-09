@@ -57,7 +57,22 @@
 
 <div class="akdw" id="akdw-{{ section.id }}">
 
-  {%- if section.settings.banner_image != blank -%}
+  {%- if section.settings.cover_slideshow -%}
+    <div class="akdw-banner akdw-banner--slideshow" aria-label="Supreme Leader artwork">
+      {%- for cover in (1..3) -%}
+        {%- assign cover_asset = 'ak-drop-cover-' | append: cover | append: '.jpg' -%}
+        <img class="akdw-banner-img{% if forloop.first %} is-active{% endif %}"
+             data-cover-slide="{{ cover }}" src="{{ cover_asset | asset_url }}"
+             alt="Supreme Leader cover {{ cover }}" width="1500" height="500"
+             aria-hidden="{% if forloop.first %}false{% else %}true{% endif %}"
+             loading="eager">
+      {%- endfor -%}
+      <button class="akdw-motion" type="button" aria-label="Pause banner motion" title="Pause banner motion" aria-pressed="false">
+        <span class="akdw-motion__pause">{{ 'icon-pause.svg' | inline_asset_content }}</span>
+        <span class="akdw-motion__play" hidden>{{ 'icon-play.svg' | inline_asset_content }}</span>
+      </button>
+    </div>
+  {%- elsif section.settings.banner_image != blank -%}
     <div class="akdw-banner">
       {{ section.settings.banner_image
          | image_url: width: 2400
@@ -69,18 +84,18 @@
              alt: section.settings.banner_alt,
              class: 'akdw-banner-img' }}
     </div>
-  {%- elsif section.settings.banner_url != blank -%}
+  {%- else -%}
     {%- comment -%} URL fallback so a placeholder can be set without uploading to Files {%- endcomment -%}
     <div class="akdw-banner">
       <img class="akdw-banner-img"
-           src="{{ section.settings.banner_url }}"
+           src="{% if section.settings.cover_option == 'custom' %}{{ section.settings.banner_url }}{% else %}{{ section.settings.cover_option | default: 'ak-drop-cover-1.jpg' | asset_url }}{% endif %}"
            alt="{{ section.settings.banner_alt | escape }}"
-           width="1500" height="900"
+           width="1500" height="500"
            loading="eager" fetchpriority="high">
     </div>
   {%- endif -%}
 
-  {%- if section.settings.band_ko != blank or section.settings.band_en != blank -%}
+  {%- if section.settings.band_ko != blank -%}
     <a class="akdw-band" href="{{ section.settings.band_url | default: '/' }}">
       {%- if section.settings.band_ko != blank -%}
         <span class="akdw-band__ko" lang="ko">
@@ -91,9 +106,6 @@
             <span class="akdw-band__kocopy" aria-hidden="true">{{ section.settings.band_ko }}</span>
           </span>
         </span>
-      {%- endif -%}
-      {%- if section.settings.band_en != blank -%}
-        <span class="akdw-band__en">{{ section.settings.band_en }}</span>
       {%- endif -%}
     </a>
   {%- endif -%}
@@ -218,7 +230,21 @@
   }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-banner-img{
     display:block;width:100%;height:auto;
-    max-height:34vh;object-fit:cover;
+    object-fit:contain;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-banner--slideshow { display:grid; }
+  html.ak-drop-page #akdw-{{ section.id }} [data-cover-slide] {
+    grid-area:1/1;opacity:0;transition:opacity 1s ease;pointer-events:none;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} [data-cover-slide].is-active { opacity:1; }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-motion {
+    position:absolute;right:12px;bottom:12px;z-index:2;width:44px;height:44px;
+    display:grid;place-items:center;border:1px solid #fff;background:#000;color:#fff;cursor:pointer;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-motion svg { width:18px;height:18px; }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-motion:focus-visible { outline:3px solid #fff;outline-offset:3px; }
+  @media (prefers-reduced-motion:reduce) {
+    html.ak-drop-page #akdw-{{ section.id }} [data-cover-slide] { transition:none; }
   }
 
   /* ==========================================================================
@@ -232,10 +258,9 @@
      WHAT MOVES: one thing. The Korean headline travels LEFT TO RIGHT on a
      26s linear loop — four copies in a max-content track, translating -25% to 0
      so the wrap is seamless whatever the merchant types.
-     It PAUSES on hover and on keyboard focus. That is load-bearing: it satisfies
-     WCAG 2.2 SC 2.2.2 (Pause/Stop/Hide), which a prefers-reduced-motion query
-     does NOT satisfy on its own, and play-state freezes progress rather than
-     re-mapping it, so there is no snap in either direction.
+     As of 2026-09-09, hover/focus does not pause motion. The slideshow's explicit
+     pause button pauses both banner and headline; reduced motion is respected.
+     The lower availability strip is no longer rendered.
      The headline is clipped with overflow:clip, NOT hidden: hidden would make it
      a scroll container that find-in-page could offset permanently.
 
@@ -275,12 +300,8 @@
     border-bottom:3px solid var(--akdw-ink);
   }
 
-  /* Approach it and the headline holds still so you can read it. play-state
-     freezes progress rather than re-mapping it, so there is no snap in either
-     direction — and it is the pause mechanism WCAG SC 2.2.2 requires of any
-     automatically-moving content. */
-  html.ak-drop-page #akdw-{{ section.id }} .akdw-band:hover .akdw-band__kotrack,
-  html.ak-drop-page #akdw-{{ section.id }} .akdw-band:focus-visible .akdw-band__kotrack{
+  /* Explicit pause only: hovering the headline must not interrupt its motion. */
+  html.ak-drop-page #akdw-{{ section.id }}.akdw-motion-paused .akdw-band__kotrack{
     animation-play-state:paused;
   }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-band:focus-visible{
@@ -390,13 +411,11 @@
      At 1440x1000 (no query): 921px. At 1920x1080: 1029px. Row 1's images AND
      titles are above the fold at every one of them. */
   @media screen and (max-height:900px){
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-banner-img{ max-height:24vh; }
     html.ak-drop-page #akdw-{{ section.id }} .akdw-wall{
       padding-top:clamp(16px,2.2vw,32px);
     }
   }
   @media screen and (max-height:740px){
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-banner-img{ max-height:21vh; }
   }
 
   /* ---- REDUCED MOTION -------------------------------------------------------
@@ -439,6 +458,10 @@
   html.ak-drop-page #akdw-{{ section.id }} .akdw-shot{
     position:relative;display:block;aspect-ratio:1/1;overflow:visible;
     transition:transform .22s cubic-bezier(.36,.05,.2,1);
+  }
+  @media (min-width:750px) and (max-height:740px) {
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-shot { height:30vh;aspect-ratio:auto; }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-wall { padding-top:16px; }
   }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-item:hover .akdw-shot{ transform:translateY(-4px); }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-item:focus-visible{ outline:none; }
@@ -537,7 +560,7 @@
     /* much larger — roughly 2.4 per screen instead of 5 squeezed across */
     html.ak-drop-page #akdw-{{ section.id }} .akdw-item{
       flex:0 0 auto;
-      width:min(41vw,220px);
+      width:calc((100% - clamp(10px,3vw,18px)) / 2);
       gap:8px;
     }
     html.ak-drop-page #akdw-{{ section.id }} .akdw-name{
@@ -558,6 +581,40 @@
   (function () {
     var root = document.getElementById('akdw-{{ section.id }}');
     if (!root) return;
+
+    var covers = root.querySelectorAll('[data-cover-slide]');
+    var motionButton = root.querySelector('.akdw-motion');
+    var coverIndex = 0;
+    var coverTimer;
+    var coverPaused = false;
+    var coverReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    function scheduleCover() {
+      clearInterval(coverTimer);
+      if (coverPaused || coverReduced.matches || document.hidden || covers.length < 2) return;
+      coverTimer = setInterval(function () {
+        if (!root.isConnected) { clearInterval(coverTimer); return; }
+        covers[coverIndex].classList.remove('is-active');
+        covers[coverIndex].setAttribute('aria-hidden', 'true');
+        coverIndex = (coverIndex + 1) % covers.length;
+        covers[coverIndex].classList.add('is-active');
+        covers[coverIndex].setAttribute('aria-hidden', 'false');
+      }, 10000);
+    }
+    if (motionButton) {
+      motionButton.addEventListener('click', function () {
+        coverPaused = !coverPaused;
+        root.classList.toggle('akdw-motion-paused', coverPaused);
+        motionButton.setAttribute('aria-pressed', String(coverPaused));
+        motionButton.setAttribute('aria-label', coverPaused ? 'Resume banner motion' : 'Pause banner motion');
+        motionButton.title = motionButton.getAttribute('aria-label');
+        motionButton.querySelector('.akdw-motion__pause').hidden = coverPaused;
+        motionButton.querySelector('.akdw-motion__play').hidden = !coverPaused;
+        scheduleCover();
+      });
+    }
+    document.addEventListener('visibilitychange', scheduleCover);
+    coverReduced.addEventListener('change', scheduleCover);
+    scheduleCover();
 
     /* ---- MOBILE SIZE TRACKS -------------------------------------------
        Each .akdw-row is a real horizontal scroller. We drive scrollLeft from
@@ -581,7 +638,6 @@
             var c = originals[k].cloneNode(true);
             c.setAttribute('aria-hidden', 'true');
             c.setAttribute('tabindex', '-1');
-            if (c.removeAttribute) c.removeAttribute('href');
             row.appendChild(c);
           }
           /* pos is a FLOAT we own. Writing sub-pixel increments straight into
@@ -714,6 +770,25 @@
   "class": "ak-drop-wall-section",
   "settings": [
     {
+      "type": "checkbox",
+      "id": "cover_slideshow",
+      "label": "Cycle all three covers every 10 seconds",
+      "default": true,
+      "info": "Overrides the static image selection. Reduced motion disables autoplay."
+    },
+    {
+      "type": "select",
+      "id": "cover_option",
+      "label": "Cover artwork option",
+      "default": "ak-drop-cover-1.jpg",
+      "options": [
+        { "value": "ak-drop-cover-1.jpg", "label": "Cover 1" },
+        { "value": "ak-drop-cover-2.jpg", "label": "Cover 2" },
+        { "value": "ak-drop-cover-3.jpg", "label": "Cover 3" },
+        { "value": "custom", "label": "Custom URL" }
+      ]
+    },
+    {
       "type": "image_picker",
       "id": "banner_image",
       "label": "Banner image"
@@ -722,7 +797,7 @@
       "type": "text",
       "id": "banner_url",
       "label": "Banner image URL",
-      "info": "Used when no image is picked above. Currently the landing postcard, as a placeholder."
+      "info": "Used with Custom URL selected. The image picker overrides all cover options."
     },
     {
       "type": "text",

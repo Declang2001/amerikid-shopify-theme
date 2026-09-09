@@ -1,5 +1,14 @@
 # HANDOFF — Supreme Leader Drop Theme
 
+> 2026-09-09 final update: full-width three-cover slideshow at 10-second intervals,
+> lower availability strip removed, headline no longer pauses on hover. Natural
+> 3:1 banner height takes priority over the previous first-row-above-fold target.
+> New artwork options, full-viewport landing,
+> larger drop PDP images, hidden quantity selector and previous/next navigation
+> are uploaded to the same unpublished theme. See `../qa/2026-09-09-drop/README.md`
+> (relative to docs: `qa/2026-09-09-drop/README.md`) for current QA and limitations.
+> The older "only one image remains" handoff below is superseded by owner review.
+
 **Last updated:** 2026-08-30
 **Branch:** `experiment/propaganda-drop-theme`
 **Status:** Built, QA'd end-to-end in a real browser, pushed to the dev theme.

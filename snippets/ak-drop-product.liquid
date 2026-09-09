@@ -26,7 +26,43 @@
 <script>document.documentElement.classList.add('ak-pdp-drop');</script>
 {% render 'ak-drop-chrome', drop_url: '/collections/supreme-leader' %}
 
+{%- assign drop_handles = 'sl-s-01,sl-s-02,sl-s-03,sl-s-04,sl-s-05,sl-m-01,sl-m-02,sl-m-03,sl-m-04,sl-m-05,sl-l-01,sl-l-02,sl-l-03,sl-l-04,sl-l-05,sl-xl-01,sl-xl-02,sl-xl-03,sl-xl-04,sl-xl-05' | split: ',' -%}
+{%- for handle in drop_handles -%}
+  {%- if handle == product.handle -%}
+    {%- assign previous_index = forloop.index0 | minus: 1 -%}
+    {%- assign next_index = forloop.index0 | plus: 1 | modulo: 20 -%}
+    {%- if previous_index < 0 -%}{%- assign previous_index = 19 -%}{%- endif -%}
+    <nav class="akdp-navigation" aria-label="Browse drop products">
+      <a href="{{ routes.root_url }}products/{{ drop_handles[previous_index] }}" aria-label="Previous shirt: {{ drop_handles[previous_index] | upcase }}" title="Previous shirt">{{ 'icon-arrow.svg' | inline_asset_content }}</a>
+      <a class="akdp-navigation__grid" href="{{ routes.root_url }}collections/supreme-leader">All shirts</a>
+      <a href="{{ routes.root_url }}products/{{ drop_handles[next_index] }}" aria-label="Next shirt: {{ drop_handles[next_index] | upcase }}" title="Next shirt">{{ 'icon-arrow.svg' | inline_asset_content }}</a>
+    </nav>
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+
 {%- style -%}
+  html.ak-pdp-drop .product-form__quantity { display:none !important; }
+  html.ak-pdp-drop .akdp-navigation {
+    display:flex;align-items:center;gap:16px;padding:12px 72px 12px 16px;
+  }
+  html.ak-pdp-drop .akdp-navigation a {
+    display:flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;
+    color:#fff;text-decoration:none;font-size:14px;letter-spacing:0;
+  }
+  html.ak-pdp-drop .akdp-navigation svg { width:24px;height:24px; }
+  html.ak-pdp-drop .akdp-navigation a:first-child svg { transform:rotate(180deg); }
+  html.ak-pdp-drop .akdp-navigation a:focus-visible { outline:2px solid #fff;outline-offset:2px; }
+  html.ak-pdp-drop .product-media-container.constrain-height { width:100%; }
+  html.ak-pdp-drop .product__media img { object-fit:contain !important; }
+  @media (min-width:990px) {
+    html.ak-pdp-drop .product__media-wrapper { width:calc(65% - 16px);max-width:65%; }
+    html.ak-pdp-drop .product__info-wrapper { width:35%;max-width:35%; }
+  }
+  @media (max-width:749px) {
+    html.ak-pdp-drop section[id^="MainProduct-"] { padding-top:8px;padding-inline:10px; }
+    html.ak-pdp-drop .product__media-list .product__media-item { width:100%;padding:0; }
+  }
   /* main-product.liquid:59-64 already sets #MainProduct-*{background:#000!important}
      and :90-148 already kills every Dawn media plate to transparent. On a black
      drop both work FOR us, so this block is colour + hierarchy only. */

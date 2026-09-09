@@ -37,11 +37,11 @@
            sizes: '100vw',
            alt: section.settings.aria_label,
            class: 'ak-drop-landing__media ak-drop-landing__img' }}
-  {%- elsif section.settings.still_url != blank -%}
+  {%- else -%}
     <img class="ak-drop-landing__media ak-drop-landing__img"
-         src="{{ section.settings.still_url }}"
+         src="{{ 'ak-drop-landing-grid.jpg' | asset_url }}"
          alt="{{ section.settings.aria_label | escape }}"
-         width="1500" height="900"
+         width="1920" height="1080"
          loading="eager" fetchpriority="high">
   {%- endif -%}
 
@@ -59,7 +59,7 @@
   html.ak-drop-page .ak-drop-landing,
   .ak-drop-landing{
     position:fixed;inset:0;width:100vw;
-    height:100svh;height:100dvh;height:100vh;
+    height:100vh;height:100svh;height:100dvh;
     display:block;overflow:hidden;background:#000;z-index:1;
     cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
     transition:transform 350ms ease-in,opacity 350ms ease-in;
@@ -72,12 +72,8 @@
   }
   .ak-drop-landing__media{
     position:absolute;inset:0;width:100%;height:100%;
-    /* CONTAIN, not cover. The postcard carries content in all four corners —
-       the stamp, the SUPREME LEADER mark, the Korean banner — so a cover crop
-       destroys the design. contain fits the whole card to any viewport; the
-       surrounding black is not dead space because the rays, grain and vignette
-       layers span the full frame. */
-    object-fit:contain;object-position:center;
+    /* Approved full-viewport treatment: proportional scaling with centre crop. */
+    object-fit:cover;object-position:center;
     pointer-events:none;
   }
   .ak-drop-landing__video{ opacity:0;transition:opacity 200ms ease; }
