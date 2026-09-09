@@ -4,6 +4,9 @@ Target: unpublished theme 188605497624 only. No publication or protected-theme e
 
 ## Changes
 
+- Final divider correction: removed the image banner's bottom border and the
+  headline band's top border so the artwork touches the red fill directly.
+
 - Landing uses SL Website Grid (1920x1080), proportionally covering the viewport.
   Portrait screens crop the sides. Existing print effects and entry interaction remain.
 - Three 1500x500 covers plus the original Supreme Leader postcard cycle in order
