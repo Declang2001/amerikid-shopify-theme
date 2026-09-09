@@ -67,10 +67,10 @@
              aria-hidden="{% if forloop.first %}false{% else %}true{% endif %}"
              loading="eager">
       {%- endfor -%}
-      <button class="akdw-motion" type="button" aria-label="Pause banner motion" title="Pause banner motion" aria-pressed="false">
-        <span class="akdw-motion__pause">{{ 'icon-pause.svg' | inline_asset_content }}</span>
-        <span class="akdw-motion__play" hidden>{{ 'icon-play.svg' | inline_asset_content }}</span>
-      </button>
+      <img class="akdw-banner-img" data-cover-slide="4"
+           src="https://cdn.shopify.com/s/files/1/0930/3267/7656/files/Superme-Leader-PostcardFINAL-V2.png?v=1788061530"
+           alt="Original Supreme Leader postcard" width="1500" height="900"
+           aria-hidden="true" loading="eager">
     </div>
   {%- elsif section.settings.banner_image != blank -%}
     <div class="akdw-banner">
@@ -232,17 +232,12 @@
     display:block;width:100%;height:auto;
     object-fit:contain;
   }
-  html.ak-drop-page #akdw-{{ section.id }} .akdw-banner--slideshow { display:grid; }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-banner--slideshow { display:grid;aspect-ratio:3/1; }
   html.ak-drop-page #akdw-{{ section.id }} [data-cover-slide] {
-    grid-area:1/1;opacity:0;transition:opacity 1s ease;pointer-events:none;
+    grid-area:1/1;width:100%;height:100%;min-height:0;object-fit:cover;
+    opacity:0;transition:opacity 1s ease;pointer-events:none;
   }
   html.ak-drop-page #akdw-{{ section.id }} [data-cover-slide].is-active { opacity:1; }
-  html.ak-drop-page #akdw-{{ section.id }} .akdw-motion {
-    position:absolute;right:12px;bottom:12px;z-index:2;width:44px;height:44px;
-    display:grid;place-items:center;border:1px solid #fff;background:#000;color:#fff;cursor:pointer;
-  }
-  html.ak-drop-page #akdw-{{ section.id }} .akdw-motion svg { width:18px;height:18px; }
-  html.ak-drop-page #akdw-{{ section.id }} .akdw-motion:focus-visible { outline:3px solid #fff;outline-offset:3px; }
   @media (prefers-reduced-motion:reduce) {
     html.ak-drop-page #akdw-{{ section.id }} [data-cover-slide] { transition:none; }
   }
@@ -258,8 +253,8 @@
      WHAT MOVES: one thing. The Korean headline travels LEFT TO RIGHT on a
      26s linear loop — four copies in a max-content track, translating -25% to 0
      so the wrap is seamless whatever the merchant types.
-     As of 2026-09-09, hover/focus does not pause motion. The slideshow's explicit
-     pause button pauses both banner and headline; reduced motion is respected.
+     As of 2026-09-09, hover/focus does not pause motion and no visible motion
+     controls are rendered, per owner request. Reduced motion is respected.
      The lower availability strip is no longer rendered.
      The headline is clipped with overflow:clip, NOT hidden: hidden would make it
      a scroll container that find-in-page could offset permanently.
@@ -300,10 +295,6 @@
     border-bottom:3px solid var(--akdw-ink);
   }
 
-  /* Explicit pause only: hovering the headline must not interrupt its motion. */
-  html.ak-drop-page #akdw-{{ section.id }}.akdw-motion-paused .akdw-band__kotrack{
-    animation-play-state:paused;
-  }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-band:focus-visible{
     outline:4px solid #fff;outline-offset:-8px;
   }
@@ -530,43 +521,23 @@
     opacity:.5;
   }
 
-  /* ==========================================================================
-     MOBILE — each SIZE becomes its own horizontal track that drifts right to
-     left and can also be swiped by hand. A track's drift stops while you are
-     swiping THAT track and resumes when you let go; the other three keep going.
-     Auto-scroll is driven from JS via scrollLeft, not a CSS animation, because
-     a transform-based marquee cannot coexist with real touch scrolling.
-     ========================================================================== */
+  /* Mobile: two stationary columns, continuing across size-row wrappers. */
   @media screen and (max-width:749px){
     html.ak-drop-page #akdw-{{ section.id }} .akdw-grid{
-      display:flex;flex-direction:column;
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
       gap:clamp(16px,4vw,26px);
       max-width:none;
     }
     html.ak-drop-page #akdw-{{ section.id }} .akdw-row{
-      display:flex;
-      gap:clamp(10px,3vw,18px);
-      overflow-x:auto;
-      overscroll-behavior-x:contain;
-      -webkit-overflow-scrolling:touch;
-      /* NO scroll-snap. Snap points fight a continuous drift: each sub-pixel
-         increment is re-snapped to the nearest item boundary, so the track
-         stalls. A marquee wants free scrolling. */
-      scrollbar-width:none;
-      padding-bottom:2px;
+      display:contents;
     }
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-row::-webkit-scrollbar{ display:none; }
-
-    /* much larger — roughly 2.4 per screen instead of 5 squeezed across */
     html.ak-drop-page #akdw-{{ section.id }} .akdw-item{
-      flex:0 0 auto;
-      width:calc((100% - clamp(10px,3vw,18px)) / 2);
+      width:100%;min-width:0;
       gap:8px;
     }
     html.ak-drop-page #akdw-{{ section.id }} .akdw-name{
-      font-size:clamp(11px,3.1vw,15px);letter-spacing:.03em;
+      font-size:13px;letter-spacing:0;
     }
-  }
   }
 
   /* reduced motion — same kill-switch shape as ak-archive-magazine.liquid:284-287 */
@@ -583,14 +554,12 @@
     if (!root) return;
 
     var covers = root.querySelectorAll('[data-cover-slide]');
-    var motionButton = root.querySelector('.akdw-motion');
     var coverIndex = 0;
     var coverTimer;
-    var coverPaused = false;
     var coverReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     function scheduleCover() {
       clearInterval(coverTimer);
-      if (coverPaused || coverReduced.matches || document.hidden || covers.length < 2) return;
+      if (coverReduced.matches || document.hidden || covers.length < 2) return;
       coverTimer = setInterval(function () {
         if (!root.isConnected) { clearInterval(coverTimer); return; }
         covers[coverIndex].classList.remove('is-active');
@@ -600,119 +569,10 @@
         covers[coverIndex].setAttribute('aria-hidden', 'false');
       }, 10000);
     }
-    if (motionButton) {
-      motionButton.addEventListener('click', function () {
-        coverPaused = !coverPaused;
-        root.classList.toggle('akdw-motion-paused', coverPaused);
-        motionButton.setAttribute('aria-pressed', String(coverPaused));
-        motionButton.setAttribute('aria-label', coverPaused ? 'Resume banner motion' : 'Pause banner motion');
-        motionButton.title = motionButton.getAttribute('aria-label');
-        motionButton.querySelector('.akdw-motion__pause').hidden = coverPaused;
-        motionButton.querySelector('.akdw-motion__play').hidden = !coverPaused;
-        scheduleCover();
-      });
-    }
     document.addEventListener('visibilitychange', scheduleCover);
     coverReduced.addEventListener('change', scheduleCover);
     scheduleCover();
 
-    /* ---- MOBILE SIZE TRACKS -------------------------------------------
-       Each .akdw-row is a real horizontal scroller. We drive scrollLeft from
-       rAF rather than animating a transform, because a transform marquee
-       cannot coexist with genuine touch scrolling — the user would be fighting
-       the animation. Children are cloned once so the wrap is seamless; clones
-       are aria-hidden and taken out of the tab order so the 20 real product
-       links are still the only 20 the page exposes.
-       A track pauses while it is being touched or actively scrolled, and only
-       that track — the other three keep moving. */
-    var tracks = [];
-
-    function setupTracks() {
-      if (!mqTouch.matches || tracks.length) return;
-      var rows = root.querySelectorAll('.akdw-row');
-      for (var i = 0; i < rows.length; i++) {
-        (function (row, idx) {
-          var originals = Array.prototype.slice.call(row.children);
-          if (!originals.length) return;
-          for (var k = 0; k < originals.length; k++) {
-            var c = originals[k].cloneNode(true);
-            c.setAttribute('aria-hidden', 'true');
-            c.setAttribute('tabindex', '-1');
-            row.appendChild(c);
-          }
-          /* pos is a FLOAT we own. Writing sub-pixel increments straight into
-             scrollLeft does not work: the browser rounds the value on read-back,
-             so a 0.4px/frame drift is rounded to 0 every frame and the track
-             never moves. Accumulate here, assign from here. */
-          /* speed is PX PER SECOND, not per frame. A per-frame constant is
-             frame-rate dependent: it runs at double speed on a 120Hz phone and
-             far faster still on an unthrottled headless browser.
-             SIGN ALTERNATES BY ROW: row 0 travels right-to-left, row 1
-             left-to-right, and so on down the wall. */
-          var dir = (idx % 2 === 0) ? 1 : -1;
-          var t = { el: row, held: false, idle: 0, pos: 0, last: 0, init: false,
-                    speed: (24 + idx * 4) * dir };
-          function hold() { t.held = true; t.idle = 0; }
-          function release() { t.idle = 0; }
-          row.addEventListener('pointerdown', hold);
-          row.addEventListener('touchstart', hold, { passive: true });
-          window.addEventListener('pointerup', release);
-          row.addEventListener('touchend', release, { passive: true });
-          tracks.push(t);
-        })(rows[i], i);
-      }
-    }
-
-    var lastT = 0;
-    function tick(now) {
-      /* seconds since the previous frame, clamped so a background tab that
-         wakes after 10s does not fling every track across its whole width */
-      var dt = lastT ? Math.min((now - lastT) / 1000, 0.05) : 0;
-      lastT = now;
-
-      for (var i = 0; i < tracks.length; i++) {
-        var t = tracks[i];
-
-        /* held while the finger is down, and for ~1.8s after release so a
-           flick can coast to a stop before we take the track back */
-        if (t.held) {
-          t.idle += dt;
-          if (t.idle > 1.8) { t.held = false; t.pos = t.el.scrollLeft; }
-          continue;
-        }
-
-        var half = t.el.scrollWidth / 2;
-        if (half <= 0) continue;
-
-        /* a left-to-right track starts at the midpoint so it has a full set of
-           clones to its left to travel into. Deferred to the first tick because
-           scrollWidth is not known until after the clones have laid out. */
-        if (!t.init) {
-          t.init = true;
-          if (t.speed < 0) { t.pos = half; t.el.scrollLeft = half; t.last = t.el.scrollLeft; }
-        }
-
-        /* if the value moved by more than our own last write, the user did it —
-           adopt their position instead of fighting them */
-        if (Math.abs(t.el.scrollLeft - t.last) > 2) { t.pos = t.el.scrollLeft; }
-
-        t.pos += t.speed * dt;
-        /* seamless both ways: the second half of each track is clones */
-        if (t.pos >= half) t.pos -= half;
-        else if (t.pos < 0) t.pos += half;
-        t.el.scrollLeft = t.pos;
-        t.last = t.el.scrollLeft;
-      }
-      raf = requestAnimationFrame(tick);
-    }
-
-    var raf = null;
-    function startTracks() {
-      if (raf || mqMotion.matches || !mqTouch.matches) return;
-      setupTracks();
-      if (tracks.length) raf = requestAnimationFrame(tick);
-    }
-    function stopTracks() { if (raf) { cancelAnimationFrame(raf); raf = null; lastT = 0; } }
 
     /* Hover does not exist on touch. On mobile the cells auto-dissolve on a
        staggered timer so every back print is seen without interaction.
@@ -745,18 +605,17 @@
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
-          if (e.isIntersecting) { start(); startTracks(); }
-          else { stop(); stopTracks(); }
+          if (e.isIntersecting) { start(); }
+          else { stop(); }
         });
       }, { threshold: 0 }).observe(root);
     } else {
       start();
-      startTracks();
     }
 
     if (mqTouch.addEventListener) {
-      mqTouch.addEventListener('change', function () { start(); startTracks(); });
-      mqMotion.addEventListener('change', function () { start(); stopTracks(); startTracks(); });
+      mqTouch.addEventListener('change', start);
+      mqMotion.addEventListener('change', start);
     }
   })();
 </script>
@@ -772,7 +631,7 @@
     {
       "type": "checkbox",
       "id": "cover_slideshow",
-      "label": "Cycle all three covers every 10 seconds",
+      "label": "Cycle all four images every 10 seconds",
       "default": true,
       "info": "Overrides the static image selection. Reduced motion disables autoplay."
     },

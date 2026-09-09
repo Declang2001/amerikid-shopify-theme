@@ -2,7 +2,8 @@
 
 > Updated 2026-09-09: the old one-image-only task below is superseded.
 > Read `docs/qa/2026-09-09-drop/README.md` and its `index.html` screenshot gallery.
-> Full-width 3:1 slideshow (three covers / 10 seconds), lower availability strip
+> Full-width 3:1 slideshow (three covers plus original postcard / 10 seconds),
+> no visible pause button, stationary two-column mobile product grid, lower availability strip
 > removal, uninterrupted-on-hover Korean headline, full-screen landing artwork,
 > enlarged PDP media and previous/next navigation are uploaded to unpublished
 > theme 188605497624. Owner QA and manual publication remain. Never publish via CLI.

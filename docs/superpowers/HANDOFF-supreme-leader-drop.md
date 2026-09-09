@@ -1,6 +1,8 @@
 # HANDOFF — Supreme Leader Drop Theme
 
-> 2026-09-09 final update: full-width three-cover slideshow at 10-second intervals,
+> 2026-09-09 latest clarification: mobile is now a stationary two-column grid,
+> with no horizontal drift or duplicated tiles. No visible banner pause button.
+> Full-width four-image slideshow (three covers plus original postcard) at 10-second intervals,
 > lower availability strip removed, headline no longer pauses on hover. Natural
 > 3:1 banner height takes priority over the previous first-row-above-fold target.
 > New artwork options, full-viewport landing,
