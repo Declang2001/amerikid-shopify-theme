@@ -123,6 +123,8 @@
       "type": "ak-drop-wall",
       "settings": {
         "collection_handle": "supreme-leader",
+        "cover_slideshow": false,
+        "cover_option": "ak-drop-cover-1.jpg",
         "banner_alt": "Supreme Leader",
         "handle_prefix": "sl",
         "size_order": "S,M,L,XL",

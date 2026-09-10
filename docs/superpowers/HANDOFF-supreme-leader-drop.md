@@ -1,5 +1,10 @@
 # HANDOFF — Supreme Leader Drop Theme
 
+> FINAL 2026-09-10: slideshow is OFF; only Cover 1 is displayed. Landing effects
+> and image zoom are OFF; bouncing KID logo retained. This supersedes all prior
+> slideshow instructions below. Read `docs/qa/2026-09-10-final/README.md` from the
+> repo root. Repo moved to `/Users/declangainey/Desktop/Everything/amerikid-shopify-theme-working`.
+
 > 2026-09-09 latest clarification: mobile is now a stationary two-column grid,
 > with no horizontal drift or duplicated tiles. No visible banner pause button.
 > Full-width four-image slideshow (three covers plus original postcard) at 10-second intervals,

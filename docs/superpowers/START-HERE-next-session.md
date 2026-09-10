@@ -1,5 +1,10 @@
 # Paste this into the next terminal session
 
+> FINAL 2026-09-10: open `/Users/declangainey/Desktop/Everything/amerikid-shopify-theme-working`.
+> Read `docs/qa/2026-09-10-final/README.md`. Only Cover 1 is now shown; slideshow
+> disabled. Landing light effects and artwork zoom disabled; bouncing logo kept.
+> This supersedes the older instructions below. Theme remains unpublished.
+
 > Updated 2026-09-09: the old one-image-only task below is superseded.
 > Read `docs/qa/2026-09-09-drop/README.md` and its `index.html` screenshot gallery.
 > Full-width 3:1 slideshow (three covers plus original postcard / 10 seconds),

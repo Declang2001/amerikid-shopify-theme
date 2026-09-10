@@ -97,7 +97,7 @@
 
   /* slow push on the artwork itself */
   .ak-drop-landing__media{
-    animation: akDropPush 44s ease-in-out infinite;
+    animation: {% if section.settings.propaganda_effect %}akDropPush 44s ease-in-out infinite{% else %}none{% endif %};
     will-change: transform;
   }
   @keyframes akDropPush{
