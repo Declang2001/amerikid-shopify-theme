@@ -65,7 +65,8 @@
     transition:transform 350ms ease-in,opacity 350ms ease-in;
   }
   .ak-drop-landing--exiting{
-    transform:scale(1.04);opacity:0;pointer-events:none;
+    /* Stay opaque and intercept clicks until navigation replaces the document. */
+    transform:scale(1.04);opacity:1;
   }
   @media (prefers-reduced-motion: reduce){
     .ak-drop-landing{ transition:none; }

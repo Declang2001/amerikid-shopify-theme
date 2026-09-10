@@ -1,5 +1,13 @@
 # HANDOFF — Supreme Leader Drop Theme
 
+> LIVE STATUS 2026-09-10: owner published 188605497624; verified via Shopify CLI.
+> Notebook 186464731416 is now unpublished. Treat the drop as production, not DEV
+> despite its unchanged Admin name. Only owner-authorized scoped live hotfixes.
+> Landing flash hotfix: exit remains opaque instead of revealing old artwork
+> underneath. Only sections/ak-drop-landing.liquid uploaded with --allow-live.
+> Verified at 390px and 1440px: exit opacity 1, pointer interception retained,
+> click navigates to /collections/supreme-leader. No other storefront edits.
+
 > FINAL 2026-09-10: slideshow is OFF; only Cover 1 is displayed. Landing effects
 > and image zoom are OFF; bouncing KID logo retained. This supersedes all prior
 > slideshow instructions below. Read `docs/qa/2026-09-10-final/README.md` from the

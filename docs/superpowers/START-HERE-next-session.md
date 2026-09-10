@@ -1,5 +1,9 @@
 # Paste this into the next terminal session
 
+> LIVE 2026-09-10: owner has published theme 188605497624. All "unpublished"
+> references below are historical. Landing exit flash fixed by keeping its
+> artwork opaque through navigation; mobile and desktop navigation verified.
+
 > FINAL 2026-09-10: open `/Users/declangainey/Desktop/Everything/amerikid-shopify-theme-working`.
 > Read `docs/qa/2026-09-10-final/README.md`. Only Cover 1 is now shown; slideshow
 > disabled. Landing light effects and artwork zoom disabled; bouncing logo kept.
