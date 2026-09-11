@@ -1,5 +1,10 @@
 # HANDOFF — Supreme Leader Drop Theme
 
+> LATEST 2026-09-11: `docs/qa/2026-09-11-hotfix/README.md` records the live
+> PageFly takeover fix and touch-front-only product grid. This supplements the
+> earlier exit-opacity fix below, which did not stop the delayed old landing.
+> Only drop landing and wall sections changed; theme 188605497624 remains LIVE.
+
 > LIVE STATUS 2026-09-10: owner published 188605497624; verified via Shopify CLI.
 > Notebook 186464731416 is now unpublished. Treat the drop as production, not DEV
 > despite its unchanged Admin name. Only owner-authorized scoped live hotfixes.

@@ -1,5 +1,10 @@
 # Paste this into the next terminal session
 
+> LATEST 2026-09-11: read `docs/qa/2026-09-11-hotfix/README.md` first.
+> Live theme 188605497624 has the delayed PageFly landing takeover suppressed
+> on the drop homepage only. Mobile shirt timers removed; front stays visible,
+> tap opens PDP, desktop hover retained. Two section files uploaded, no redesign.
+
 > LIVE 2026-09-10: owner has published theme 188605497624. All "unpublished"
 > references below are historical. Landing exit flash fixed by keeping its
 > artwork opaque through navigation; mobile and desktop navigation verified.

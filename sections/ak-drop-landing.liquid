@@ -56,6 +56,12 @@
 </a>
 
 {%- style -%}
+  /* This section exists only on the drop homepage. Hide late PageFly landing
+     injection without changing PageFly or its pages elsewhere in the store. */
+  body:has(.ak-drop-landing) #__pf,
+  body:has(.ak-drop-landing) .ak-landing{
+    display:none !important;pointer-events:none !important;
+  }
   html.ak-drop-page .ak-drop-landing,
   .ak-drop-landing{
     position:fixed;inset:0;width:100vw;
