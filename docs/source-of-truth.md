@@ -3,6 +3,9 @@
 ## Repo Purpose
 This repository holds the unpublished working copy of the live Amerikid Shopify theme. It serves as a staging ground for performance optimization and cleanup before pushing updates to the live store.
 
+## CURRENT LIVE STATE (2026-09-26, verified via `shopify theme list`)
+**Theme `188605497624` "AmeriKid Supreme Leader Drop - DEV" is the LIVE (published) theme** (since 2026-09-10; the Admin name still says DEV). The notebook theme `186464731416` is now UNPUBLISHED and is the rollback target; `184615043352` stays byte-unchanged. The 2026-06-18 block below is HISTORICAL. Latest change: DROP-WALL-REFRESH-1, `docs/qa/2026-09-26-drop-refresh/README.md`. Live pushes to `188605497624` require `--allow-live`, which `scripts/guard-shopify.sh` blocks for agents, so the owner runs them. The guard's `LIVE_ID` is stale and it misses short flags (`-a/-t/-l/-p`).
+
 ## Theme Publish State & Live-Readiness (current, 2026-06-18 — POST-PUBLISH — verified via `shopify theme list --store iacxyv-w5.myshopify.com`)
 **The notebook redesign is now LIVE.** The owner **manually published** the notebook theme from Shopify Admin (Online Store → Themes → Publish). This was a manual Admin action — **NOT a CLI publish; Claude ran no `shopify theme publish`.** Two themes matter:
 

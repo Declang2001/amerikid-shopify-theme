@@ -1,5 +1,11 @@
 # HANDOFF — Supreme Leader Drop Theme
 
+> LATEST 2026-09-26: `docs/qa/2026-09-26-drop-refresh/README.md` (DROP-WALL-REFRESH-1).
+> The wall banner is smaller (55% on desktop), PDP says ALL SHIRTS, sold-out tiles are full colour
+> under the new SOLD OUT burst (`assets/ak-drop-sold-out.png`), and there is a new in-stock showcase
+> after the M row. LIVE on 188605497624, pushed by the owner (guard blocks --allow-live
+> for agents). If a sold-out burst is missing, the PNG did not ship: push the asset first.
+
 > LATEST 2026-09-11: `docs/qa/2026-09-11-hotfix/README.md` records the live
 > PageFly takeover fix and touch-front-only product grid. This supplements the
 > earlier exit-opacity fix below, which did not stop the delayed old landing.

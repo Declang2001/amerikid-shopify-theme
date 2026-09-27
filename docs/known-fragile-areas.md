@@ -1,6 +1,13 @@
 # Known Fragile Areas
 
 ## "Do Not Break" Principles
+- **Drop wall refresh (DROP-WALL-REFRESH-1, 2026-09-26, LIVE `188605497624`), load-bearing facts in `sections/ak-drop-wall.liquid`:**
+  - (1) The sold-out look depends ENTIRELY on `assets/ak-drop-sold-out.png` (all other cues were removed), so always push that asset before, or with, the section.
+  - (2) The showcase pre-pass re-reads the SAME 20 handles via `all_products`. The cap counts UNIQUE handles, so it stays at 20; adding any other `all_products` lookup on this template breaks the wall.
+  - (3) `showcase_hidden` is deliberately a "hide" checkbox: `collection.json` has no value for it, and missing reads as false, so the showcase is on.
+  - (4) The burst's short-laptop override `@media (min-width:750px) and (max-height:740px)` MUST stay after the base `::before` rule. It anchors to the contained shirt via width-relative `margin-top`.
+  - (5) Showcase slide states: queued (hidden, no transition), `is-active`, `is-leaving`. Hover hold is based on real `pointermove`, not `pointerenter`, so scrolling under a parked cursor does not freeze it; focus hold is keyboard-only (`:focus-visible`).
+  - (6) The showcase focus ring uses a negative `outline-offset` because the track clips.
 - Do not remove canvas tags (`<canvas>`) or their associated Javascript. The ambient particles and starfield effects are core to the brand.
 - Do not normalize typography if it removes the "Impact" font. Hardcoded font declarations exist for a reason.
 - **NEVER run `shopify theme dev --theme 186464731416` (the live theme), or `shopify theme dev --theme <any live id>`.** `shopify theme dev` hot-syncs local file saves (and `git checkout`/branch switches) to the targeted theme — against the live theme it silently pushes unfinished edits to the live store and can revert live files to whatever the working tree momentarily holds. On 2026-06-18 a rogue instance partially leaked edits to live and reverted the live Archive template to the old cassette deck. For live use ONLY `shopify theme push --only … --allow-live --nodelete`; for previews use `shopify theme dev --store iacxyv-w5.myshopify.com` with NO `--theme` (isolated dev theme). If unsure what is live, verify with `shopify theme pull --path /tmp/x --only <file> --theme <id>`.

@@ -1,5 +1,11 @@
 # Paste this into the next terminal session
 
+> LATEST 2026-09-26: `docs/qa/2026-09-26-drop-refresh/README.md` (DROP-WALL-REFRESH-1).
+> The wall banner is smaller (55% on desktop), PDP says ALL SHIRTS, sold-out tiles are full colour
+> under the new SOLD OUT burst (`assets/ak-drop-sold-out.png`), and there is a new in-stock showcase
+> after the M row. LIVE on 188605497624, pushed by the owner (guard blocks --allow-live
+> for agents). If a sold-out burst is missing, the PNG did not ship: push the asset first.
+
 > LATEST 2026-09-11: read `docs/qa/2026-09-11-hotfix/README.md` first.
 > Live theme 188605497624 has the delayed PageFly landing takeover suppressed
 > on the drop homepage only. Mobile shirt timers removed; front stays visible,
