@@ -55,6 +55,57 @@
 {%- assign design_list = section.settings.design_order | split: ',' -%}
 {%- assign prefix = section.settings.handle_prefix | strip | downcase -%}
 
+{%- comment -%}
+  SHOWCASE (2026-09-26, DROP-WALL-REFRESH-1): a full-width break after the
+  `showcase_after` row holding a large front shot (image 1) of every shirt
+  still in stock, sliding left every `showcase_seconds`.
+  Pre-pass over the SAME handles the wall resolves below, so the all_products
+  cap (20 UNIQUE handles per page) is not exceeded. Slides are captured here
+  and emitted inside the grid loop. Sold-out shirts never appear; with none
+  left the block is not rendered at all.
+  The toggle is "hide", not "show", on purpose: collection.json predates these
+  settings, and a missing checkbox reads as false — so the showcase is on
+  without any template change.
+{%- endcomment -%}
+{%- assign show_after = section.settings.showcase_after | default: 'M' | strip | upcase -%}
+{%- assign show_count = 0 -%}
+{%- capture show_slides -%}
+  {%- unless section.settings.showcase_hidden -%}
+    {%- for size in size_list -%}
+      {%- assign size = size | strip -%}
+      {%- for design in design_list -%}
+        {%- assign design = design | strip -%}
+        {%- assign handle = prefix | append: '-' | append: size | append: '-' | append: design | downcase -%}
+        {%- assign sp = all_products[handle] -%}
+        {%- if sp.title == blank -%}
+          {%- assign want = prefix | upcase | append: '-' | append: size | upcase | append: '-' | append: design -%}
+          {%- for cp in collection.products -%}
+            {%- if cp.title == want -%}
+              {%- assign sp = cp -%}
+              {%- break -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+        {%- if sp.title != blank and sp.available and sp.images[0] != blank -%}
+          <a class="akdw-show__slide{% if show_count == 0 %} is-active{% endif %}" href="{{ sp.url }}" data-akdw-slide{% if show_count > 0 %} aria-hidden="true" tabindex="-1"{% endif %}>
+            <span class="akdw-show__shot">
+              {{ sp.images[0] | image_url: width: 2000
+                               | image_tag:
+                                   loading: 'lazy',
+                                   widths: '600,900,1200,1600,2000',
+                                   sizes: '(min-width: 750px) and (max-height: 1117px) 68vh, (min-width: 750px) 760px, (orientation: landscape) 68vh, 92vw',
+                                   alt: '',
+                                   class: 'akdw-show__img' }}
+            </span>
+            <span class="akdw-show__name">{{ sp.title }}</span>
+          </a>
+          {%- assign show_count = show_count | plus: 1 -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endfor -%}
+  {%- endunless -%}
+{%- endcapture -%}
+
 <div class="akdw" id="akdw-{{ section.id }}">
 
   {%- if section.settings.cover_slideshow -%}
@@ -80,7 +131,7 @@
              loading: 'eager',
              fetchpriority: 'high',
              widths: '600,900,1200,1600,2000,2400',
-             sizes: '100vw',
+             sizes: '(min-width: 750px) 55vw, 100vw',
              alt: section.settings.banner_alt,
              class: 'akdw-banner-img' }}
     </div>
@@ -176,12 +227,19 @@
                     </span>
                   </span>
                 </span>
-                <span class="akdw-name">{{ p.title }}</span>
+                <span class="akdw-name">{{ p.title }}{% unless p.available %}<span class="visually-hidden"> (sold out)</span>{% endunless %}</span>
               </a>
             {%- endif -%}
 
           {%- endfor -%}
         </div>
+        {%- assign size_up = size | upcase -%}
+        {%- if show_count > 0 and size_up == show_after -%}
+          <div class="akdw-show" data-akdw-show data-seconds="{{ section.settings.showcase_seconds | default: 4 }}"
+               role="region" aria-roledescription="carousel" aria-label="Shirts still available">
+            <div class="akdw-show__track">{{ show_slides }}</div>
+          </div>
+        {%- endif -%}
       {%- endfor -%}
     </div>
   </div>
@@ -231,6 +289,19 @@
   html.ak-drop-page #akdw-{{ section.id }} .akdw-banner-img{
     display:block;width:100%;height:auto;
     object-fit:contain;
+  }
+  /* BANNER SIZE (2026-09-26, DROP-WALL-REFRESH-1 — owner: "smaller so more of the
+     top row of shirts show"). The artwork's lettering touches its top and bottom
+     edges, so it is SCALED, never cropped: 55% of the full-bleed width (so 55% of
+     the old 3:1 height — ~264px instead of 480px at 1440 wide), centred on black.
+     Mobile (<750px, ~130px tall) is unchanged. The slideshow variant is excluded
+     from the img rule because its [data-cover-slide] images fill their own box. */
+  @media screen and (min-width:750px){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-banner{ background:var(--akdw-bg); }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-banner:not(.akdw-banner--slideshow) > .akdw-banner-img,
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-banner--slideshow{
+      width:55%;margin-inline:auto;
+    }
   }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-banner--slideshow { display:grid;aspect-ratio:3/1; }
   html.ak-drop-page #akdw-{{ section.id }} [data-cover-slide] {
@@ -504,21 +575,90 @@
   }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-item:hover .akdw-name{ color:var(--akdw-accent); }
 
-  /* sold out — greyscale and struck, no wording */
+  /* SOLD OUT (2026-09-26, DROP-WALL-REFRESH-1): the shirt stays in FULL colour
+     under the owner's SOLD OUT burst — assets/ak-drop-sold-out.png, 800x663,
+     trimmed and quantised from the owner's 2400px "SOLD OUT BANNER.png". It sits
+     over the top-left shoulder and spills past the tile edge, per the owner's
+     example.jpeg. Replaced the greyscale + 26% opacity + diagonal strike + struck
+     title. The left overhang is 9% of a tile, CAPPED at the page gutter
+     (--akdw-gut), so it never passes the viewport edge or causes horizontal
+     scroll (uncapped, 600-749px phones overflowed by ~6px). Screen readers get
+     "(sold out)" from a visually-hidden span in the markup. */
   html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold{ cursor:not-allowed; }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold:hover .akdw-shot{ transform:none; }
-  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold .akdw-flip{ filter:grayscale(1);opacity:.26; }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold:hover .akdw-face--front{ opacity:1; }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold:hover .akdw-face--back{ opacity:0; }
-  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold .akdw-name{
-    color:var(--akdw-dim);text-decoration:line-through;
-  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold .akdw-name{ color:var(--akdw-dim); }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold .akdw-shot::before{
-    content:"";position:absolute;inset:14%;z-index:3;pointer-events:none;
-    background:linear-gradient(to top left,
-      transparent calc(50% - 1.5px),var(--akdw-fg) calc(50% - 1.5px),
-      var(--akdw-fg) calc(50% + 1.5px),transparent calc(50% + 1.5px));
-    opacity:.5;
+    content:"";position:absolute;z-index:3;pointer-events:none;
+    top:-7%;left:-9%;left:max(-9%,calc(-1 * var(--akdw-gut)));width:62%;aspect-ratio:800/663;
+    background:url({{ 'ak-drop-sold-out.png' | asset_url }}) no-repeat center/contain;
+  }
+  /* Short laptops (>=750 wide, <=740 tall) turn .akdw-shot into a 30vh-tall box
+     that is wider (or narrower) than the square shirt image contained in it, so
+     percentages of the box would float the burst away from the shirt. Anchor it
+     to the contained square instead: side = min(100% of width, 30vh). margin-top
+     percentages resolve against WIDTH, which is what makes the vertical anchor
+     possible. MUST stay after the base ::before rule above. */
+  @media screen and (min-width:750px) and (max-height:740px){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold .akdw-shot::before{
+      width:min(62%,18.6vh);
+      left:calc(50% - min(50%,15vh) - min(9%,2.7vh));
+      top:15vh;
+      margin-top:calc(-1 * min(50%,15vh) - min(7%,2.1vh));
+    }
+  }
+
+  /* ---- SHOWCASE (2026-09-26, DROP-WALL-REFRESH-1) ----------------------------
+     Full-width break after the M row: one big front shot of each in-stock shirt,
+     sliding right-to-left every N seconds (owner: slide, 4s, name only).
+     A plain grid item spanning every column, so on mobile it lands exactly after
+     tile 10 (S+M = 10 tiles = five 2-up rows) and on desktop after row 2.
+     Slides stack in one grid cell. States: queued (off right, hidden, no
+     transition, so it snaps back unseen), .is-active (centre), .is-leaving
+     (slides out left, still visible). overflow:clip, not hidden, for the same
+     find-in-page reason as the band. */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-show{
+    grid-column:1/-1;
+    padding-block:clamp(10px,2.4vw,40px);
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-show__track{
+    display:grid;overflow:hidden;overflow:clip;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-show__slide{
+    grid-area:1/1;min-width:0;
+    display:flex;flex-direction:column;align-items:center;gap:clamp(8px,1.2vw,18px);
+    text-decoration:none;color:inherit;
+    transform:translate3d(100%,0,0);visibility:hidden;
+    transition:none;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-show__slide.is-active,
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-show__slide.is-leaving{
+    visibility:visible;
+    transition:transform .8s cubic-bezier(.65,0,.35,1);
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-show__slide.is-active{ transform:translate3d(0,0,0); }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-show__slide.is-leaving{ transform:translate3d(-100%,0,0); }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-show__shot{
+    display:block;width:min(100%,68vh,760px);aspect-ratio:1/1;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-show__img{
+    display:block;width:100%;height:100%;object-fit:contain;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-show__name{
+    font-size:clamp(15px,1.5vw,27px);line-height:1.3;font-weight:600;
+    letter-spacing:.05em;text-transform:uppercase;color:var(--akdw-fg);
+    text-align:center;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-show__slide:hover .akdw-show__name{ color:var(--akdw-accent); }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-show__slide:focus-visible{ outline:none; }
+  /* offset is NEGATIVE: the track clips, and a 6px outside ring would be cut off
+     at the edges (same reason as the band's -8px at :focus-visible above) */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-show__slide:focus-visible .akdw-show__shot{
+    outline:2px solid var(--akdw-accent);outline-offset:-2px;
+  }
+  @media (prefers-reduced-motion:reduce){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-show__slide{ transition:none !important; }
   }
 
   /* Mobile: two stationary columns, continuing across size-row wrappers. */
@@ -573,7 +713,90 @@
     coverReduced.addEventListener('change', scheduleCover);
     scheduleCover();
 
+    /* SHOWCASE (2026-09-26): advance every data-seconds while the block is on
+       screen and the tab is visible. Holds while a mouse is over it or a slide
+       has keyboard focus, so a slide never changes under a click. Reduced
+       motion: no autoplay, the first shirt stays. Images are lazy; the next
+       slide's image is switched to eager one step ahead so it never arrives
+       blank. */
+    var show = root.querySelector('[data-akdw-show]');
+    var slides = show ? show.querySelectorAll('[data-akdw-slide]') : [];
+    if (slides.length > 1) {
+      var showIndex = 0;
+      var showTimer;
+      var showSeen = !('IntersectionObserver' in window);
+      var showHover = false;
+      var showFocus = false;
+      var showMs = Math.max(3, parseInt(show.getAttribute('data-seconds'), 10) || 4) * 1000;
 
+      var warm = function (n) {
+        var img = slides[n % slides.length].querySelector('img');
+        if (img && img.loading === 'lazy') img.loading = 'eager';
+      };
+      var advance = function () {
+        if (!root.isConnected) { clearInterval(showTimer); return; }
+        var cur = slides[showIndex];
+        showIndex = (showIndex + 1) % slides.length;
+        var nxt = slides[showIndex];
+        cur.classList.remove('is-active');
+        cur.classList.add('is-leaving');
+        cur.setAttribute('aria-hidden', 'true');
+        cur.setAttribute('tabindex', '-1');
+        nxt.classList.remove('is-leaving');
+        nxt.classList.add('is-active');
+        nxt.removeAttribute('aria-hidden');
+        nxt.removeAttribute('tabindex');
+        setTimeout(function () { cur.classList.remove('is-leaving'); }, 900);
+        warm(showIndex + 1);
+      };
+      var scheduleShow = function () {
+        clearInterval(showTimer);
+        if (coverReduced.matches || document.hidden || !showSeen || showHover || showFocus) return;
+        showTimer = setInterval(advance, showMs);
+      };
+
+      if (!showSeen) {
+        new IntersectionObserver(function (entries) {
+          showSeen = entries[entries.length - 1].isIntersecting;
+          if (showSeen) warm(showIndex + 1);
+          scheduleShow();
+        }, { rootMargin: '200px 0px' }).observe(show);
+      } else {
+        warm(1);
+      }
+      /* Hold only when the mouse actually MOVES over the showcase. pointerenter
+         also fires when the page scrolls the block under a parked cursor, which
+         would freeze it for a reader who never touched the mouse. */
+      var px = null;
+      var py = null;
+      document.addEventListener('pointermove', function (e) {
+        var moved = px !== null && (e.clientX !== px || e.clientY !== py);
+        px = e.clientX;
+        py = e.clientY;
+        if (!moved || e.pointerType !== 'mouse') return;
+        var over = show.contains(e.target);
+        if (over !== showHover) { showHover = over; scheduleShow(); }
+      }, { passive: true });
+      show.addEventListener('pointerleave', function () { showHover = false; scheduleShow(); });
+      /* Keyboard focus only: a mouse click (or cmd/middle-click to a new tab)
+         also focuses the link, and must not freeze the showcase for good. */
+      show.addEventListener('focusin', function (e) {
+        var kb = true;
+        try { kb = e.target.matches(':focus-visible'); } catch (err) {}
+        showFocus = kb;
+        scheduleShow();
+      });
+      show.addEventListener('focusout', function (e) {
+        if (!show.contains(e.relatedTarget)) { showFocus = false; scheduleShow(); }
+      });
+      /* back/forward cache: the pointer may have left while the page was frozen */
+      window.addEventListener('pageshow', function (e) {
+        if (e.persisted) { showHover = false; showFocus = false; scheduleShow(); }
+      });
+      document.addEventListener('visibilitychange', scheduleShow);
+      coverReduced.addEventListener('change', scheduleShow);
+      scheduleShow();
+    }
   })();
 </script>
 
@@ -666,6 +889,34 @@
       "label": "Column order (designs)",
       "info": "Comma separated, one column per entry.",
       "default": "01,02,03,04,05"
+    },
+    {
+      "type": "header",
+      "content": "Shirt showcase"
+    },
+    {
+      "type": "checkbox",
+      "id": "showcase_hidden",
+      "label": "Hide the rotating shirt showcase",
+      "info": "The showcase shows a large front shot of every shirt still in stock. It hides itself when everything is sold out.",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "showcase_after",
+      "label": "Showcase appears after this row",
+      "info": "Must exactly match one of the sizes in Row order. Any other value hides the showcase. On phones, M or XL sit cleanly; S or L leave one empty cell before it.",
+      "default": "M"
+    },
+    {
+      "type": "range",
+      "id": "showcase_seconds",
+      "label": "Seconds per shirt",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 4
     }
   ],
   "presets": [

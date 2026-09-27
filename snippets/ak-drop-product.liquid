@@ -34,7 +34,7 @@
     {%- if previous_index < 0 -%}{%- assign previous_index = 19 -%}{%- endif -%}
     <nav class="akdp-navigation" aria-label="Browse drop products">
       <a href="{{ routes.root_url }}products/{{ drop_handles[previous_index] }}" aria-label="Previous shirt: {{ drop_handles[previous_index] | upcase }}" title="Previous shirt">{{ 'icon-arrow.svg' | inline_asset_content }}</a>
-      <a class="akdp-navigation__grid" href="{{ routes.root_url }}collections/supreme-leader">All shirts</a>
+      <a class="akdp-navigation__grid" href="{{ routes.root_url }}collections/supreme-leader">ALL SHIRTS</a>
       <a href="{{ routes.root_url }}products/{{ drop_handles[next_index] }}" aria-label="Next shirt: {{ drop_handles[next_index] | upcase }}" title="Next shirt">{{ 'icon-arrow.svg' | inline_asset_content }}</a>
     </nav>
     {%- break -%}

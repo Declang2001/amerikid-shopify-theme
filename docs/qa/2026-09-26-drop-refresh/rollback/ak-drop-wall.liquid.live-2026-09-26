@@ -1,0 +1,677 @@
+{%- comment -%}
+  ============================================================================
+  AK DROP WALL — "Supreme Leader" drop  (created 2026-08-29)
+
+  SELF-CONTAINED. All markup, CSS and JS live in this file, in the manner of
+  sections/ak-archive-magazine.liquid. It deliberately does NOT render
+  snippets/card-product.liquid and is NOT hosted by main-collection-product-grid.
+
+  That single decision neutralises six hazards documented in
+  docs/superpowers/specs/2026-08-29-propaganda-drop-theme-design.md §13.4:
+    - assets/base.css:2939-3004 .ak-badge-new (red starburst on any product
+      tagged `new`) is emitted by card-product.liquid:190-196 — never rendered here
+    - templates/collection.json:50-53 custom_css (4rem margins) — not this template
+    - columns_mobile capped at 2 by the grid schema — own markup, own columns
+    - .glowing-product-box width:100vw overflow — not rendered
+    - main-collection-product-grid.liquid:36-43 Impact 3rem !important on card
+      titles — different class names entirely
+    - component-card.css:383 gates the hover swap to >=990px — own flip
+
+  HOVER: front cross-dissolves to back over .4s (was a 3D flip until 2026-08-29).
+
+  ORDERING: products are titled SL-<SIZE>-<NN>. title-ascending sorts these
+  L, M, S, XL — the WRONG size order — and no Shopify sort_by value can produce
+  S, M, L, XL (§17.4). The order is therefore hard-coded below and resolved by
+  handle, never by collection sort order.
+
+  NOTE (verified 2026-08-29 by inspecting the live artwork): the 20 pieces are
+  each UNIQUE, one of one — SL-S-01, SL-M-01, SL-L-01 and SL-XL-01 are four
+  different garments, and SL-L-01 is a long sleeve. A column is therefore NOT
+  "one design in four sizes". What the grid guarantees is that each ROW is a
+  size: row 1 is the five S pieces, row 2 the five M, and so on. That is the
+  original brief — 4 size rows x 5 pieces.
+
+  PRODUCT RESOLUTION: all_products[handle] first, because UNLISTED products are
+  returned in Liquid "only when referenced individually by handle" (§17.5) — that
+  is what lets the wall be QA'd with real products that stay out of collections
+  and search. all_products allows exactly 20 unique handles per page and this
+  wall uses exactly 20, so NO other section on this template may use all_products.
+  Falls back to a title match within collection.products when a handle misses.
+
+  NEVER wrap this section in {% paginate %} — a paginated section renders
+  different items, or none, on ?page=2 (§17.4).
+
+  Revert: remove 'ak-drop-wall' from the template's order array.
+  ============================================================================
+{%- endcomment -%}
+
+{%- assign drop_handle = section.settings.collection_handle | strip | downcase -%}
+{%- if collection.handle == drop_handle -%}
+
+<script>document.documentElement.classList.add('ak-drop-page');</script>
+{% render 'ak-drop-chrome', drop_url: '/collections/supreme-leader' %}
+
+{%- assign size_list = section.settings.size_order | split: ',' -%}
+{%- assign design_list = section.settings.design_order | split: ',' -%}
+{%- assign prefix = section.settings.handle_prefix | strip | downcase -%}
+
+<div class="akdw" id="akdw-{{ section.id }}">
+
+  {%- if section.settings.cover_slideshow -%}
+    <div class="akdw-banner akdw-banner--slideshow" aria-label="Supreme Leader artwork">
+      {%- for cover in (1..3) -%}
+        {%- assign cover_asset = 'ak-drop-cover-' | append: cover | append: '.jpg' -%}
+        <img class="akdw-banner-img{% if forloop.first %} is-active{% endif %}"
+             data-cover-slide="{{ cover }}" src="{{ cover_asset | asset_url }}"
+             alt="Supreme Leader cover {{ cover }}" width="1500" height="500"
+             aria-hidden="{% if forloop.first %}false{% else %}true{% endif %}"
+             loading="eager">
+      {%- endfor -%}
+      <img class="akdw-banner-img" data-cover-slide="4"
+           src="https://cdn.shopify.com/s/files/1/0930/3267/7656/files/Superme-Leader-PostcardFINAL-V2.png?v=1788061530"
+           alt="Original Supreme Leader postcard" width="1500" height="900"
+           aria-hidden="true" loading="eager">
+    </div>
+  {%- elsif section.settings.banner_image != blank -%}
+    <div class="akdw-banner">
+      {{ section.settings.banner_image
+         | image_url: width: 2400
+         | image_tag:
+             loading: 'eager',
+             fetchpriority: 'high',
+             widths: '600,900,1200,1600,2000,2400',
+             sizes: '100vw',
+             alt: section.settings.banner_alt,
+             class: 'akdw-banner-img' }}
+    </div>
+  {%- else -%}
+    {%- comment -%} URL fallback so a placeholder can be set without uploading to Files {%- endcomment -%}
+    <div class="akdw-banner">
+      <img class="akdw-banner-img"
+           src="{% if section.settings.cover_option == 'custom' %}{{ section.settings.banner_url }}{% else %}{{ section.settings.cover_option | default: 'ak-drop-cover-1.jpg' | asset_url }}{% endif %}"
+           alt="{{ section.settings.banner_alt | escape }}"
+           width="1500" height="500"
+           loading="eager" fetchpriority="high">
+    </div>
+  {%- endif -%}
+
+  {%- if section.settings.band_ko != blank -%}
+    <a class="akdw-band" href="{{ section.settings.band_url | default: '/' }}">
+      {%- if section.settings.band_ko != blank -%}
+        <span class="akdw-band__ko" lang="ko">
+          <span class="akdw-band__kotrack">
+            <span class="akdw-band__kocopy">{{ section.settings.band_ko }}</span>
+            <span class="akdw-band__kocopy" aria-hidden="true">{{ section.settings.band_ko }}</span>
+            <span class="akdw-band__kocopy" aria-hidden="true">{{ section.settings.band_ko }}</span>
+            <span class="akdw-band__kocopy" aria-hidden="true">{{ section.settings.band_ko }}</span>
+          </span>
+        </span>
+      {%- endif -%}
+    </a>
+  {%- endif -%}
+
+  <div class="akdw-wall">
+    <div class="akdw-grid">
+      {%- for size in size_list -%}
+        {%- assign size = size | strip -%}
+        <div class="akdw-row" data-akdw-row="{{ size | downcase }}">
+          {%- for design in design_list -%}
+            {%- assign design = design | strip -%}
+
+            {%- comment -%} handle: sl-s-01 {%- endcomment -%}
+            {%- assign handle = prefix | append: '-' | append: size | append: '-' | append: design | downcase -%}
+            {%- assign p = all_products[handle] -%}
+
+            {%- comment -%} fallback: exact title match inside the collection {%- endcomment -%}
+            {%- if p.title == blank -%}
+              {%- assign want = prefix | upcase | append: '-' | append: size | upcase | append: '-' | append: design -%}
+              {%- for cp in collection.products -%}
+                {%- if cp.title == want -%}
+                  {%- assign p = cp -%}
+                  {%- break -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
+
+            {%- if p.title == blank -%}
+              {%- comment -%} keep the cell so the 5x4 grid never collapses {%- endcomment -%}
+              <span class="akdw-item akdw-item--empty" aria-hidden="true">
+                <span class="akdw-shot"></span>
+                <span class="akdw-name"></span>
+              </span>
+            {%- else -%}
+              {%- assign front = p.images[0] -%}
+              {%- assign back = p.images[1] -%}
+              <a
+                class="akdw-item{% unless p.available %} akdw-item--sold{% endunless %}"
+                href="{{ p.url }}"
+                {% unless p.available %}aria-disabled="true"{% endunless %}
+              >
+                <span class="akdw-shot">
+                  <span class="akdw-flip">
+                    <span class="akdw-face akdw-face--front">
+                      {%- if front != blank -%}
+                        {{ front | image_url: width: 900
+                                 | image_tag:
+                                     loading: 'lazy',
+                                     widths: '200,300,400,600,900',
+                                     sizes: '(min-width: 750px) 18vw, 40vw',
+                                     alt: p.title,
+                                     class: 'akdw-img' }}
+                      {%- endif -%}
+                    </span>
+                    <span class="akdw-face akdw-face--back">
+                      {%- if back != blank -%}
+                        {{ back | image_url: width: 900
+                                | image_tag:
+                                    loading: 'lazy',
+                                    widths: '200,300,400,600,900',
+                                    sizes: '(min-width: 750px) 18vw, 40vw',
+                                    alt: '',
+                                    class: 'akdw-img' }}
+                      {%- elsif front != blank -%}
+                        {{ front | image_url: width: 900
+                                 | image_tag: loading: 'lazy', alt: '', class: 'akdw-img' }}
+                      {%- endif -%}
+                    </span>
+                  </span>
+                </span>
+                <span class="akdw-name">{{ p.title }}</span>
+              </a>
+            {%- endif -%}
+
+          {%- endfor -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{%- style -%}
+  /* ==========================================================================
+     Page-scoped under html.ak-drop-page and the section id, following the
+     CORRECT precedent at sections/main-product.liquid:311-436. Deliberately NOT
+     the globally-scoped !important pattern at
+     main-collection-product-grid.liquid:27-89, which
+     docs/known-fragile-areas.md:40 and :213 forbid.
+     ========================================================================== */
+
+  html.ak-drop-page #akdw-{{ section.id }}{
+    --akdw-bg:#000;
+    --akdw-fg:#fff;
+    --akdw-dim:rgba(255,255,255,.52);
+    --akdw-accent:#ff33ff;            /* brand literal, 109 uses in the notebook system */
+    --akdw-gut:clamp(18px,3.2vw,54px);
+    background:var(--akdw-bg);
+    color:var(--akdw-fg);
+  }
+
+  /* layout/theme.liquid:270-282 forces html,body{background:#000!important}.
+     On a black drop that rule works FOR us — we only need the content wells
+     transparent so nothing paints a lighter plate behind the wall. */
+  /* the wall REPLACES the stock Dawn grid on this collection */
+  html.ak-drop-page .glowing-product-box,
+  html.ak-drop-page #product-grid,
+  html.ak-drop-page .collection__title,
+  html.ak-drop-page .facets-container{
+    display:none !important;
+  }
+
+  html.ak-drop-page #MainContent{ background:transparent !important; }
+  html.ak-drop-page #MainContent .gradient{
+    background:transparent !important;
+    background-image:none !important;
+  }
+
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-banner{
+    position:relative;width:100%;line-height:0;
+    background:#0a0a0a;
+    border-bottom:0;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-banner-img{
+    display:block;width:100%;height:auto;
+    object-fit:contain;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-banner--slideshow { display:grid;aspect-ratio:3/1; }
+  html.ak-drop-page #akdw-{{ section.id }} [data-cover-slide] {
+    grid-area:1/1;width:100%;height:100%;min-height:0;object-fit:cover;
+    opacity:0;transition:opacity 1s ease;pointer-events:none;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} [data-cover-slide].is-active { opacity:1; }
+  @media (prefers-reduced-motion:reduce) {
+    html.ak-drop-page #akdw-{{ section.id }} [data-cover-slide] { transition:none; }
+  }
+
+  /* ==========================================================================
+     RED BAND — "ONE BEAT" (revised for ship)
+     Replaces the old flex-row band at lines 219-244.
+
+     MARKUP AT LINES 83-92 IS UNCHANGED. Same <a>, same href, same two spans,
+     same lang="ko". No Liquid edit, no schema edit, no duplicated copies, no
+     aria-hidden scaffolding. The whole band remains exactly one click target.
+
+     WHAT MOVES: one thing. The Korean headline travels LEFT TO RIGHT on a
+     26s linear loop — four copies in a max-content track, translating -25% to 0
+     so the wrap is seamless whatever the merchant types.
+     As of 2026-09-09, hover/focus does not pause motion and no visible motion
+     controls are rendered, per owner request. Reduced motion is respected.
+     The lower availability strip is no longer rendered.
+     The headline is clipped with overflow:clip, NOT hidden: hidden would make it
+     a scroll container that find-in-page could offset permanently.
+
+     DELIBERATELY REMOVED at the owner's request (2026-08-30): the diagonal
+     mis-registration field behind the type, the chevron rail along the bottom
+     edge, and the stars flanking the second line.
+
+     WHAT DOES NOT MOVE: the English. A looping text crawl is a Level A
+     accessibility failure without a pause control, is corrupted permanently by
+     Ctrl+F (an overflow:hidden box holding six copies gets scrolled to a match
+     and never resets), forces a saccade per step, and is the one device on this
+     band that reads as a template rather than as a design. The announcement is
+     struck once, centred, between two stars.
+
+     COLOUR: #e31300 is sampled from the postcard's own bottom banner and is
+     HELD IN EVERY STATE. White on it measures 4.817:1 (AA). Lightening it to
+     #ff1a05 on hover drops that to 3.89:1 — below AA — so hover strikes the
+     English plate to solid black (21:1) instead of raising the red.
+     ========================================================================== */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band{
+    --akdw-red:#e31300;
+    --akdw-ink:#000;
+    --akdw-ko-pt:clamp(10px,1.4vh,24px);
+    --akdw-ko-pb:clamp(7px,1vh,16px);
+    --akdw-en-py:clamp(6px,1vh,13px);
+
+    position:relative;isolation:isolate;
+    /* clip, not hidden: overflow:clip creates NO scroll container, so nothing
+       (find-in-page, focus, scrollIntoView) can ever offset the band's contents,
+       and it can never contribute to document scrollWidth. Older engines take
+       the hidden declaration. */
+    overflow:hidden;overflow:clip;
+    display:block;width:100%;padding:0;
+    background:var(--akdw-red);
+    color:#fff;text-decoration:none;
+    border-top:0;
+    border-bottom:3px solid var(--akdw-ink);
+  }
+
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band:focus-visible{
+    outline:4px solid #fff;outline-offset:-8px;
+  }
+
+  /* ---- DECK 1: THE MONUMENT -------------------------------------------------
+     Korean falls to the system stack by design — neither Bevan nor Fjalla One
+     carries Hangul and no Korean webfont is loaded or assumed. The stack ends in
+     a generic so Android, where none of these family names resolve, gets Noto
+     Sans CJK KR through per-script fallback.
+     line-height is 1.12, NOT below 1.0: these faces carry ~1.16em ascent and
+     ~0.29em descent, and Hangul ink spans ~1.10em, so tighter leading makes
+     line 1's jongseong collide with line 2 the moment the headline wraps —
+     guaranteed at 320px and on any viewport if the merchant edits band_ko.
+     The upper bound is height-aware, which is what keeps the band off the fold
+     on laptops without giving up size on a desktop. */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band__ko{
+    position:relative;z-index:1;display:block;
+    padding:var(--akdw-ko-pt) 0 var(--akdw-ko-pb);
+    /* clip, not hidden — overflow:hidden would make this a scroll container,
+       and find-in-page could then offset the marquee permanently */
+    overflow:hidden;overflow:clip;
+    text-align:center;
+    font-family:"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic","\B9D1\C740 \ACE0\B515",
+                "Nanum Gothic",system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-size:clamp(34px,min(8.2vw,12vh),132px);
+    font-weight:800;line-height:1.12;letter-spacing:0;
+    word-break:keep-all;overflow-wrap:break-word;
+    text-shadow:.03em .03em 0 var(--akdw-ink);
+  }
+
+  /* LEFT-TO-RIGHT MARQUEE. Four copies in a max-content track; translating from
+     -25% to 0 advances the track rightward by exactly one copy, so the loop is
+     seamless whatever the merchant types into band_ko. Only the three clones are
+     aria-hidden, so the accessible name is still the phrase once. */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band__kotrack{
+    display:flex;width:max-content;
+    animation:akdw-ko-marquee 26s linear infinite;
+    will-change:transform;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band__kocopy{
+    display:block;padding-right:.5em;white-space:nowrap;
+  }
+  @keyframes akdw-ko-marquee{
+    from{ transform:translate3d(-25%,0,0); }
+    to  { transform:translate3d(0,0,0); }
+  }
+  /* if the merchant leaves the English blank, keep the rail off the descenders */
+
+
+  /* ---- DECK 2: THE ANNOUNCEMENT --------------------------------------------
+     Full bleed, struck once, cut hard at the plate edge. A flex row of
+     star / text / star; the text is an anonymous flex item, so it wraps
+     internally to two centred lines at 320px instead of being clipped —
+     which is exactly what white-space:nowrap would have done there.
+     The .18 plate takes this line to 6.64:1, so it clears AA at the 14px
+     mobile size as well as at 32px. */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band__en{
+    position:relative;z-index:1;
+    display:flex;align-items:center;justify-content:center;gap:1.15em;
+    padding:var(--akdw-en-py) var(--akdw-gut)
+            var(--akdw-en-py);
+    background:rgba(0,0,0,.18);
+    font-family:var(--font-body-family);
+    font-size:clamp(15px,min(2.15vw,3.2vh),32px);
+    font-weight:700;line-height:1.15;
+    letter-spacing:.18em;
+    /* .18em of trailing space after the last letter drags centred text left by
+       half a tracking unit; indent it back. */
+    text-indent:.18em;
+    text-transform:uppercase;text-align:center;
+  }
+  /* draw the dividing rule only when there is a headline above it */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-band__ko + .akdw-band__en{
+    border-top:3px solid var(--akdw-ink);
+  }
+  /* ---- MOBILE ---------------------------------------------------------------
+     The rail stops entirely below 749px. Lines 351-371 already run five infinite
+     the four size tracks already scroll on their own and the script fires a
+     700ms auto-dissolve; the band must not become another moving thing on a
+     screen where it and the merchandise are stacked in the same frame. It still reads
+     as printed — the mis-registration field and the rail are both drawn, held. */
+  @media screen and (max-width:749px){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-band__ko{
+      font-size:clamp(28px,min(11vw,7vh),68px);
+      line-height:1.14;
+    }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-band__en{
+      font-size:clamp(14px,3.6vw,20px);letter-spacing:.15em;text-indent:.15em;
+      gap:.9em;
+    }
+  }
+  @media screen and (max-width:479px){
+  }
+
+
+  /* ---- FOLD BUDGET ----------------------------------------------------------
+     THIS BLOCK MUST SIT AFTER the existing max-height:780px rule at lines
+     343-346; it supersedes it and that block can be deleted outright.
+     It covers the whole laptop band, not only sub-780px machines — 1440x800 is
+     the most common laptop viewport and it falls in the gap the 780px query
+     leaves open.
+     Measured at 1440x800: banner 192 + band 176 + wall pad 31.7 + tile 250 +
+     gap 11 + title 56.2 = 717px against an 800px fold. 83px of headroom, with
+     an 84px Korean headline — 3.1x the current 27.4px. At 1440x900: 757px.
+     At 1440x1000 (no query): 921px. At 1920x1080: 1029px. Row 1's images AND
+     titles are above the fold at every one of them. */
+  @media screen and (max-height:900px){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-wall{
+      padding-top:clamp(16px,2.2vw,32px);
+    }
+  }
+  @media screen and (max-height:740px){
+  }
+
+  /* ---- REDUCED MOTION -------------------------------------------------------
+     AMENDS the existing block at lines 374-378, same kill-switch shape as
+     ak-archive-magazine.liquid:284-287. Nothing is hidden and nothing is left
+     mid-cycle: the headline sits at its final stamped size with the letterpress
+     offset intact, the mis-registration field stays (it never moved), and the
+     chevron rail freezes at phase 0 as a printed rule. What is left is the
+     poster the moving version was animating. */
+  @media (prefers-reduced-motion:reduce){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-band__kotrack,
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-band__ko{
+      animation:none !important;
+      will-change:auto;
+    }
+  }
+
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-wall{
+    padding:clamp(30px,4.5vw,66px) var(--akdw-gut) clamp(48px,7vw,110px);
+  }
+
+  /* DOM is row-major (outer loop = size), so the grid needs no auto-flow
+     override — default row flow places each .akdw-row's five items across one
+     row. Each ROW IS A SIZE, on desktop and on mobile alike. */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-grid{
+    max-width:1600px;margin-inline:auto;
+    display:grid;
+    grid-template-columns:repeat({{ design_list.size }},minmax(0,1fr));
+    gap:clamp(14px,2.1vw,34px) clamp(12px,1.7vw,28px);
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-row{ display:contents; }
+
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item{
+    display:flex;flex-direction:column;gap:11px;
+    text-decoration:none;color:inherit;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--empty{ visibility:hidden; }
+
+  /* no frame, no fill — the shirt sits directly on the ground */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-shot{
+    position:relative;display:block;aspect-ratio:1/1;overflow:visible;
+    transition:transform .22s cubic-bezier(.36,.05,.2,1);
+  }
+  @media (min-width:750px) and (max-height:740px) {
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-shot { height:30vh;aspect-ratio:auto; }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-wall { padding-top:16px; }
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item:hover .akdw-shot{ transform:translateY(-4px); }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item:focus-visible{ outline:none; }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item:focus-visible .akdw-shot{
+    outline:2px solid var(--akdw-accent);outline-offset:6px;
+  }
+
+  /* CROSS-DISSOLVE front -> back on hover (replaced the 3D flip 2026-08-29 at
+     the owner's request). Matches the theme's own idiom: assets/base.css:1129-1133
+     already cross-fades .media > img over .4s, and :1160-1162 hides the second
+     image with img + img{opacity:0}. No preserve-3d, no perspective, no
+     backface-visibility — the dissolve needs none of them.
+     .akdw-flip MUST still be display:block: it is a <span>, and an inline box
+     ignores width/height:100%, collapsing every absolutely-positioned face to
+     0x0. That bug shipped once in the prototype. */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-flip{
+    display:block;position:relative;width:100%;height:100%;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-face{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;padding:4%;
+    transition:opacity .4s ease;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-face--front{ opacity:1; }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-face--back{ opacity:0; }
+
+  @media (hover:hover) and (pointer:fine){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-item:hover .akdw-face--front,
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-item:focus-visible .akdw-face--front{
+      opacity:0;
+    }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-item:hover .akdw-face--back,
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-item:focus-visible .akdw-face--back{
+      opacity:1;
+    }
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-img{
+    display:block;width:100%;height:100%;object-fit:contain;
+  }
+
+  /* Two-line clamp keeps all 20 cells aligned regardless of title length.
+     cf. commit 123add7 "products: lock coaster grid title wrap". */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-name{
+    font-size:clamp(15px,1.5vw,27px);line-height:1.3;font-weight:600;
+    letter-spacing:.05em;text-transform:uppercase;color:var(--akdw-fg);
+    text-align:center;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+    overflow:hidden;min-height:2.6em;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item:hover .akdw-name{ color:var(--akdw-accent); }
+
+  /* sold out — greyscale and struck, no wording */
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold{ cursor:not-allowed; }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold:hover .akdw-shot{ transform:none; }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold .akdw-flip{ filter:grayscale(1);opacity:.26; }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold:hover .akdw-face--front{ opacity:1; }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold:hover .akdw-face--back{ opacity:0; }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold .akdw-name{
+    color:var(--akdw-dim);text-decoration:line-through;
+  }
+  html.ak-drop-page #akdw-{{ section.id }} .akdw-item--sold .akdw-shot::before{
+    content:"";position:absolute;inset:14%;z-index:3;pointer-events:none;
+    background:linear-gradient(to top left,
+      transparent calc(50% - 1.5px),var(--akdw-fg) calc(50% - 1.5px),
+      var(--akdw-fg) calc(50% + 1.5px),transparent calc(50% + 1.5px));
+    opacity:.5;
+  }
+
+  /* Mobile: two stationary columns, continuing across size-row wrappers. */
+  @media screen and (max-width:749px){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-grid{
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:clamp(16px,4vw,26px);
+      max-width:none;
+    }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-row{
+      display:contents;
+    }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-item{
+      width:100%;min-width:0;
+      gap:8px;
+    }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-name{
+      font-size:13px;letter-spacing:0;
+    }
+  }
+
+  /* reduced motion — same kill-switch shape as ak-archive-magazine.liquid:284-287 */
+  @media (prefers-reduced-motion:reduce){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-face,
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-shot{ transition:none !important; }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-row{ scroll-behavior:auto !important; }
+  }
+{%- endstyle -%}
+
+<script>
+  (function () {
+    var root = document.getElementById('akdw-{{ section.id }}');
+    if (!root) return;
+
+    var covers = root.querySelectorAll('[data-cover-slide]');
+    var coverIndex = 0;
+    var coverTimer;
+    var coverReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    function scheduleCover() {
+      clearInterval(coverTimer);
+      if (coverReduced.matches || document.hidden || covers.length < 2) return;
+      coverTimer = setInterval(function () {
+        if (!root.isConnected) { clearInterval(coverTimer); return; }
+        covers[coverIndex].classList.remove('is-active');
+        covers[coverIndex].setAttribute('aria-hidden', 'true');
+        coverIndex = (coverIndex + 1) % covers.length;
+        covers[coverIndex].classList.add('is-active');
+        covers[coverIndex].setAttribute('aria-hidden', 'false');
+      }, 10000);
+    }
+    document.addEventListener('visibilitychange', scheduleCover);
+    coverReduced.addEventListener('change', scheduleCover);
+    scheduleCover();
+
+
+  })();
+</script>
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "AK Drop Wall",
+  "tag": "section",
+  "class": "ak-drop-wall-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "cover_slideshow",
+      "label": "Cycle all four images every 10 seconds",
+      "default": true,
+      "info": "Overrides the static image selection. Reduced motion disables autoplay."
+    },
+    {
+      "type": "select",
+      "id": "cover_option",
+      "label": "Cover artwork option",
+      "default": "ak-drop-cover-1.jpg",
+      "options": [
+        { "value": "ak-drop-cover-1.jpg", "label": "Cover 1" },
+        { "value": "ak-drop-cover-2.jpg", "label": "Cover 2" },
+        { "value": "ak-drop-cover-3.jpg", "label": "Cover 3" },
+        { "value": "custom", "label": "Custom URL" }
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "banner_image",
+      "label": "Banner image"
+    },
+    {
+      "type": "text",
+      "id": "banner_url",
+      "label": "Banner image URL",
+      "info": "Used with Custom URL selected. The image picker overrides all cover options."
+    },
+    {
+      "type": "text",
+      "id": "banner_alt",
+      "label": "Banner alt text",
+      "default": "Supreme Leader"
+    },
+    {
+      "type": "text",
+      "id": "collection_handle",
+      "label": "Only render on this collection",
+      "info": "The section outputs nothing on any other collection, so it is safe in the default collection template.",
+      "default": "supreme-leader"
+    },
+    {
+      "type": "text",
+      "id": "band_ko",
+      "label": "Red band \u2014 Korean line",
+      "default": "\ucd5c\uace0 \uc9c0\ub3c4\uc790 \ud2f0\uc154\uce20"
+    },
+    {
+      "type": "text",
+      "id": "band_en",
+      "label": "Red band \u2014 second line",
+      "default": "AMERIKID \uc9c0\uae08 \uad6c\ub9e4 \uac00\ub2a5"
+    },
+    {
+      "type": "text",
+      "id": "band_url",
+      "label": "Red band destination",
+      "default": "/"
+    },
+    {
+      "type": "text",
+      "id": "handle_prefix",
+      "label": "Product handle prefix",
+      "info": "Products resolve as <prefix>-<size>-<design>, e.g. sl-s-01",
+      "default": "sl"
+    },
+    {
+      "type": "text",
+      "id": "size_order",
+      "label": "Row order (sizes)",
+      "info": "Comma separated. Hard-coded because no Shopify sort produces S,M,L,XL.",
+      "default": "S,M,L,XL"
+    },
+    {
+      "type": "text",
+      "id": "design_order",
+      "label": "Column order (designs)",
+      "info": "Comma separated, one column per entry.",
+      "default": "01,02,03,04,05"
+    }
+  ],
+  "presets": [
+    {
+      "name": "AK Drop Wall"
+    }
+  ]
+}
+{% endschema %}
