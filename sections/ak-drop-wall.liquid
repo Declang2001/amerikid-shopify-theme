@@ -131,7 +131,7 @@
              loading: 'eager',
              fetchpriority: 'high',
              widths: '600,900,1200,1600,2000,2400',
-             sizes: '(min-width: 750px) 55vw, 100vw',
+             sizes: '100vw',
              alt: section.settings.banner_alt,
              class: 'akdw-banner-img' }}
     </div>
@@ -290,17 +290,17 @@
     display:block;width:100%;height:auto;
     object-fit:contain;
   }
-  /* BANNER SIZE (2026-09-26, DROP-WALL-REFRESH-1 — owner: "smaller so more of the
-     top row of shirts show"). The artwork's lettering touches its top and bottom
-     edges, so it is SCALED, never cropped: 55% of the full-bleed width (so 55% of
-     the old 3:1 height — ~264px instead of 480px at 1440 wide), centred on black.
-     Mobile (<750px, ~130px tall) is unchanged. The slideshow variant is excluded
-     from the img rule because its [data-cover-slide] images fill their own box. */
+  /* BANNER SIZE (2026-09-26, DROP-WALL-REFRESH-1/-2 — owner: "smaller so more of
+     the top row of shirts show", then "stretch full left and right").
+     The artwork's lettering touches its top and bottom edges, so it can't be
+     cropped; the owner chose a full-width SQUASH instead (option B of the
+     mock-up sheet): full bleed at 25vw tall, i.e. 360px at 1440 instead of the
+     natural 3:1 480px — a 25% vertical squash that stays the same at every
+     desktop width. Mobile (<750px, natural 3:1, ~130px) is unchanged.
+     Static image only — the (disabled) slideshow keeps its own 3:1 box. */
   @media screen and (min-width:750px){
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-banner{ background:var(--akdw-bg); }
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-banner:not(.akdw-banner--slideshow) > .akdw-banner-img,
-    html.ak-drop-page #akdw-{{ section.id }} .akdw-banner--slideshow{
-      width:55%;margin-inline:auto;
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-banner:not(.akdw-banner--slideshow) > .akdw-banner-img{
+      width:100%;height:25vw;object-fit:fill;
     }
   }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-banner--slideshow { display:grid;aspect-ratio:3/1; }
@@ -714,8 +714,11 @@
     scheduleCover();
 
     /* SHOWCASE (2026-09-26): advance every data-seconds while the block is on
-       screen and the tab is visible. Holds while a mouse is over it or a slide
-       has keyboard focus, so a slide never changes under a click. Reduced
+       screen and the tab is visible. Holds only while a slide has KEYBOARD
+       focus. It deliberately does NOT pause for the mouse: the block covers
+       ~80% of a laptop screen, so a hover pause kept it frozen whenever anyone
+       looked at it (owner report, DROP-WALL-REFRESH-2). A click always opens
+       the shirt on screen — queued slides are visibility:hidden. Reduced
        motion: no autoplay, the first shirt stays. Images are lazy; the next
        slide's image is switched to eager one step ahead so it never arrives
        blank. */
@@ -725,7 +728,6 @@
       var showIndex = 0;
       var showTimer;
       var showSeen = !('IntersectionObserver' in window);
-      var showHover = false;
       var showFocus = false;
       var showMs = Math.max(3, parseInt(show.getAttribute('data-seconds'), 10) || 4) * 1000;
 
@@ -751,7 +753,7 @@
       };
       var scheduleShow = function () {
         clearInterval(showTimer);
-        if (coverReduced.matches || document.hidden || !showSeen || showHover || showFocus) return;
+        if (coverReduced.matches || document.hidden || !showSeen || showFocus) return;
         showTimer = setInterval(advance, showMs);
       };
 
@@ -764,20 +766,6 @@
       } else {
         warm(1);
       }
-      /* Hold only when the mouse actually MOVES over the showcase. pointerenter
-         also fires when the page scrolls the block under a parked cursor, which
-         would freeze it for a reader who never touched the mouse. */
-      var px = null;
-      var py = null;
-      document.addEventListener('pointermove', function (e) {
-        var moved = px !== null && (e.clientX !== px || e.clientY !== py);
-        px = e.clientX;
-        py = e.clientY;
-        if (!moved || e.pointerType !== 'mouse') return;
-        var over = show.contains(e.target);
-        if (over !== showHover) { showHover = over; scheduleShow(); }
-      }, { passive: true });
-      show.addEventListener('pointerleave', function () { showHover = false; scheduleShow(); });
       /* Keyboard focus only: a mouse click (or cmd/middle-click to a new tab)
          also focuses the link, and must not freeze the showcase for good. */
       show.addEventListener('focusin', function (e) {
@@ -789,9 +777,9 @@
       show.addEventListener('focusout', function (e) {
         if (!show.contains(e.relatedTarget)) { showFocus = false; scheduleShow(); }
       });
-      /* back/forward cache: the pointer may have left while the page was frozen */
+      /* back/forward cache: focus may have moved while the page was frozen */
       window.addEventListener('pageshow', function (e) {
-        if (e.persisted) { showHover = false; showFocus = false; scheduleShow(); }
+        if (e.persisted) { showFocus = false; scheduleShow(); }
       });
       document.addEventListener('visibilitychange', scheduleShow);
       coverReduced.addEventListener('change', scheduleShow);
