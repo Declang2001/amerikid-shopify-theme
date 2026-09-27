@@ -14,6 +14,8 @@ Branch `feature/drop-wall-refresh`, code commit `1f9fa31`.
 | C | New SOLD OUT graphic, big, over the corner | Full-colour shirt under the owner's burst, top-left (per example.jpeg), 62% of tile, overhang capped at the page gutter, re-anchored to the shirt on short laptops. Removed greyscale / 26% opacity / diagonal strike / title strikethrough; title dimmed. Visually-hidden "(sold out)". | `sections/ak-drop-wall.liquid`, NEW `assets/ak-drop-sold-out.png` (800x663, 77KB, trimmed + quantised from the owner's 2400px 2.6MB PNG) |
 | D | Rotating big front shot of every available shirt between M and L rows | Full-width showcase after the M row: image 1 of each in-stock shirt, slides right-to-left every 4s, name only, links to the PDP. Hidden at 0 in stock, static at 1. Holds on real mouse movement or keyboard focus, when offscreen or the tab is hidden; no autoplay with reduced motion. | `sections/ak-drop-wall.liquid` |
 
+> Rows A and D above describe **v1**. The banner (55%) and the showcase hover hold were both changed in **v2**; see below.
+
 New section settings (schema defaults apply — `templates/collection.json` was
 NOT changed or pushed): `showcase_hidden` (checkbox, default off — a "hide"
 toggle on purpose, because a missing checkbox reads as false),
@@ -58,8 +60,8 @@ change. The PNG can stay on the theme; unused it is harmless.
 
 - `scripts/guard-shopify.sh` is stale and has gaps: `LIVE_ID` still names the
   notebook theme 186464731416 (now unpublished), and short flags `-a`
-  (allow-live), `-t` (theme), `-l` (live) and `-p` (**publish**) are not
-  matched. The agent was not permitted to edit the guard
+  (allow-live), `-t` (theme) and `-l` (live) are not matched, and `--publish`/`-p`
+  on `theme push` is not blocked at all (rule 1 only matches `theme publish`). The agent was not permitted to edit the guard
   (auto-mode self-modification denial), so live pushes remain owner-run.
 
 ## Follow-up v2 — DROP-WALL-REFRESH-2 (same day, LIVE)
@@ -85,3 +87,25 @@ edges; (2) the showcase "doesn't seem to be moving".
   Screenshot `LIVE-v2-desktop-1440x900-top.png`.
 - Rollback to v1: `rollback/ak-drop-wall.liquid.live-v1-2026-09-26`, or
   `git checkout 28033c4~1 -- sections/ak-drop-wall.liquid`, then the same scoped push.
+
+## Banner art spec (for a future full-width, SHORT, undistorted banner)
+
+The banner shows the image at full browser width at its natural shape, so
+**height = screen width ÷ aspect ratio**. To be short, the artwork itself has to be wide:
+
+| Aspect | Height at 1440 | at 1920 | Export size (2x, sharp on 4K) |
+|---|---|---|---|
+| 3:1 (current art) | 480px | 640px | 3840x1280 |
+| 5:1 | 288px | 384px | 3840x768 |
+| **6:1 (recommended)** | **240px** | **320px** | **3840x640** |
+| 8:1 | 180px | 240px | 3840x480 |
+
+Put "SUPREME LEADER" on ONE line with ~8% padding top and bottom; two stacked lines
+at 6:1 would be tiny. Export JPG, sRGB, under ~500KB. Keep the current 3:1 art for
+phones: a 6:1 image on a 390px phone is only 65px tall. Code needed when it arrives:
+replace the desktop `height:25vw;object-fit:fill` rule with `height:auto`, and serve the
+wide image >=750px and the 3:1 below (a `<picture>` with a media source). The squash selector is
+`.akdw-banner:not(.akdw-banner--slideshow) > .akdw-banner-img`, which will NOT match an img inside a `<picture>`,
+so update the selector with the markup. Also update the fallback img's hardcoded `width="1500" height="500"`
+to the new ratio. The picker path serves at most 2400w; ship 3840 art as a theme asset, or accept 2400.
+Owner files are usually PNG; convert the wide art to JPG (a 3840x640 PNG is several MB).

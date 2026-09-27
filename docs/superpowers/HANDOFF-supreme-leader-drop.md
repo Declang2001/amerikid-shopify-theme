@@ -1,12 +1,48 @@
 # HANDOFF — Supreme Leader Drop Theme
 
+> ## CURRENT STATE — read this first (2026-09-26, end of DROP-WALL-REFRESH-1/-2)
+> - **LIVE theme: `188605497624` "AmeriKid Supreme Leader Drop - DEV"** (role `main`; the name still says DEV).
+>   Rollback theme: `186464731416` notebook (unpublished). `184615043352` dark theme must stay byte-unchanged.
+> - **Repo == live.** On 2026-09-26 a full pull of 188605497624 matched the repo's theme folders
+>   byte-for-byte (commit `e303e0d` mirrored 19 app/Admin-side files: PageFly, Gameball, GemPages, Shopify rewrites).
+>   Before editing, re-check: pull live into a scratch folder and `diff -rq` it, since apps and the Admin can change live at any time.
+> - **Branch:** `experiment/propaganda-drop-theme` (fast-forwarded to match `feature/drop-wall-refresh`), both pushed to origin.
+> - **Pushing to live:** the only shape is `shopify theme push --theme 188605497624 --store iacxyv-w5.myshopify.com --nodelete --allow-live --only <file>...`.
+>   `scripts/guard-shopify.sh` blocks `--allow-live` for agents and the auto-mode classifier blocked editing the guard,
+>   so **the OWNER runs live pushes** by pasting the command with `!`. Push new assets BEFORE the code that uses them.
+>   Guard caveats: its `LIVE_ID` still names 186464731416, and it misses the short flags `-a/-t/-l/-p`.
+> - **Never** `shopify theme dev --theme <id>` (it hot-syncs to that theme), `theme publish`, `theme delete`, or push `config/settings_data.json`.
+> - **What's on the wall now:** full-width 25%-squashed banner (desktop), red Korean band, 5x4 grid, SOLD OUT burst on
+>   sold tiles, and an in-stock showcase after the M row (4s, no hover pause). PDP label `ALL SHIRTS`.
+>   Details: `docs/qa/2026-09-26-drop-refresh/README.md` (also rollback) and `docs/known-fragile-areas.md` (top).
+> - **If wide banner art arrives** (spec: 6:1, 3840x640, lettering on one line; see the QA README):
+>   the current desktop rule `height:25vw;object-fit:fill` in `sections/ak-drop-wall.liquid` would STRETCH it.
+>   Change that rule to `height:auto` (natural aspect) when swapping the art, and keep a 3:1 image for mobile.
+> - Local QA tooling that worked: python-liquid render of the section with live `products.json`
+>   (see the 2026-09-26 QA README), then Playwright at 390/700/1366x700/1440x900.
+> - **File map:** the wall is `sections/ak-drop-wall.liquid`, hosted by the DEFAULT `templates/collection.json`
+>   behind a `supreme-leader` handle guard (`templates/collection.supreme-leader.json` is UNUSED). The live banner
+>   image is `assets/ak-drop-cover-1.jpg` (via the `cover_option` default; no `banner_image` is set). The PDP is
+>   `snippets/ak-drop-product.liquid` (only `sl-` handles), rendered from `templates/product.json`.
+> - Agents MAY run `shopify theme pull --theme 188605497624 --path <scratch dir>` (read-only; the guard allows it).
+>   Never pull into the repo root. The guard also does NOT block `--publish` on `theme push` (long or `-p`); never use it.
+> - The old "swap the banner with the theme-editor picker, no code change" instruction is OBSOLETE: the
+>   desktop squash rule would distort any new art. See the Banner art spec in the 2026-09-26 QA README.
+
 > LATEST 2026-09-26: `docs/qa/2026-09-26-drop-refresh/README.md` (DROP-WALL-REFRESH-1).
 > v2 same day: desktop banner is a FULL-WIDTH 25% squash (owner's choice, 360px at 1440);
 > the showcase no longer pauses on mouse hover (it froze because it covers ~81% of a laptop).
-> The wall banner is smaller (55% on desktop), PDP says ALL SHIRTS, sold-out tiles are full colour
+> v1 shrank the banner to 55% (superseded by v2). PDP says ALL SHIRTS, sold-out tiles are full colour
 > under the new SOLD OUT burst (`assets/ak-drop-sold-out.png`), and there is a new in-stock showcase
 > after the M row. LIVE on 188605497624, pushed by the owner (guard blocks --allow-live
 > for agents). If a sold-out burst is missing, the PNG did not ship: push the asset first.
+
+
+---
+## HISTORICAL NOTES BELOW. Superseded by CURRENT STATE above; do not act on them.
+Everything below predates 2026-09-26. Some of it describes the pre-publish world
+("unpublished", "never --allow-live", "use the picker", old repo path, mobile tracks).
+Where it conflicts with CURRENT STATE, CURRENT STATE wins.
 
 > LATEST 2026-09-11: `docs/qa/2026-09-11-hotfix/README.md` records the live
 > PageFly takeover fix and touch-front-only product grid. This supplements the

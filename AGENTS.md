@@ -28,8 +28,14 @@ These are enforced at the tool layer by `scripts/guard-shopify.sh`
   A push without `--only` ships the entire working tree — there is no `.shopifyignore`.
 - **Never push `config/settings_data.json`.** 123 merchant settings, 10 colour schemes
   and 3 app embeds; it is auto-generated and Admin-overwritable.
-- **Theme IDs:**
-  - `186464731416` — **LIVE** notebook theme. Never a target for drop work.
+- **Theme IDs (updated 2026-09-26, verified with `shopify theme list`):**
+  - `188605497624` — **LIVE** (published 2026-09-10; its Admin name still says "DEV").
+    The Supreme Leader drop. Agents never push to it: live pushes need `--allow-live`,
+    which the guard blocks, so the OWNER runs the scoped
+    `--allow-live --nodelete --only <file>` push by pasting it with `!`.
+  - `186464731416` — notebook theme, **unpublished rollback** (live until 2026-09-10). Do not modify.
   - `184615043352` — preserved dark theme. Must stay **byte-unchanged**.
-  - `185910067480` — development lane.
+  - `185910067480` — no longer exists. There is currently no development theme.
+- **Current state and handoff:** `docs/superpowers/START-HERE-next-session.md`
+  (its CURRENT STATE block wins over any older note in the docs).
 - Before any branch switch, confirm no `shopify theme dev` server is running.

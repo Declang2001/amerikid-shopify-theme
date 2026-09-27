@@ -4,9 +4,9 @@
 This repository holds the unpublished working copy of the live Amerikid Shopify theme. It serves as a staging ground for performance optimization and cleanup before pushing updates to the live store.
 
 ## CURRENT LIVE STATE (2026-09-26, verified via `shopify theme list`)
-**Theme `188605497624` "AmeriKid Supreme Leader Drop - DEV" is the LIVE (published) theme** (since 2026-09-10; the Admin name still says DEV). The notebook theme `186464731416` is now UNPUBLISHED and is the rollback target; `184615043352` stays byte-unchanged. The 2026-06-18 block below is HISTORICAL. Latest change: DROP-WALL-REFRESH-1, `docs/qa/2026-09-26-drop-refresh/README.md`. Live pushes to `188605497624` require `--allow-live`, which `scripts/guard-shopify.sh` blocks for agents, so the owner runs them. The guard's `LIVE_ID` is stale and it misses short flags (`-a/-t/-l/-p`).
+**Theme `188605497624` "AmeriKid Supreme Leader Drop - DEV" is the LIVE (published) theme** (since 2026-09-10; the Admin name still says DEV). The notebook theme `186464731416` is now UNPUBLISHED and is the rollback target; `184615043352` stays byte-unchanged. The 2026-06-18 block below is HISTORICAL. Latest change: DROP-WALL-REFRESH-1, `docs/qa/2026-09-26-drop-refresh/README.md`. Live pushes to `188605497624` require `--allow-live`, which `scripts/guard-shopify.sh` blocks for agents, so the owner runs them. The guard's `LIVE_ID` is stale (still names 186464731416), it misses short flags (`-a/-t/-l`), and it does not block `--publish`/`-p` on `theme push` at all. Owner to patch; agents were denied editing it.
 
-## Theme Publish State & Live-Readiness (current, 2026-06-18 — POST-PUBLISH — verified via `shopify theme list --store iacxyv-w5.myshopify.com`)
+## HISTORICAL (superseded 2026-09-10; see CURRENT LIVE STATE above). Theme Publish State & Live-Readiness (as of 2026-06-18 — POST-PUBLISH — verified via `shopify theme list --store iacxyv-w5.myshopify.com`)
 **The notebook redesign is now LIVE.** The owner **manually published** the notebook theme from Shopify Admin (Online Store → Themes → Publish). This was a manual Admin action — **NOT a CLI publish; Claude ran no `shopify theme publish`.** Two themes matter:
 
 > **⚠ LIVE-THEME SAFETY (added 2026-06-18, NOTEBOOK-MOBILE-RULES-1):** NEVER run `shopify theme dev --theme 186464731416` (or `shopify theme dev --theme <any live id>`). `shopify theme dev` **hot-syncs local file saves to the theme it targets** — pointed at the live theme it silently pushes every local edit AND branch checkout to the live store. A rogue instance did exactly this: it partially leaked in-progress edits to live and, during a `git checkout` that briefly sat at a pre-magazine commit, reverted the live `templates/list-collections.json` to the cassette deck (dropping the magazine) — the live Archive regressed until repaired (kill the process → controlled scoped `--only` push → `shopify theme pull` to verify). For live, use ONLY `shopify theme push --only … --allow-live --nodelete`. For previews use `shopify theme dev --store iacxyv-w5.myshopify.com` with **no `--theme`** (isolated dev theme).
@@ -15,7 +15,7 @@ This repository holds the unpublished working copy of the live Amerikid Shopify 
 
 | Theme ID | Admin name | Role | Meaning |
 | :--- | :--- | :--- | :--- |
-| **`186464731416`** | **AmeriKid Notebook Theme - Publish Candidate** | **currently `[live]`** | **The public storefront now.** The notebook redesign (this repo's `experiment/notebook-paper-background` branch) is live. |
+| **`186464731416`** | **AmeriKid Notebook Theme - Publish Candidate** | **was `[live]` until 2026-09-10, now the unpublished rollback** | **Was the public storefront until 2026-09-10.** The notebook redesign (this repo's `experiment/notebook-paper-background` branch) is live. |
 | **`184615043352`** | **AmeriKid Dark Theme - Preserve** | **currently `[unpublished]`** | The original dark theme. **Preserved rollback / fallback** — sits in the draft theme library, re-publishable to revert. |
 
 (Both were renamed 2026-06-18 — `184615043352` from `Copy of club amerikid update`; `186464731416` from `Notebook Paper Experiment - DO NOT PUBLISH`. Admin-label only — no files/settings changed by the rename. Historical change-log entries still reference the old "Notebook Paper Experiment - DO NOT PUBLISH" name and are accurate as-of-their-date; do not rewrite them. The roles in those old rows ("186464731416 = unpublished experiment") were true then but are now SUPERSEDED by this section.)
@@ -288,9 +288,9 @@ The Mystery Crate is currently implemented as an iframe embed pointing to an ext
 ## Shopify CLI Push Info
 
 > ## ⚠️ STALE AND DANGEROUS — DO NOT RUN ANYTHING IN THIS SECTION
-> Superseded by the theme table at lines 6-18 of this file, which is authoritative.
+> Superseded by the CURRENT LIVE STATE block at the top of this file, which is authoritative.
 > **`184615043352` is NOT the live theme.** It is the preserved dark theme and must
-> stay byte-unchanged. The live theme is `186464731416`.
+> stay byte-unchanged. The live theme is `188605497624` (since 2026-09-10; `186464731416` is the rollback).
 > The push command previously printed below was **unscoped** (`--path .`, no `--only`,
 > no `--nodelete`) and aimed at that preserved theme. There is no `.shopifyignore`, so
 > running it would have shipped the entire working tree over it.
@@ -310,8 +310,8 @@ shopify theme list --store iacxyv-w5.myshopify.com
 # Never restore it. Sanctioned shape only:
 #   shopify theme push --theme <ID> --nodelete --only <file> [--only <file>...]
 
-# Push to development theme (safe for testing) — active workflow dev theme
-shopify theme push --theme 185910067480 --nodelete --store iacxyv-w5.myshopify.com
+# (Removed 2026-09-26: an unscoped push aimed at 185910067480, a theme that no longer exists.)
+# Live pushes: owner-run only. See AGENTS.md > Deploy Guardrails.
 ```
 
 ## Product Card Badges
