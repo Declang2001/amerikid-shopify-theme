@@ -1,6 +1,8 @@
 # HANDOFF — Supreme Leader Drop Theme
 
 > LATEST 2026-09-26: `docs/qa/2026-09-26-drop-refresh/README.md` (DROP-WALL-REFRESH-1).
+> v2 same day: desktop banner is a FULL-WIDTH 25% squash (owner's choice, 360px at 1440);
+> the showcase no longer pauses on mouse hover (it froze because it covers ~81% of a laptop).
 > The wall banner is smaller (55% on desktop), PDP says ALL SHIRTS, sold-out tiles are full colour
 > under the new SOLD OUT burst (`assets/ak-drop-sold-out.png`), and there is a new in-stock showcase
 > after the M row. LIVE on 188605497624, pushed by the owner (guard blocks --allow-live

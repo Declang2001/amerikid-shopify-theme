@@ -6,7 +6,8 @@
   - (2) The showcase pre-pass re-reads the SAME 20 handles via `all_products`. The cap counts UNIQUE handles, so it stays at 20; adding any other `all_products` lookup on this template breaks the wall.
   - (3) `showcase_hidden` is deliberately a "hide" checkbox: `collection.json` has no value for it, and missing reads as false, so the showcase is on.
   - (4) The burst's short-laptop override `@media (min-width:750px) and (max-height:740px)` MUST stay after the base `::before` rule. It anchors to the contained shirt via width-relative `margin-top`.
-  - (5) Showcase slide states: queued (hidden, no transition), `is-active`, `is-leaving`. Hover hold is based on real `pointermove`, not `pointerenter`, so scrolling under a parked cursor does not freeze it; focus hold is keyboard-only (`:focus-visible`).
+  - (5) Showcase slide states: queued (hidden, no transition), `is-active`, `is-leaving`. There is NO mouse-hover hold (removed in v2): the block covers ~81% of a laptop viewport, so a hover pause froze it. Only keyboard focus (`:focus-visible`), offscreen, hidden tab and reduced motion hold it. Do not re-add a hover pause.
+  - (7) The desktop banner is a deliberate full-width vertical SQUASH (`height:25vw;object-fit:fill`), the owner's choice. The art's lettering touches both edges, so do not switch it to `cover` (that crops the words).
   - (6) The showcase focus ring uses a negative `outline-offset` because the track clips.
 - Do not remove canvas tags (`<canvas>`) or their associated Javascript. The ambient particles and starfield effects are core to the brand.
 - Do not normalize typography if it removes the "Impact" font. Hardcoded font declarations exist for a reason.

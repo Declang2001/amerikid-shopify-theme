@@ -61,3 +61,27 @@ change. The PNG can stay on the theme; unused it is harmless.
   (allow-live), `-t` (theme), `-l` (live) and `-p` (**publish**) are not
   matched. The agent was not permitted to edit the guard
   (auto-mode self-modification denial), so live pushes remain owner-run.
+
+## Follow-up v2 — DROP-WALL-REFRESH-2 (same day, LIVE)
+
+Owner feedback on v1: (1) the smaller banner no longer reached the screen
+edges; (2) the showcase "doesn't seem to be moving".
+
+- **Banner:** a proportional resize can't be both full width and short (3:1
+  art at full width is 480px at 1440; 264px full width needs about 5.5:1). Blurred,
+  mirrored and cropped fills were mocked (`banner-options/banner-options-sheet.jpg`)
+  and rejected. The owner chose a **full-width squash**, option B of
+  `banner-options/resize-squash-sheet.jpg`: desktop `width:100%;height:25vw;object-fit:fill`,
+  360px at 1440, a 25% vertical squash at every desktop width. Mobile is unchanged.
+  Trade-off: row-1 titles end at 888px on 1440x900 (above the fold) but fall
+  just below the fold on 1440x800.
+- **Showcase:** the code was rotating correctly on live (4051/8051/12052ms with
+  no mouse). The cause was the v1 hover hold: the block covers ~81% of a laptop
+  viewport, so any mouse movement over it froze it. **Removed the hover hold.**
+  Keyboard focus, offscreen, hidden tab and reduced motion still hold it.
+- Pushed by the owner: `--only sections/ak-drop-wall.liquid` (commit `28033c4`).
+  The pull-back is byte-identical. Live check at 1440x900: banner 1440x360, row-1 titles at
+  888px, and with the mouse on the showcase it advanced 0->1->2->3 at 4s intervals.
+  Screenshot `LIVE-v2-desktop-1440x900-top.png`.
+- Rollback to v1: `rollback/ak-drop-wall.liquid.live-v1-2026-09-26`, or
+  `git checkout 28033c4~1 -- sections/ak-drop-wall.liquid`, then the same scoped push.
