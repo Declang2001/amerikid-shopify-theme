@@ -21,7 +21,7 @@
 {%- endif -%}
 {%- assign club_return_to = club_return_to | url_encode -%}
 
-{%- assign club_is_logged_in = customer != blank -%}
+{%- assign club_is_logged_in = customer -%}
 
 {%- assign club_is_member = false -%}
 {%- if customer and customer.tags contains 'club_amerikid' -%}
@@ -416,3 +416,13 @@
   }
 })();
 </script>
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- assign club_is_logged_in = customer != blank -%}"
+  to: "{%- assign club_is_logged_in = customer -%}"
+  position: 821..864
+{% endcomment %}
