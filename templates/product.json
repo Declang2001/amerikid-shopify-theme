@@ -31,6 +31,12 @@
           "type": "description",
           "settings": {}
         },
+        "size_chart": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{% render 'ak-drop-size-chart', product: product %}"
+          }
+        },
         "price": {
           "type": "price",
           "settings": {}
@@ -67,6 +73,7 @@
         "quantity_selector",
         "buy_buttons",
         "description",
+        "size_chart",
         "share"
       ],
       "settings": {

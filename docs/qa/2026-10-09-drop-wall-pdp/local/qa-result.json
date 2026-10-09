@@ -1,0 +1,424 @@
+{
+ "wall 1440x900": {
+  "rows": {
+   "s": [
+    "S-01",
+    "S-02",
+    "S-03",
+    "S-04",
+    "S-05"
+   ],
+   "m": [
+    "M-01",
+    "M-02",
+    "M-03",
+    "M-04",
+    "M-05"
+   ],
+   "l": [
+    "L-05",
+    "L-01*",
+    "L-02*",
+    "L-03*",
+    "L-04*"
+   ],
+   "xl": [
+    "XL-02",
+    "XL-03",
+    "XL-01*",
+    "XL-04*",
+    "XL-05*"
+   ]
+  },
+  "row1TitleBottom": 888,
+  "shot": [
+   432,
+   378
+  ],
+  "showH": 423,
+  "gapMtoL": 484,
+  "nameBottomToLTop": 30,
+  "overflow": 0,
+  "slides": 13,
+  "dataSeconds": "2.5",
+  "tabOrderMatches": true,
+  "cadence_ms": [
+   1881,
+   4382,
+   6881,
+   9382
+  ],
+  "cadence_hover_ms": [
+   2461,
+   4962,
+   7461
+  ]
+ },
+ "wall 1440x800": {
+  "rows": {
+   "s": [
+    "S-01",
+    "S-02",
+    "S-03",
+    "S-04",
+    "S-05"
+   ],
+   "m": [
+    "M-01",
+    "M-02",
+    "M-03",
+    "M-04",
+    "M-05"
+   ],
+   "l": [
+    "L-05",
+    "L-01*",
+    "L-02*",
+    "L-03*",
+    "L-04*"
+   ],
+   "xl": [
+    "XL-02",
+    "XL-03",
+    "XL-01*",
+    "XL-04*",
+    "XL-05*"
+   ]
+  },
+  "row1TitleBottom": 873,
+  "shot": [
+   384,
+   336
+  ],
+  "showH": 381,
+  "gapMtoL": 442,
+  "nameBottomToLTop": 30,
+  "overflow": 0,
+  "slides": 13,
+  "dataSeconds": "2.5",
+  "tabOrderMatches": true
+ },
+ "wall 1366x700": {
+  "rows": {
+   "s": [
+    "S-01",
+    "S-02",
+    "S-03",
+    "S-04",
+    "S-05"
+   ],
+   "m": [
+    "M-01",
+    "M-02",
+    "M-03",
+    "M-04",
+    "M-05"
+   ],
+   "l": [
+    "L-05",
+    "L-01*",
+    "L-02*",
+    "L-03*",
+    "L-04*"
+   ],
+   "xl": [
+    "XL-02",
+    "XL-03",
+    "XL-01*",
+    "XL-04*",
+    "XL-05*"
+   ]
+  },
+  "row1TitleBottom": 747,
+  "shot": [
+   336,
+   294
+  ],
+  "showH": 337,
+  "gapMtoL": 394,
+  "nameBottomToLTop": 29,
+  "overflow": 0,
+  "slides": 13,
+  "dataSeconds": "2.5",
+  "tabOrderMatches": true
+ },
+ "wall 1920x1080": {
+  "rows": {
+   "s": [
+    "S-01",
+    "S-02",
+    "S-03",
+    "S-04",
+    "S-05"
+   ],
+   "m": [
+    "M-01",
+    "M-02",
+    "M-03",
+    "M-04",
+    "M-05"
+   ],
+   "l": [
+    "L-05",
+    "L-01*",
+    "L-02*",
+    "L-03*",
+    "L-04*"
+   ],
+   "xl": [
+    "XL-02",
+    "XL-03",
+    "XL-01*",
+    "XL-04*",
+    "XL-05*"
+   ]
+  },
+  "row1TitleBottom": 1100,
+  "shot": [
+   518,
+   454
+  ],
+  "showH": 507,
+  "gapMtoL": 575,
+  "nameBottomToLTop": 34,
+  "overflow": 0,
+  "slides": 13,
+  "dataSeconds": "2.5",
+  "tabOrderMatches": true
+ },
+ "wall 700x900": {
+  "rows": {
+   "s": [
+    "S-01",
+    "S-02",
+    "S-03",
+    "S-04",
+    "S-05"
+   ],
+   "m": [
+    "M-01",
+    "M-02",
+    "M-03",
+    "M-04",
+    "M-05"
+   ],
+   "l": [
+    "L-05",
+    "L-01*",
+    "L-02*",
+    "L-03*",
+    "L-04*"
+   ],
+   "xl": [
+    "XL-02",
+    "XL-03",
+    "XL-01*",
+    "XL-04*",
+    "XL-05*"
+   ]
+  },
+  "row1TitleBottom": 719,
+  "shot": [
+   432,
+   378
+  ],
+  "showH": 439,
+  "gapMtoL": 491,
+  "nameBottomToLTop": 43,
+  "overflow": 0,
+  "slides": 13,
+  "dataSeconds": "2.5",
+  "tabOrderMatches": true
+ },
+ "wall 390x844": {
+  "rows": {
+   "s": [
+    "S-01",
+    "S-02",
+    "S-03",
+    "S-04",
+    "S-05"
+   ],
+   "m": [
+    "M-01",
+    "M-02",
+    "M-03",
+    "M-04",
+    "M-05"
+   ],
+   "l": [
+    "L-05",
+    "L-01*",
+    "L-02*",
+    "L-03*",
+    "L-04*"
+   ],
+   "xl": [
+    "XL-02",
+    "XL-03",
+    "XL-01*",
+    "XL-04*",
+    "XL-05*"
+   ]
+  },
+  "row1TitleBottom": 444,
+  "shot": [
+   354,
+   310
+  ],
+  "showH": 357,
+  "gapMtoL": 389,
+  "nameBottomToLTop": 26,
+  "overflow": 0,
+  "slides": 13,
+  "dataSeconds": "2.5",
+  "tabOrderMatches": true,
+  "cadence_ms": [
+   1881,
+   4381,
+   6881,
+   9381
+  ],
+  "cadence_hover_ms": null
+ },
+ "keyboard_focus_hold (expect [])": [],
+ "reduced_motion (expect [])": [],
+ "pdp sl-l-05 1440": {
+  "chart": true,
+  "afterDescription": true,
+  "beforeShare": true,
+  "chartBox": [
+   490,
+   490
+  ],
+  "sizeHeaderWeight": "700",
+  "hiddenTable": 225.078125,
+  "overflow": 0,
+  "liquidError": false,
+  "imgLoaded": 1200
+ },
+ "pdp sl-l-05 390": {
+  "chart": true,
+  "afterDescription": true,
+  "beforeShare": true,
+  "chartBox": [
+   357,
+   357
+  ],
+  "sizeHeaderWeight": "700",
+  "hiddenTable": 225.078125,
+  "overflow": 0,
+  "liquidError": false,
+  "imgLoaded": 1200
+ },
+ "pdp sl-s-01 1440": {
+  "chart": true,
+  "afterDescription": true,
+  "beforeShare": true,
+  "chartBox": [
+   490,
+   490
+  ],
+  "sizeHeaderWeight": "700",
+  "hiddenTable": 225.078125,
+  "overflow": 0,
+  "liquidError": false,
+  "imgLoaded": 1200
+ },
+ "pdp sl-s-01 390": {
+  "chart": true,
+  "afterDescription": true,
+  "beforeShare": true,
+  "chartBox": [
+   357,
+   357
+  ],
+  "sizeHeaderWeight": "700",
+  "hiddenTable": 225.078125,
+  "overflow": 0,
+  "liquidError": false,
+  "imgLoaded": 1200
+ },
+ "pdp sl-xl-02 1440": {
+  "chart": true,
+  "afterDescription": true,
+  "beforeShare": true,
+  "chartBox": [
+   490,
+   490
+  ],
+  "sizeHeaderWeight": "700",
+  "hiddenTable": 225.078125,
+  "overflow": 0,
+  "liquidError": false,
+  "imgLoaded": 1200
+ },
+ "pdp sl-xl-02 390": {
+  "chart": true,
+  "afterDescription": true,
+  "beforeShare": true,
+  "chartBox": [
+   357,
+   357
+  ],
+  "sizeHeaderWeight": "700",
+  "hiddenTable": 225.078125,
+  "overflow": 0,
+  "liquidError": false,
+  "imgLoaded": 1200
+ },
+ "pdp sl-l-01 1440": {
+  "chart": true,
+  "afterDescription": true,
+  "beforeShare": true,
+  "chartBox": [
+   490,
+   490
+  ],
+  "sizeHeaderWeight": "700",
+  "hiddenTable": 225.078125,
+  "overflow": 0,
+  "liquidError": false,
+  "imgLoaded": 1200
+ },
+ "pdp sl-l-01 390": {
+  "chart": true,
+  "afterDescription": true,
+  "beforeShare": true,
+  "chartBox": [
+   357,
+   357
+  ],
+  "sizeHeaderWeight": "700",
+  "hiddenTable": 225.078125,
+  "overflow": 0,
+  "liquidError": false,
+  "imgLoaded": 1200
+ },
+ "pdp flag-tee 1440": {
+  "chart": false,
+  "afterDescription": null,
+  "beforeShare": null,
+  "chartBox": null,
+  "sizeHeaderWeight": "400",
+  "hiddenTable": null,
+  "overflow": 0,
+  "liquidError": false
+ },
+ "pdp flag-tee 390": {
+  "chart": false,
+  "afterDescription": null,
+  "beforeShare": null,
+  "chartBox": null,
+  "sizeHeaderWeight": "400",
+  "hiddenTable": null,
+  "overflow": 0,
+  "liquidError": false
+ },
+ "console (errors/warnings)": [
+  "error: Access to script at 'http://cdn.shopify.com/shopifycloud/storefront/assets/storefront/origin_trials-318ab40a.js' from origin 'http://127.0.0.1:9292' has ",
+  "error: Failed to load resource: net::ERR_FAILED",
+  "error: Failed to load resource: the server responded with a status of 403 ()",
+  "error: Framing 'https://shop.app/' violates the following Content Security Policy directive: \"frame-ancestors 'self' https://shop.app https://admin.shopify.com\""
+ ]
+}

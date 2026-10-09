@@ -1,0 +1,79 @@
+{% doc %}
+  Size chart for the Supreme Leader (SL) tees, shown on the product page directly
+  under the description.
+
+  Rendered from the `size_chart` custom_liquid block in templates/product.json
+  (main-product block_order: ... description, size_chart, share). product.json is
+  shared by EVERY product, so the gate lives here:
+    - shown on every product whose handle starts with 'sl-'
+    - ALSO shown on any product tagged 'size-chart' (future shirts on the same
+      blanks that do not use the sl- prefix)
+    - NEVER on a product tagged 'no-size-chart' (a piece on a different blank);
+      the opt-out wins
+  Everything else renders nothing.
+
+  The image is the owner's chart (assets/ak-size-chart.jpg, 1200x1200, resized from
+  the 2400px original). The same numbers are repeated in a visually hidden table so
+  screen readers get the measurements, not a picture of text.
+
+  Push order: assets/ak-size-chart.jpg + this snippet FIRST, templates/product.json
+  SECOND. The render call runs for every product, so a missing snippet would print
+  a Liquid error on every product page.
+
+  @param {product} product - The product being viewed
+  @example
+    {% render 'ak-drop-size-chart', product: product %}
+{% enddoc %}
+
+{%- comment -%}
+  Tags are compared lower-cased, element by element (array `contains` is an
+  exact match), so 'No-Size-Chart' works and 'size-chart' never matches
+  'no-size-chart'. The opt-out wins over the opt-in.
+{%- endcomment -%}
+{%- liquid
+  assign ak_show_size_chart = false
+  assign ak_handle_prefix = product.handle | slice: 0, 3
+  if ak_handle_prefix == 'sl-'
+    assign ak_show_size_chart = true
+  endif
+  assign ak_tags = product.tags | join: '|' | downcase | split: '|'
+  if ak_tags contains 'size-chart'
+    assign ak_show_size_chart = true
+  endif
+  if ak_tags contains 'no-size-chart'
+    assign ak_show_size_chart = false
+  endif
+-%}
+
+{%- if ak_show_size_chart -%}
+  <div class="ak-size-chart quick-add-hidden">
+    <img
+      class="ak-size-chart__img"
+      src="{{ 'ak-size-chart.jpg' | asset_url }}"
+      width="1200"
+      height="1200"
+      loading="lazy"
+      decoding="async"
+      fetchpriority="low"
+      alt="AmeriKid T-shirt size chart"
+    >
+    <div class="visually-hidden">
+      <table>
+        <caption>AmeriKid T-shirt measurements in inches. Shirts conform to these measurements after the first wash.</caption>
+        <thead>
+          <tr><th scope="col">Size</th><th scope="col">Pit to pit</th><th scope="col">Length</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Small</th><td>18.5</td><td>27</td></tr>
+          <tr><th scope="row">Medium</th><td>20</td><td>28</td></tr>
+          <tr><th scope="row">Large</th><td>21</td><td>30</td></tr>
+          <tr><th scope="row">XL</th><td>22.5</td><td>31</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {%- style -%}
+    .ak-size-chart{ margin-top:2.4rem; }
+    .ak-size-chart__img{ display:block;width:100%;max-width:56rem;height:auto; }
+  {%- endstyle -%}
+{%- endif -%}

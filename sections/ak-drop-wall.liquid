@@ -23,6 +23,9 @@
   L, M, S, XL — the WRONG size order — and no Shopify sort_by value can produce
   S, M, L, XL (§17.4). The order is therefore hard-coded below and resolved by
   handle, never by collection sort order.
+  Within each row, in-stock shirts come first and sold shirts after (2026-10-09,
+  owner), each group in design_order; see the row loop. Do it in Liquid, never
+  with CSS `order`: that would split visual order from reading/focus order.
 
   NOTE (verified 2026-08-29 by inspecting the live artwork): the 20 pieces are
   each UNIQUE, one of one — SL-S-01, SL-M-01, SL-L-01 and SL-XL-01 are four
@@ -58,7 +61,8 @@
 {%- comment -%}
   SHOWCASE (2026-09-26, DROP-WALL-REFRESH-1): a full-width break after the
   `showcase_after` row holding a large front shot (image 1) of every shirt
-  still in stock, sliding left every `showcase_seconds`.
+  still in stock, sliding left every `showcase_seconds` (2.5s by default
+  since 2026-10-09, in 0.5s steps; was 4s in whole seconds).
   Pre-pass over the SAME handles the wall resolves below, so the all_products
   cap (20 UNIQUE handles per page) is not exceeded. Slides are captured here
   and emitted inside the grid loop. Sold-out shirts never appear; with none
@@ -93,7 +97,7 @@
                                | image_tag:
                                    loading: 'lazy',
                                    widths: '600,900,1200,1600,2000',
-                                   sizes: '(min-width: 750px) and (max-height: 1117px) 68vh, (min-width: 750px) 760px, (orientation: landscape) 68vh, 92vw',
+                                   sizes: '(min-width: 750px) and (max-height: 1142px) 48vh, (min-width: 750px) 548px, (orientation: landscape) 48vh, 92vw',
                                    alt: '',
                                    class: 'akdw-show__img' }}
             </span>
@@ -165,6 +169,16 @@
     <div class="akdw-grid">
       {%- for size in size_list -%}
         {%- assign size = size | strip -%}
+        {%- comment -%}
+          SOLD TO THE END (2026-10-09, owner): each row is built into three
+          buffers and emitted in-stock, then sold, then empty placeholders. Stable:
+          each buffer keeps design_order. Server-side, so DOM order == visual order
+          == reading/focus order (no CSS `order`). Same single all_products lookup
+          per handle as before. Buffers MUST be reset per row.
+        {%- endcomment -%}
+        {%- assign akdw_open = '' -%}
+        {%- assign akdw_sold = '' -%}
+        {%- assign akdw_gap = '' -%}
         <div class="akdw-row" data-akdw-row="{{ size | downcase }}">
           {%- for design in design_list -%}
             {%- assign design = design | strip -%}
@@ -186,13 +200,17 @@
 
             {%- if p.title == blank -%}
               {%- comment -%} keep the cell so the 5x4 grid never collapses {%- endcomment -%}
+              {%- capture akdw_tile -%}
               <span class="akdw-item akdw-item--empty" aria-hidden="true">
                 <span class="akdw-shot"></span>
                 <span class="akdw-name"></span>
               </span>
+              {%- endcapture -%}
+              {%- assign akdw_gap = akdw_gap | append: akdw_tile -%}
             {%- else -%}
               {%- assign front = p.images[0] -%}
               {%- assign back = p.images[1] -%}
+              {%- capture akdw_tile -%}
               <a
                 class="akdw-item{% unless p.available %} akdw-item--sold{% endunless %}"
                 href="{{ p.url }}"
@@ -229,13 +247,20 @@
                 </span>
                 <span class="akdw-name">{{ p.title }}{% unless p.available %}<span class="visually-hidden"> (sold out)</span>{% endunless %}</span>
               </a>
+              {%- endcapture -%}
+              {%- if p.available -%}
+                {%- assign akdw_open = akdw_open | append: akdw_tile -%}
+              {%- else -%}
+                {%- assign akdw_sold = akdw_sold | append: akdw_tile -%}
+              {%- endif -%}
             {%- endif -%}
 
           {%- endfor -%}
+          {{- akdw_open -}}{{- akdw_sold -}}{{- akdw_gap -}}
         </div>
         {%- assign size_up = size | upcase -%}
         {%- if show_count > 0 and size_up == show_after -%}
-          <div class="akdw-show" data-akdw-show data-seconds="{{ section.settings.showcase_seconds | default: 4 }}"
+          <div class="akdw-show" data-akdw-show data-seconds="{{ section.settings.showcase_seconds | default: 2.5 }}"
                role="region" aria-roledescription="carousel" aria-label="Shirts still available">
             <div class="akdw-show__track">{{ show_slides }}</div>
           </div>
@@ -611,7 +636,16 @@
 
   /* ---- SHOWCASE (2026-09-26, DROP-WALL-REFRESH-1) ----------------------------
      Full-width break after the M row: one big front shot of each in-stock shirt,
-     sliding right-to-left every N seconds (owner: slide, 4s, name only).
+     sliding right-to-left (owner: slide, name only; 4s until 2026-10-09, then
+     "faster" -> 2.5s with a .55s slide).
+     SIZE (2026-10-09, owner: "takes up too much space"): the frame is 8:7, not
+     square, cropped with object-fit:cover. 8:7 only removes the transparent
+     rows above/below the shirt: <=0.17% of any of the 20 shirts is lost, where
+     4:3 cut XL-02 by 9.7% (the XL photos are 1.14-1.19:1, edge to edge).
+     min-height:0 on the frame is REQUIRED - without it the square <img>
+     stretches the aspect-ratio box back to a square. Padding is trimmed on
+     desktop only: on phones the sold burst of the next row (top:-7%, ~12px)
+     needs the 10px. The grid gaps are never cancelled.
      A plain grid item spanning every column, so on mobile it lands exactly after
      tile 10 (S+M = 10 tiles = five 2-up rows) and on desktop after row 2.
      Slides stack in one grid cell. States: queued (off right, hidden, no
@@ -621,6 +655,10 @@
   html.ak-drop-page #akdw-{{ section.id }} .akdw-show{
     grid-column:1/-1;
     padding-block:clamp(10px,2.4vw,40px);
+  }
+  @media screen and (min-width:750px){
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-show{ padding-block:0; }
+    html.ak-drop-page #akdw-{{ section.id }} .akdw-show__slide{ gap:6px; }
   }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-show__track{
     display:grid;overflow:hidden;overflow:clip;
@@ -635,15 +673,15 @@
   html.ak-drop-page #akdw-{{ section.id }} .akdw-show__slide.is-active,
   html.ak-drop-page #akdw-{{ section.id }} .akdw-show__slide.is-leaving{
     visibility:visible;
-    transition:transform .8s cubic-bezier(.65,0,.35,1);
+    transition:transform .55s cubic-bezier(.65,0,.35,1);
   }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-show__slide.is-active{ transform:translate3d(0,0,0); }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-show__slide.is-leaving{ transform:translate3d(-100%,0,0); }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-show__shot{
-    display:block;width:min(100%,68vh,760px);aspect-ratio:1/1;
+    display:block;width:min(100%,48vh,548px);aspect-ratio:8/7;min-height:0;overflow:hidden;
   }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-show__img{
-    display:block;width:100%;height:100%;object-fit:contain;
+    display:block;width:100%;height:100%;object-fit:cover;
   }
   html.ak-drop-page #akdw-{{ section.id }} .akdw-show__name{
     font-size:clamp(15px,1.5vw,27px);line-height:1.3;font-weight:600;
@@ -720,8 +758,11 @@
        looked at it (owner report, DROP-WALL-REFRESH-2). A click always opens
        the shirt on screen — queued slides are visibility:hidden. Reduced
        motion: no autoplay, the first shirt stays. Images are lazy; the next
-       slide's image is switched to eager one step ahead so it never arrives
-       blank. */
+       slide's image is switched to eager one step ahead, and advance() holds
+       the current shirt (at most 3 beats) while the next image is still
+       downloading, so a slow connection never slides in a blank frame.
+       Invariant: slide transition (.55s) < is-leaving cleanup (900ms) <
+       minimum cadence (2000ms, the schema min). */
     var show = root.querySelector('[data-akdw-show]');
     var slides = show ? show.querySelectorAll('[data-akdw-slide]') : [];
     if (slides.length > 1) {
@@ -729,7 +770,8 @@
       var showTimer;
       var showSeen = !('IntersectionObserver' in window);
       var showFocus = false;
-      var showMs = Math.max(3, parseInt(show.getAttribute('data-seconds'), 10) || 4) * 1000;
+      var showWait = 0;
+      var showMs = Math.round(Math.max(2, parseFloat(show.getAttribute('data-seconds')) || 2.5) * 1000);
 
       var warm = function (n) {
         var img = slides[n % slides.length].querySelector('img');
@@ -737,9 +779,20 @@
       };
       var advance = function () {
         if (!root.isConnected) { clearInterval(showTimer); return; }
+        var nextIndex = (showIndex + 1) % slides.length;
+        var nxt = slides[nextIndex];
+        /* still downloading: keep the current shirt one more beat. `complete`
+           is also true for a BROKEN image, so a 404 never stalls the showcase,
+           and the hold is capped at 3 beats regardless. */
+        var nimg = nxt.querySelector('img');
+        if (nimg && !nimg.complete && showWait < 3) {
+          showWait++;
+          warm(nextIndex);
+          return;
+        }
+        showWait = 0;
         var cur = slides[showIndex];
-        showIndex = (showIndex + 1) % slides.length;
-        var nxt = slides[showIndex];
+        showIndex = nextIndex;
         cur.classList.remove('is-active');
         cur.classList.add('is-leaving');
         cur.setAttribute('aria-hidden', 'true');
@@ -875,7 +928,7 @@
       "type": "text",
       "id": "design_order",
       "label": "Column order (designs)",
-      "info": "Comma separated, one column per entry.",
+      "info": "Comma separated. Order within each row: in-stock shirts first, then sold, each in this order.",
       "default": "01,02,03,04,05"
     },
     {
@@ -900,11 +953,11 @@
       "type": "range",
       "id": "showcase_seconds",
       "label": "Seconds per shirt",
-      "min": 3,
+      "min": 2,
       "max": 10,
-      "step": 1,
+      "step": 0.5,
       "unit": "s",
-      "default": 4
+      "default": 2.5
     }
   ],
   "presets": [
