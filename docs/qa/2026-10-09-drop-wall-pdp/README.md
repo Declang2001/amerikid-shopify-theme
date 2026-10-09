@@ -48,4 +48,11 @@ seconds with `step: 0.5`, which Shopify accepted on the dev theme (so decimal st
 - On phones the wall is 2 columns, so the reorder reads as "in-stock first within each size", not left/right.
 
 ## Push log
-(filled in after the owner's pushes)
+- **Push 1 (2026-10-09, owner):** asset + snippet. Pulled back: both byte-identical to the repo; wall and
+  product.json still the old versions; no Liquid error. Gate for push 3 satisfied.
+- **Push 2 (2026-10-09, owner):** `sections/ak-drop-wall.liquid`. Pulled back: byte-identical; collection.json
+  unchanged. Live HTML `data-seconds="2.5"`, no Liquid error. Live headless Chromium (`live-result.json`):
+  L = L-05 | L-01..04 sold, XL = XL-02 XL-03 | XL-01 XL-04 XL-05 sold at all 6 sizes; 1440x900 row-1 titles
+  888px, frame 432x378, M-to-L 484px, cadence 2.5s with the mouse on it; keyboard focus and reduced motion
+  hold; overflow 0; console only Shop Pay third-party errors. Screenshot `live/wall-1440x900-L-XL.png`.
+- **Push 3:** pending owner answer on SL-L-01 / SL-L-05 / SL-XL-02.
