@@ -1,10 +1,10 @@
 # HANDOFF — Supreme Leader Drop Theme
 
-> ## CURRENT STATE — read this first (2026-09-26, end of DROP-WALL-REFRESH-1/-2)
+> ## CURRENT STATE — read this first (2026-10-09, end of DROP-WALL-REFRESH-3 / PDP-SIZE-CHART-1)
 > - **LIVE theme: `188605497624` "AmeriKid Supreme Leader Drop - DEV"** (role `main`; the name still says DEV).
 >   Rollback theme: `186464731416` notebook (unpublished). `184615043352` dark theme must stay byte-unchanged.
-> - **Repo == live.** On 2026-09-26 a full pull of 188605497624 matched the repo's theme folders
->   byte-for-byte (commit `e303e0d` mirrored 19 app/Admin-side files: PageFly, Gameball, GemPages, Shopify rewrites).
+> - **Repo == live.** On 2026-10-09 a full pull of 188605497624 matched the repo byte-for-byte before the change, and every
+>   pushed file was pulled back byte-identical after it (2026-09-26: commit `e303e0d` mirrored 19 app/Admin-side files).
 >   Before editing, re-check: pull live into a scratch folder and `diff -rq` it, since apps and the Admin can change live at any time.
 > - **Branch:** `experiment/propaganda-drop-theme` (fast-forwarded to match `feature/drop-wall-refresh`), both pushed to origin.
 > - **Pushing to live:** the only shape is `shopify theme push --theme 188605497624 --store iacxyv-w5.myshopify.com --nodelete --allow-live --only <file>...`.
@@ -13,8 +13,15 @@
 >   Guard caveats: its `LIVE_ID` still names 186464731416, and it misses the short flags `-a/-t/-l/-p`.
 > - **Never** `shopify theme dev --theme <id>` (it hot-syncs to that theme), `theme publish`, `theme delete`, or push `config/settings_data.json`.
 > - **What's on the wall now:** full-width 25%-squashed banner (desktop), red Korean band, 5x4 grid, SOLD OUT burst on
->   sold tiles, and an in-stock showcase after the M row (4s, no hover pause). PDP label `ALL SHIRTS`.
->   Details: `docs/qa/2026-09-26-drop-refresh/README.md` (also rollback) and `docs/known-fragile-areas.md` (top).
+>   sold tiles, each row ordered in-stock first then sold (Liquid, every row), and an in-stock showcase after the M row
+>   (8:7 frame, 2.5s per shirt via `showcase_seconds` 2-10 step 0.5, no hover pause). PDP label `ALL SHIRTS`.
+>   **SL product pages show the owner's size chart** under the description (`size_chart` custom_liquid block in
+>   `templates/product.json` -> `snippets/ak-drop-size-chart.liquid`; `sl-` handle or tag `size-chart`; tag
+>   `no-size-chart` hides it). Owner pushed product.json without tagging, so all 20 SL shirts show it (incl. the
+>   long-sleeve L-01, cropped L-05 and black XL-02).
+>   Details: `docs/qa/2026-10-09-drop-wall-pdp/README.md` (latest, with rollback), `docs/qa/2026-09-26-drop-refresh/README.md`,
+>   and `docs/known-fragile-areas.md` (top, items 1-11). Three templates host the wall: `collection.json` (live),
+>   `collection.supreme-leader.json` and `collection.gp-template-bk-default.json`; freshness-check all three.
 > - **If wide banner art arrives** (spec: 6:1, 3840x640, lettering on one line; see the QA README):
 >   the current desktop rule `height:25vw;object-fit:fill` in `sections/ak-drop-wall.liquid` would STRETCH it.
 >   Change that rule to `height:auto` (natural aspect) when swapping the art, and keep a 3:1 image for mobile.

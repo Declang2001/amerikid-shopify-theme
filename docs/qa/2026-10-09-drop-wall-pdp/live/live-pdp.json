@@ -1,0 +1,139 @@
+{
+ "pdp sl-l-05 1440": {
+  "chart": true,
+  "afterDescription": true,
+  "beforeShare": true,
+  "chartBox": [
+   490,
+   490
+  ],
+  "sizeHeaderWeight": "700",
+  "hiddenTable": 225.078125,
+  "overflow": 0,
+  "liquidError": false,
+  "imgLoaded": 1200
+ },
+ "pdp sl-l-05 390": {
+  "chart": true,
+  "afterDescription": true,
+  "beforeShare": true,
+  "chartBox": [
+   357,
+   357
+  ],
+  "sizeHeaderWeight": "700",
+  "hiddenTable": 225.078125,
+  "overflow": 0,
+  "liquidError": false,
+  "imgLoaded": 1200
+ },
+ "pdp sl-s-01 1440": {
+  "chart": true,
+  "afterDescription": true,
+  "beforeShare": true,
+  "chartBox": [
+   490,
+   490
+  ],
+  "sizeHeaderWeight": "700",
+  "hiddenTable": 225.078125,
+  "overflow": 0,
+  "liquidError": false,
+  "imgLoaded": 1200
+ },
+ "pdp sl-s-01 390": {
+  "chart": true,
+  "afterDescription": true,
+  "beforeShare": true,
+  "chartBox": [
+   357,
+   357
+  ],
+  "sizeHeaderWeight": "700",
+  "hiddenTable": 225.078125,
+  "overflow": 0,
+  "liquidError": false,
+  "imgLoaded": 1200
+ },
+ "pdp sl-xl-02 1440": {
+  "chart": true,
+  "afterDescription": true,
+  "beforeShare": true,
+  "chartBox": [
+   490,
+   490
+  ],
+  "sizeHeaderWeight": "700",
+  "hiddenTable": 225.078125,
+  "overflow": 0,
+  "liquidError": false,
+  "imgLoaded": 1200
+ },
+ "pdp sl-xl-02 390": {
+  "chart": true,
+  "afterDescription": true,
+  "beforeShare": true,
+  "chartBox": [
+   357,
+   357
+  ],
+  "sizeHeaderWeight": "700",
+  "hiddenTable": 225.078125,
+  "overflow": 0,
+  "liquidError": false,
+  "imgLoaded": 1200
+ },
+ "pdp sl-l-01 1440": {
+  "chart": true,
+  "afterDescription": true,
+  "beforeShare": true,
+  "chartBox": [
+   490,
+   490
+  ],
+  "sizeHeaderWeight": "700",
+  "hiddenTable": 225.078125,
+  "overflow": 0,
+  "liquidError": false,
+  "imgLoaded": 1200
+ },
+ "pdp sl-l-01 390": {
+  "chart": true,
+  "afterDescription": true,
+  "beforeShare": true,
+  "chartBox": [
+   357,
+   357
+  ],
+  "sizeHeaderWeight": "700",
+  "hiddenTable": 225.078125,
+  "overflow": 0,
+  "liquidError": false,
+  "imgLoaded": 1200
+ },
+ "pdp flag-tee 1440": {
+  "chart": false,
+  "afterDescription": null,
+  "beforeShare": null,
+  "chartBox": null,
+  "sizeHeaderWeight": "400",
+  "hiddenTable": null,
+  "overflow": 0,
+  "liquidError": false
+ },
+ "pdp flag-tee 390": {
+  "chart": false,
+  "afterDescription": null,
+  "beforeShare": null,
+  "chartBox": null,
+  "sizeHeaderWeight": "400",
+  "hiddenTable": null,
+  "overflow": 0,
+  "liquidError": false
+ },
+ "console (errors/warnings)": [
+  "error: Error producing monorail event MonorailRequestError: Error completing request. A network failure may have prevented the request from completing. Error: T",
+  "error: Failed to load resource: the server responded with a status of 403 ()",
+  "error: Framing 'https://shop.app/' violates the following Content Security Policy directive: \"frame-ancestors 'self' https://shop.app https://admin.shopify.com\""
+ ]
+}

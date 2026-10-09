@@ -55,4 +55,8 @@ seconds with `step: 0.5`, which Shopify accepted on the dev theme (so decimal st
   L = L-05 | L-01..04 sold, XL = XL-02 XL-03 | XL-01 XL-04 XL-05 sold at all 6 sizes; 1440x900 row-1 titles
   888px, frame 432x378, M-to-L 484px, cadence 2.5s with the mouse on it; keyboard focus and reduced motion
   hold; overflow 0; console only Shop Pay third-party errors. Screenshot `live/wall-1440x900-L-XL.png`.
-- **Push 3:** pending owner answer on SL-L-01 / SL-L-05 / SL-XL-02.
+- **Push 3 (2026-10-09, owner):** `templates/product.json`, run without tagging any shirt `no-size-chart`, so the chart
+  shows on all 20 SL shirts. Pulled back: product.json, snippet and wall all byte-identical. All 38 public product
+  pages fetched: chart on exactly the 20 `sl-` pages, 0 elsewhere, 0 Liquid errors. Live headless Chromium
+  (`live/live-pdp.json`): sl-l-05 / sl-s-01 / sl-xl-02 / sl-l-01 at 1440 and 390 - chart under the description and
+  above Share (490px / 357px), image loads, size header still bold, overflow 0; flag-tee has no chart.
